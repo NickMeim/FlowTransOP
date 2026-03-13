@@ -7,8 +7,7 @@
 *.zip
 archived
 archived/*
-FoundationalARCHS4
-FoundationalARCHS4/*
+FoundationalARCHS4/splits.zip
 results/*.zip
 preprocessing/preprocessed_data/drug_landmarks.csv
 preprocessing/preprocessed_data/CellPairs/drug_landmarks.csv
