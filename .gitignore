@@ -10,3 +10,4 @@ archived/*
 FoundationalARCHS4
 FoundationalARCHS4/*
 results/*.zip
+preprocessing/preprocessed_data/drug_landmarks.csv
