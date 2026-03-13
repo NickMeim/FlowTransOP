@@ -19,7 +19,7 @@ for (file in files_dec_diff_in){
 results_dec_diff_ins <- results_dec_diff_ins %>% mutate(approach='Consensus space decoders') %>%
   gather('set','r',-fold,-cell,-iteration,-approach)
 
-## Load generalizedtransop results
+## Load FlowTransOP results
 files <- list.files('../results/AutoTransOP_CellPairs_diffenetInputs_bracketed/',full.names = TRUE)
 files <- files[grepl('translation',files)]
 results_diff_ins <- data.frame()
@@ -30,7 +30,7 @@ for (file in files){
   }
   results_diff_ins <- rbind(results_diff_ins,tmp)
 }
-results_diff_ins <- results_diff_ins %>% mutate(approach='GeneralizedTransOP') %>%
+results_diff_ins <- results_diff_ins %>% mutate(approach='FlowTransOP') %>%
   gather('set','r',-fold,-cell,-iteration,-approach)
 results_diff_ins <- results_diff_ins %>% select(all_of(colnames(results_dec_diff_ins)))
 
@@ -48,7 +48,7 @@ for (file in files_dec_diff_in_uncorr){
 }
 results_dec_diff_ins_uncorr <- results_dec_diff_ins_uncorr %>% mutate(approach='Consensus space decoders') %>%
   gather('set','r',-fold,-cell,-iteration,-approach)
-## Load generalizedtransop results
+## Load FlowTransOP results
 files_uncorr <- list.files('../results/AutoTransOP_CellPairs_diffenetInputs/',full.names = TRUE)
 files_uncorr <- files_uncorr[grepl('translation',files_uncorr)]
 results_diff_ins_uncorr <- data.frame()
@@ -56,7 +56,7 @@ for (file in files_uncorr){
   tmp <- data.table::fread(file) %>% select(-`shuffled X`)
   results_diff_ins_uncorr <- rbind(results_diff_ins_uncorr,tmp)
 }
-results_diff_ins_uncorr <- results_diff_ins_uncorr %>% mutate(approach='GeneralizedTransOP') %>%
+results_diff_ins_uncorr <- results_diff_ins_uncorr %>% mutate(approach='FlowTransOP') %>%
   gather('set','r',-fold,-cell,-iteration,-approach)
 results_diff_ins_uncorr <- results_diff_ins_uncorr %>% select(all_of(colnames(results_dec_diff_ins)))
 
@@ -126,7 +126,7 @@ for (cat in difficulty_levels) {
   cat_data <- test_df %>% filter(difficulty_category == cat)
   
   consensus_vals <- cat_data %>% filter(approach == "Consensus space decoders") %>% pull(r)
-  generalized_vals <- cat_data %>% filter(approach == "GeneralizedTransOP") %>% pull(r)
+  generalized_vals <- cat_data %>% filter(approach == "FlowTransOP") %>% pull(r)
   
   # Perform t-test
   test_result <- t.test(generalized_vals, consensus_vals)
@@ -172,7 +172,7 @@ plot_data_A <- test_df %>%
     .groups = "drop"
   ) %>%
   arrange(input_correlation)
-# fit <- lm(r ~ input_correlation, data = test_df %>% filter(approach=='GeneralizedTransOP'))
+# fit <- lm(r ~ input_correlation, data = test_df %>% filter(approach=='FlowTransOP'))
 # b <- coef(fit)
 # label_form <- sprintf("r = %.2f + %.2f · input_corr", b[1], b[2])
 panel_A <- ggplot(plot_data_A, aes(x = input_correlation, y = r_mean, 
@@ -194,11 +194,11 @@ panel_A <- ggplot(plot_data_A, aes(x = input_correlation, y = r_mean,
   
   # Styling
   scale_color_manual(values = c("Consensus space decoders" = "#2E86AB",
-                                "GeneralizedTransOP" = "#E63946")) +
+                                "FlowTransOP" = "#E63946")) +
   scale_fill_manual(values = c("Consensus space decoders" = "#2E86AB",
-                               "GeneralizedTransOP" = "#E63946")) +
+                               "FlowTransOP" = "#E63946")) +
   scale_shape_manual(values = c("Consensus space decoders" = 16,
-                                "GeneralizedTransOP" = 15)) +
+                                "FlowTransOP" = 15)) +
   
   labs(
     title = "A) Models` Performance Across Task Difficulty Spectrum",
@@ -258,7 +258,7 @@ panel_A
 #   
 #   scale_color_manual(values = c(
 #     "Consensus space decoders" = "#2E86AB",
-#     "GeneralizedTransOP"       = "#E63946"
+#     "FlowTransOP"       = "#E63946"
 #   )) +
 #   coord_cartesian(ylim = c(0, 1)) +
 #   labs(
@@ -286,14 +286,14 @@ stat_w <- test_df %>%
 
 ## Rank-biserial effect size per difficulty
 test_df$approach <- factor(test_df$approach,
-                           levels=c("GeneralizedTransOP",
+                           levels=c("FlowTransOP",
                                     "Consensus space decoders"))
 eff_w <- test_df %>% 
   group_by(difficulty_category) %>%
   cohens_d(r ~ approach, paired = TRUE) %>%  # effsize = rank-biserial r
   ungroup()
 
-## Mean difference: GeneralizedTransOP - Consensus space decoders
+## Mean difference: FlowTransOP - Consensus space decoders
 mean_diff <- test_df %>%
   group_by(difficulty_category, approach) %>%
   summarise(mean_r = mean(r), .groups = "drop") %>%
@@ -302,7 +302,7 @@ mean_diff <- test_df %>%
     values_from = mean_r
   ) %>%
   mutate(
-    diff_mean = `GeneralizedTransOP` - `Consensus space decoders`
+    diff_mean = `FlowTransOP` - `Consensus space decoders`
   )
 
 ## Combine, build multi-line label
@@ -344,7 +344,7 @@ panel_B <- ggviolin(test_df %>%
     size         = 5
   )  +
   scale_fill_manual(values = c("Consensus space decoders" = "#2E86AB",
-                               "GeneralizedTransOP" = "#E63946")) +
+                               "FlowTransOP" = "#E63946")) +
   
   labs(
     title = "B) Performance by Difficulty Category",

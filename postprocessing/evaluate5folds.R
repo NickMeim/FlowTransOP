@@ -2,6 +2,8 @@ library(tidyverse)
 library(ggplot2)
 library(ggpubr)
 library(patchwork)
+library(lme4)
+library(emmeans)
 
 ## Load example data----------
 results <- data.table::fread('../results/AutoTransOP_CellPairs/A375_HT29_flow12_TransAct_GeneralizedTransOP_translation_eval.csv') %>%
@@ -104,9 +106,114 @@ ggboxplot(results %>% arrange(fold),x='set',y='r',
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         legend.position = 'top')
-ggsave('../flow_transact_performance_all.png',
-       width = 20,
-       height = 16,
+results <- results %>%
+  mutate(z = atanh(r))
+lmm_fit <- lmer(z ~ set + (1 | translation) + (1 | fold),
+                data = results)
+emm <- emmeans(lmm_fit, ~ set)
+contrasts_res <- contrast(emm, method = list(
+  "AutoTransOP vs train"            = c(1, -1,  0,  0,  0),
+  "AutoTransOP vs test"             = c(1,  0, -1,  0,  0),
+  "train vs Direct translation"     = c(0,  1,  0, -1,  0),
+  "test vs Direct translation"      = c(0,  0,  1, -1,  0),
+  "test vs shuffled X"              = c(0,  0,  1,  0, -1),
+  "train vs shuffled X"             = c(0,  1,  0,  0, -1),
+  "train vs test"                   = c(0,  1, -1,  0,  0),
+  "Direct translation vs shuffled X"= c(0,  0,  0,  1, -1)
+  # adjust vector order to match levels(factor(results$set))
+), adjust = "bonferroni")
+summary(contrasts_res)
+get_sig <- function(p) ifelse(p < 0.001, "***",
+                              ifelse(p < 0.01,  "**",
+                                     ifelse(p < 0.05,  "*", "ns")))
+
+contrast_df <- as.data.frame(summary(contrasts_res)) %>%
+  mutate(label = get_sig(p.value))
+# Pull labels in the same order as comparisons below
+sig_labels <- contrast_df$label  # order matches the contrast list above
+pv <- ggviolin(results %>% arrange(fold),
+         x = 'set', y = 'r',
+         fill = 'set',
+         add = 'jitter',
+         palette = "jco",
+         draw_quantiles = 0.5,
+         size = 2) +
+  ylab("Pearson's r") +
+  scale_y_continuous(n.breaks = 10, limits = c(min_val, 1)) +
+  geom_signif(
+    comparisons = list(c('AutoTransOP', 'train'),
+                       c('AutoTransOP', 'test'),
+                       c('train', 'Direct translation'),
+                       c('test', 'Direct translation'),
+                       c('test', 'shuffled X'),
+                       c('train', 'shuffled X'),
+                       c('train', 'test'),
+                       c('Direct translation', 'shuffled X')),
+    annotations = sig_labels,        # <-- LMM Bonferroni labels
+    y_position  = c(0.75, 0.83, 0.75, 0.65, 0.70, 0.80, 0.63, 0.60),
+    tip_length  = 0.01,
+    textsize    = 7
+  ) +
+  theme(text = element_text(size = 24),
+        axis.title.x = element_blank(),
+        axis.text.x  = element_blank(),
+        legend.text  = element_text(size = 28),
+        legend.title = element_text(size = 28),
+        legend.position = 'top')
+
+results_mean <- results %>%
+  group_by(set, translation) %>%
+  mutate(r = mean(r)) %>%
+  ungroup() %>%
+  select(-fold,-z) %>%
+  unique()
+pd <- ggdotplot(results_mean,
+          x = 'set', y = 'r',
+          fill = 'translation',
+          position = position_dodge(0.025)) +
+  geom_line(aes(x = set, y = r, group = translation),
+            color = 'gray50', size = 0.75, alpha = 0.5) +
+  stat_summary(fun = mean, geom = "crossbar",
+               width = 0.3, color = "black", linetype = 'dashed',
+               fatten = 2) +
+  stat_compare_means(
+    comparisons = list(c('AutoTransOP', 'train'),
+                       c('AutoTransOP', 'test'),
+                       c('train', 'Direct translation'),
+                       c('test', 'Direct translation'),
+                       c('test', 'shuffled X'),
+                       c('train', 'shuffled X'),
+                       c('train', 'test'),
+                       c('Direct translation', 'shuffled X')),
+    label.y  = c(0.75, 0.83, 0.75, 0.65, 0.70, 0.80, 0.63, 0.60),
+    method='wilcox',
+    paired=TRUE,
+    label = 'p.signif' ,
+    size=7
+  ) +
+  scale_y_continuous(n.breaks = 10, limits = c(min_val, 1)) +
+  guides(fill = guide_legend(nrow = 2)) +
+  ylab("Pearson's r averaged across folds") +
+  theme(text= element_text(size = 24),
+        axis.title.x  = element_blank(),
+        legend.position = 'top',
+        legend.text   = element_text(size = 16),
+        legend.title  = element_blank(),
+        axis.text     = element_text(size = 24))
+p <- pv+pd
+print(p)
+
+ggsave('../figure3a.png',
+       plot = p,
+       width = 82.5,
+       height = 24,
+       units = 'cm',
+       dpi = 600)
+ggsave('../figure3a.eps',
+       device = cairo_ps,
+       plot = p,
+       width = 82.5,
+       height = 24,
        units = 'cm',
        dpi = 600)
 
@@ -256,36 +363,55 @@ compare_df_autotransop <- rbind(compare_df %>%
                                   select(all_of(colnames(autotransop))),
                                 autotransop)
 ## VS AutoTransOP
-ggpaired(compare_df_autotransop,
+p1 <- ggpaired(compare_df_autotransop,
           x='approach',y='r',
          line.size = 0.1,line.color = 'lightgrey',linetype = 'solid')+
   scale_y_continuous(n.breaks = 10,limits = c(0,1))+
   stat_compare_means(method = 'wilcox',paired=TRUE,size=6)+
-  ylab('r') + xlab('approach')
+  ylab('r') + xlab('approach')+
+  theme(axis.title.x = element_blank())
 ggsave('../transact_decoders_vs_autotransop.png',
+       plot=p1,
        width = 12,
        height = 12,
        units = 'cm',
        dpi = 600)
 
-## VS GeneralizedTransOP
+## VS FlowTransOP
 compare_df_plt <- rbind(compare_df,
-                    results %>% mutate(approach='GeneralizedTransOP') %>% 
+                    results %>% mutate(approach='FlowTransOP') %>% 
                       select(all_of(colnames(compare_df))))
-ggpaired(compare_df_plt ,
+p2 <-ggpaired(compare_df_plt ,
          x='approach',y='r',
          line.size = 0.1,line.color = 'lightgrey',linetype = 'solid')+
   scale_y_continuous(n.breaks = 10,limits = c(0,1))+
   facet_wrap(~set)+
   stat_compare_means(method = 'wilcox')+
-  ylab('r') + xlab('approach')
+  ylab('r') + xlab('approach') + 
+  theme(axis.title.x = element_blank())
 ggsave('../transact_decoders_paired_vs_generalizedtransop.png',
-       width = 24,
+       plot=p2,
+       width = 12,
+       height = 12,
+       units = 'cm',
+       dpi = 600)
+p <- p2 + p1 + plot_layout(widths = c(2, 1))
+print(p)
+ggsave('../transact_decoders_vs_autotransop_vs_flowtransop.png',
+       plot=p,
+       width = 32,
+       height = 12,
+       units = 'cm',
+       dpi = 600)
+ggsave('../transact_decoders_vs_autotransop_vs_flowtransop.eps',
+       device = cairo_ps,
+       plot=p,
+       width = 32,
        height = 12,
        units = 'cm',
        dpi = 600)
 
-## Compare GeneralizedTransOP when we have pairs------------------
+## Compare FlowTransOP when we have pairs------------------
 files <- list.files('../results/AutoTransOP_CellPairs_withPairs/',full.names = TRUE)
 files <- files[grepl('translation',files)]
 results_paired_general <- data.frame()
@@ -295,7 +421,7 @@ for (file in files){
   results_paired_general <- rbind(results_paired_general,tmp)
 }
 results_paired_general <- results_paired_general %>% gather('set','r',-fold,-translation)
-results_paired_general <- results_paired_general %>% mutate(approach='Paired GeneralizedTransOP')
+results_paired_general <- results_paired_general %>% mutate(approach='Paired FlowTransOP')
 results_paired_general <- results_paired_general %>% select(all_of(colnames(compare_df)))
 
 ## plot comparioson
@@ -304,7 +430,7 @@ stat.test <- rbind(results_paired_general,
   filter(set != 'shuffled X') %>%
   group_by(set) %>%
   rstatix::wilcox_test(r ~ approach) %>%
-  add_y_position() 
+  rstatix::add_y_position() 
 ggboxplot(
   rbind(results_paired_general,
         compare_df %>% filter(translation %in% results_paired_general$translation)),
@@ -335,7 +461,7 @@ for (file in files_dec_diff_in){
 results_dec_diff_ins <- results_dec_diff_ins %>% mutate(approach='Consensus space decoders') %>%
   gather('set','r',-fold,-cell,-iteration,-approach)
 
-## Load generalizedtransop results
+## Load FlowTransOP results
 files <- list.files('../results/AutoTransOP_CellPairs_diffenetInputs/',full.names = TRUE)
 files <- files[grepl('translation',files)]
 results_diff_ins <- data.frame()
@@ -343,7 +469,7 @@ for (file in files){
   tmp <- data.table::fread(file)
   results_diff_ins <- rbind(results_diff_ins,tmp)
 }
-results_diff_ins <- results_diff_ins %>% mutate(approach='GeneralizedTransOP') %>%
+results_diff_ins <- results_diff_ins %>% mutate(approach='FlowTransOP') %>%
   gather('set','r',-fold,-cell,-iteration,-approach)
 results_diff_ins <- results_diff_ins %>% select(all_of(colnames(results_dec_diff_ins)))
 
@@ -364,15 +490,15 @@ pv <- ggviolin(compare_diffIns_plt,
   ## facet where all three approaches exist
   stat_compare_means(
     data = subset(compare_diffIns_plt, set == "test"),
-    comparisons = list(c('GeneralizedTransOP','Consensus space decoders'),
-                       c('GeneralizedTransOP','shuffled X')),
+    comparisons = list(c('FlowTransOP','Consensus space decoders'),
+                       c('FlowTransOP','shuffled X')),
     label.y = 0.65,
     method = 'wilcox',
   ) +
   ## facet where "shuffled X" is absent
   stat_compare_means(
     data = subset(compare_diffIns_plt, set == "train"),
-    comparisons = list(c('GeneralizedTransOP','Consensus space decoders')),
+    comparisons = list(c('FlowTransOP','Consensus space decoders')),
     label.y = 0.65,method = 'wilcox',
   ) +
   facet_wrap(~set,scales = 'free_x')+
@@ -396,15 +522,15 @@ pd <- ggdotplot(compare_diffIns_plt %>%
   ## facet where all three approaches exist
   stat_compare_means(
     data = subset(compare_diffIns_plt, set == "test"),
-    comparisons = list(c('GeneralizedTransOP','Consensus space decoders'),
-                       c('GeneralizedTransOP','shuffled X')),
+    comparisons = list(c('FlowTransOP','Consensus space decoders'),
+                       c('FlowTransOP','shuffled X')),
     label.y = 0.65,
     method = 'wilcox'
   ) +
   ## facet where "shuffled X" is absent
   stat_compare_means(
     data = subset(compare_diffIns_plt, set == "train"),
-    comparisons = list(c('GeneralizedTransOP','Consensus space decoders')),
+    comparisons = list(c('FlowTransOP','Consensus space decoders')),
     label.y = 0.65,
     method = 'wilcox'
   ) +

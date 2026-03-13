@@ -13,3 +13,4 @@ preprocessing/preprocessed_data/drug_landmarks.csv
 preprocessing/preprocessed_data/CellPairs/drug_landmarks.csv
 preprocessing/preprocessed_data/drug_triplets_dataset.rds
 preprocessing/preprocessed_data/drug_quadruplets_dataset.rds
+.Rproj.user

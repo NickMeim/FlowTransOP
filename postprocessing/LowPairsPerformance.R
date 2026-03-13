@@ -185,7 +185,7 @@ p <- ggplot(results_autotransop %>% filter(metric=='pearson translation'),
            alpha = 0.1, fill = "red")
 print(p)
 
-## Load GeneralizedTransOP performance (FlowMatch) ----------
+## Load FlowTransOP performance (FlowMatch) ----------
 get_rds_basename <- function(f) {
   bn <- basename(f)
   out <- str_extract(bn, "^sample_ratio_\\d+")
@@ -201,7 +201,7 @@ load_generalised_test_only <- function(flow_dir, method_label) {
     .[str_detect(basename(.), "\\.csv$")]
   
   if (length(files) == 0) {
-    warning(sprintf("No GeneralizedTransOP translation CSVs found in: %s", flow_dir))
+    warning(sprintf("No FlowTransOP translation CSVs found in: %s", flow_dir))
     return(tibble())
   }
   
@@ -259,16 +259,16 @@ load_generalised_test_only <- function(flow_dir, method_label) {
   out
 }
 
-## Load both GeneralizedTransOP variants
+## Load both FlowTransOP variants
 
 results_generalised_unpaired <- load_generalised_test_only(
   flow_dir = "../results/FlowMatch_lowPairsPercentage",
-  method_label = "GeneralizedTransOP (unpaired)"
+  method_label = "FlowTransOP (unpaired)"
 )
 
 results_generalised_paired <- load_generalised_test_only(
   flow_dir = "../results/FlowMatch_lowPairsPercentage_withPairs",
-  method_label = "GeneralizedTransOP (paired)"
+  method_label = "FlowTransOP (paired)"
 )
 
 ## Prepare AutoTransOP for merge
@@ -361,9 +361,9 @@ extreme_translation_file_withpairs <- "../results/FlowMatch_extremely_fewPairs_A
 results_generalised_paired_extreme <- load_extremely_fewpairs_translation(
   file_path = extreme_translation_file_withpairs,
   total_samples_full = n_avail,
-  method_label = "GeneralizedTransOP (paired)"
+  method_label = "FlowTransOP (paired)"
 )
-# Append to your existing paired GeneralizedTransOP curve
+# Append to your existing paired FlowTransOP curve
 results_generalised_paired_merged_extended <- bind_rows(
   results_generalised_paired_merged,
   results_generalised_paired_extreme
@@ -373,9 +373,9 @@ extreme_translation_file_unpaired <- "../results/FlowMatch_extremely_fewPairs_A3
 results_generalised_unpaired_extreme <- load_extremely_fewpairs_translation(
   file_path = extreme_translation_file_unpaired,
   total_samples_full = n_avail,
-  method_label = "GeneralizedTransOP (unpaired)"
+  method_label = "FlowTransOP (unpaired)"
 )
-# Append to your existing paired GeneralizedTransOP curve
+# Append to your existing paired FlowTransOP curve
 results_generalised_unpaired_merged_extended <- bind_rows(
   results_generalised_unpaired_merged,
   results_generalised_unpaired_extreme
@@ -388,25 +388,25 @@ results_both <- bind_rows(
   results_generalised_paired_merged_extended
 )
 
-## Load GeneralizedTransOP performance with both pairs and similarity ----------
+## Load FlowTransOP performance with both pairs and similarity ----------
 SimPairMax_results_generalised <- load_generalised_test_only(
   flow_dir = "../results/FlowMatch_fewPairs_A375_HT29_PairAndSimilarity",
-  method_label = "GeneralizedTransOP (pairs+sim max agg.)"
+  method_label = "FlowTransOP (pairs+sim max agg.)"
 )
 SimPairMean_results_generalised <- load_generalised_test_only(
   flow_dir = "../results/FlowMatch_fewPairs_A375_HT29_PairAndSimilarity_meanAgg",
-  method_label = "GeneralizedTransOP (pairs+sim mean agg.)"
+  method_label = "FlowTransOP (pairs+sim mean agg.)"
 )
 SimPairSum_results_generalised <- load_generalised_test_only(
   flow_dir = "../results/FlowMatch_fewPairs_A375_HT29_PairAndSimilarity_sumAgg",
-  method_label = "GeneralizedTransOP (pairs+sim sum agg.)"
+  method_label = "FlowTransOP (pairs+sim sum agg.)"
 )
 
 ## extremely low pairs---
 SimPairMax_results_extreme <- load_extremely_fewpairs_translation(
   file_path = "../results/FlowMatch_extremely_fewPairs_A375_HT29_PairAndSimilarity/A375_HT29_ExtremelyfewPairs_translation.csv",
   total_samples_full = n_avail,
-  method_label = "GeneralizedTransOP (pairs+sim max agg.)"
+  method_label = "FlowTransOP (pairs+sim max agg.)"
 )
 
 ## Merge and visualize-------------
@@ -418,9 +418,9 @@ results_all <- bind_rows(results_both,
 
 ## First compare aggregation methods
 pagg <- ggplot(results_all  %>% filter(metric=='pearson translation') %>%
-                 filter(method %in% c("GeneralizedTransOP (pairs+sim max agg.)",
-                                      "GeneralizedTransOP (pairs+sim mean agg.)",
-                                      "GeneralizedTransOP (pairs+sim sum agg.)")) %>%
+                 filter(method %in% c("FlowTransOP (pairs+sim max agg.)",
+                                      "FlowTransOP (pairs+sim mean agg.)",
+                                      "FlowTransOP (pairs+sim sum agg.)")) %>%
                  filter(number_paired_samples<50),
                aes(number_paired_samples,mean_value,
                    color = method, group = method)) +
@@ -441,16 +441,16 @@ pagg <- ggplot(results_all  %>% filter(metric=='pearson translation') %>%
         panel.grid.major = element_line(linewidth=1.5))
 print(pagg)
 tmp <- results_all  %>% filter(metric=='pearson translation') %>%
-  filter(method %in% c("GeneralizedTransOP (pairs+sim max agg.)",
-                       "GeneralizedTransOP (pairs+sim mean agg.)",
-                       "GeneralizedTransOP (pairs+sim sum agg.)")) %>%
+  filter(method %in% c("FlowTransOP (pairs+sim max agg.)",
+                       "FlowTransOP (pairs+sim mean agg.)",
+                       "FlowTransOP (pairs+sim sum agg.)")) %>%
   filter(grepl('sample_ratio',rds_basename)) %>%
   ungroup()
 ggpaired(tmp,
        x= 'method',y='mean_value',id = 'number_paired_samples',color = 'method') +
   ylab('Average pearson`s r for translation')+
   ylim(c(0,1))+
-  stat_compare_means(ref.group = "GeneralizedTransOP (pairs+sim max agg.)",
+  stat_compare_means(ref.group = "FlowTransOP (pairs+sim max agg.)",
                      label = 'p.signif',
                      method='wilcox.test',
                      paired = TRUE)+
@@ -467,8 +467,49 @@ ggpaired(tmp,
 
 final_vis_res <- results_all  %>% filter(metric=='pearson translation') %>%
   # filter(number_paired_samples<50) %>%
-  filter(!(method %in% c("GeneralizedTransOP (pairs+sim mean agg.)",
-                         "GeneralizedTransOP (pairs+sim sum agg.)")))
+  filter(!(method %in% c("FlowTransOP (pairs+sim mean agg.)",
+                         "FlowTransOP (pairs+sim sum agg.)")))
+
+## Check statistical significance at x = 32
+vals_auto <- atanh(final_vis_res %>%
+  filter(number_paired_samples == 32, method == "AutoTransOP") %>%
+  pull(value))
+vals_flow <- atanh(final_vis_res %>%
+  filter(number_paired_samples == 32, method == "FlowTransOP (unpaired)") %>%
+  pull(value))
+p_val    <- t.test(vals_auto, vals_flow, paired = TRUE, var.equal = FALSE)$p.value
+sig_label <- ifelse(p_val < 0.001, "***",
+                    ifelse(p_val < 0.01,  "**",
+                           ifelse(p_val < 0.05,  "*", "ns")))
+## Check also at 7 pairs
+vals_auto2 <- atanh(final_vis_res %>%
+                     filter(number_paired_samples == 7, method == "AutoTransOP") %>%
+                     pull(value))
+vals_flow2 <- atanh(final_vis_res %>%
+                     filter(number_paired_samples == 7, method == "FlowTransOP (unpaired)") %>%
+                     pull(value))
+p_val2    <- t.test(vals_auto2, vals_flow2, paired = TRUE, var.equal = FALSE)$p.value
+sig_label2 <- ifelse(p_val2 < 0.001, "***",
+                    ifelse(p_val2 < 0.01,  "**",
+                           ifelse(p_val2 < 0.05,  "*", "ns")))
+y_top     <- final_vis_res %>%
+  filter(number_paired_samples == 32,
+         method %in% c("AutoTransOP", "FlowTransOP (unpaired)")) %>%
+  summarise(y = max(mean_value + std_value / sqrt(5))) %>%   # top of ribbon
+  pull(y)
+y_bracket <- y_top + 0.04   # base of bracket
+y_text    <- y_bracket + 0.03
+sig_layers <- list(
+  annotate("text",
+           x = 32, y = y_text,
+           label = sig_label,
+           size  = 7, fontface = "bold", color = "black"),
+  annotate("text",
+           x = 7, y = y_text-0.02,
+           label = sig_label2,
+           size  = 7, fontface = "bold", color = "black")
+)
+
 p1 <- ggplot(final_vis_res ,
             aes(number_paired_samples,mean_value,
                 color = method, group = method)) +
@@ -506,11 +547,18 @@ p2 <-  ggplot(final_vis_res %>% filter(number_paired_samples<50),
         legend.title = element_blank(),
         legend.position = 'top',
         panel.grid.major = element_line(linewidth=1.5))
+p1 <- p1 + sig_layers
+p2 <- p2 + sig_layers
 p1c <- p1 + theme(legend.position = "top")
 p2c <- p2 + theme(legend.position = "top")
 p <- p1 + p2 +
   plot_layout(guides = "collect") +
-  plot_annotation(theme = theme(legend.position = "top"))
+  plot_annotation(theme = theme(legend.position = "top",
+                                legend.justification = "left"))
 print(p)
 ggsave("../figures/low_pairs_comparison.png", p, 
-       width = 24, height = 18,units = 'cm', dpi = 600, bg = "white")
+       width = 32, height = 18,units = 'cm', dpi = 600, bg = "white")
+
+ggsave("../figures/low_pairs_comparison.eps", p, 
+       device = cairo_ps,
+       width = 32, height = 18,units = 'cm', dpi = 600, bg = "white")
