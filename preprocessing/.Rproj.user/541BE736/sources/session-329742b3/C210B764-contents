@@ -1,0 +1,108 @@
+suppressPackageStartupMessages(library(pwr))
+
+# Exact (non-asymptotic) one-sided binomial sample size for:
+# H0: p <= p0  vs  H1: p = p1  (reject for large X)
+find_n_pos_exact <- function(p0, p1, power_target = 0.80, alpha = 0.05,
+                             n_start = 1, n_max = 1e6) {
+  if (p1 <= p0) stop("Need p1 > p0 for a 'greater' one-sided test.")
+  for (n in n_start:n_max) {
+    xs <- 0:n
+    # exact one-sided tail under H0: P(X >= x)
+    tail_p0 <- pbinom(xs - 1, size = n, prob = p0, lower.tail = FALSE)
+    
+    idx <- which(tail_p0 <= alpha)
+    if (!length(idx)) next
+    x_crit <- xs[min(idx)]
+    alpha_actual <- tail_p0[min(idx)]
+    
+    # exact power under H1 with same rejection rule
+    power_actual <- pbinom(x_crit - 1, size = n, prob = p1, lower.tail = FALSE)
+    
+    if (power_actual >= power_target) {
+      return(list(n_pos = n, x_crit = x_crit,
+                  alpha_actual = alpha_actual, power_actual = power_actual))
+    }
+  }
+  stop("n_max too small; increase n_max.")
+}
+
+design_sensitivity_study <- function(
+    p_target = 0.80,      # p1
+    p_null   = 0.65,      # p0
+    prevalence = 0.0065,  # 0.65% = 0.0065
+    dropout    = 0.15,
+    alpha      = 0.05,
+    power_target = 0.80,
+    start_with_pwr = TRUE,
+    ensure_pos_prob = NULL # optional: guarantee P(#diseased completers >= n_pos) >= this
+) {
+  if (prevalence <= 0 || prevalence >= 1) stop("prevalence must be in (0,1).")
+  if (dropout < 0 || dropout >= 1) stop("dropout must be in [0,1).")
+  
+  # pwr is approximate; use only as a starting point
+  n_start <- 1L
+  n_pos_approx <- NA_integer_
+  if (start_with_pwr) {
+    n_pos_approx <- ceiling(pwr.p.test(
+      h = ES.h(p_target, p_null),
+      sig.level = alpha,
+      power = power_target,
+      alternative = "greater"
+    )$n)
+    n_start <- max(1L, n_pos_approx)
+  }
+  
+  pos_req <- find_n_pos_exact(
+    p0 = p_null, p1 = p_target,
+    power_target = power_target, alpha = alpha,
+    n_start = n_start
+  )
+  
+  n_pos <- pos_req$n_pos
+  
+  # Expected-based conversion to total enrolled
+  n_total_evaluable_expected <- ceiling(n_pos / prevalence)
+  n_total_enroll_expected <- ceiling(n_total_evaluable_expected / (1 - dropout))
+  
+  out <- list(
+    inputs = list(p_target=p_target, p_null=p_null, prevalence=prevalence, dropout=dropout,
+                  alpha=alpha, power_target=power_target, start_with_pwr=start_with_pwr),
+    n_pos_approx_pwr = n_pos_approx,
+    positives_required_exact = pos_req,
+    totals_expected = list(
+      n_total_evaluable_expected = n_total_evaluable_expected,
+      n_total_enroll_expected = n_total_enroll_expected
+    )
+  )
+  
+  # Optional exact guarantee of having enough diseased completers
+  if (!is.null(ensure_pos_prob)) {
+    if (ensure_pos_prob <= 0 || ensure_pos_prob >= 1) stop("ensure_pos_prob must be in (0,1).")
+    p_diseased_completer <- prevalence * (1 - dropout)
+    N <- max(1L, ceiling(n_pos / p_diseased_completer))
+    repeat {
+      prob_enough <- pbinom(n_pos - 1, size = N, prob = p_diseased_completer, lower.tail = FALSE)
+      if (prob_enough >= ensure_pos_prob) break
+      N <- N + 1L
+    }
+    out$totals_guaranteed <- list(
+      n_total_enroll_min = N,
+      prob_at_least_n_pos = prob_enough
+    )
+  }
+  
+  out
+}
+
+# ---- Example with your parameters ----
+res <- design_sensitivity_study(
+  p_target = 0.9,
+  p_null   = 0.85,
+  prevalence = 0.08,
+  dropout    = 0.15,
+  alpha      = 0.05,
+  power_target = 0.80,
+  start_with_pwr = TRUE
+)
+print(res$positives_required_exact)
+print(res$totals_expected)
