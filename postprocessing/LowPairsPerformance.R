@@ -369,7 +369,7 @@ results_generalised_paired_merged_extended <- bind_rows(
   results_generalised_paired_extreme
 )
 # # repeat for unpaired
-extreme_translation_file_unpaired <- "../results/FlowMatch_extremely_fewPairs_A375_HT29_withPairs/A375_HT29_ExtremelyfewPairs_translation.csv"
+extreme_translation_file_unpaired <- "../results/FlowMatch_extremely_fewPairs_A375_HT29/A375_HT29_ExtremelyfewPairs_translation.csv"
 results_generalised_unpaired_extreme <- load_extremely_fewpairs_translation(
   file_path = extreme_translation_file_unpaired,
   total_samples_full = n_avail,
