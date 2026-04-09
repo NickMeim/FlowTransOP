@@ -3,7 +3,9 @@ import torch
 from evaluationUtils import pearson_r, r_square
 from utility import *
 from transact_utility_gpu import *
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, r2_score
+from scipy.stats import pearsonr
+from torch.distributions import NegativeBinomial
 # from geomloss import SamplesLoss
 import logging
 logger = logging.getLogger(__name__)  # Use __name__ for module-level logger
@@ -2018,3 +2020,306 @@ def train_GeneralFM_fold(model_params, device,
             cosineLoss = np.nan
 
     return (pearson_translation, cosineLoss, flow)
+
+
+def train_RNAseq_AE_fold(model_params, device, x_train,
+                    decoder, encoder,
+                    bs:int, NUM_EPOCHS:int,
+                    evaluate:bool=True):
+    # Combine parameters and create optimizers/schedulers
+    allParams = list(decoder.parameters()) + list(encoder.parameters())
+    optimizer = torch.optim.Adam(allParams, lr=model_params['encoding_lr'], weight_decay=0)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
+                                                step_size=model_params['schedule_step_enc'],
+                                                gamma=model_params['gamma_enc'])
+    recon_criterion = NBLoss()
+    # Get dataset sizes
+    N = x_train.shape[0]
+    batch_pearson_mus = []
+    batch_pearson_vars = []
+    batch_mu_r2s = []
+    batch_var_r2s = []
+    batch_losses = []
+    # Training loop
+    for e in range(NUM_EPOCHS):        
+        decoder.train()
+        encoder.train()
+        # Generate training batches
+        trainloader = getSamples(N, bs)
+        # Iterate through batches
+        for j in range(len(trainloader)):
+            dataIndex = trainloader[j]            
+            X = x_train[dataIndex, :].double().to(device)
+            optimizer.zero_grad()
+            # encode
+            z = encoder(X)
+            # decode
+            y_pred_means, y_pred_vars = decoder(z)
+            # calculate loss
+            fitLoss = recon_criterion(y_pred_means, X, y_pred_vars)
+            L2Loss = decoder.L2Regularization(model_params['dec_l2_reg']) + encoder.L2Regularization(model_params['enc_l2_reg'])
+            loss = fitLoss + L2Loss
+            loss.backward()
+            optimizer.step()
+            # Get performance metrics
+            counts, logits = _convert_mean_disp_to_counts_logits(
+                        torch.clamp(
+                            y_pred_means.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        ),
+                        torch.clamp(
+                            y_pred_vars.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        )
+                    )
+            distr = NegativeBinomial(total_count=counts,
+                                     logits=logits)
+            nb_sample = distr.sample().cpu().numpy()
+            yp_m = nb_sample.mean(0)
+            yp_v = nb_sample.var(0)
+            # true means and variances
+            yt_m = X.detach().cpu().numpy().mean(axis=0)
+            yt_v = X.detach().cpu().numpy().var(axis=0)
+            pearson_mu,_ = pearsonr(yp_m, yt_m)
+            pearson_var,_ = pearsonr(yp_v, yt_v)
+
+            batch_pearson_mus.append(pearson_mu)
+            batch_pearson_vars.append(pearson_var)
+            batch_mu_r2s.append(r2_score(yt_m, yp_m))
+            batch_var_r2s.append(r2_score(yt_v, yp_v))
+            batch_losses.append(loss.item())
+        
+        scheduler.step()
+        outString = 'Epoch={:.0f}/{:.0f}'.format(e+1,NUM_EPOCHS)
+        outString += ', muR2={:.4f}'.format(np.nanmean(batch_mu_r2s))
+        outString += ', varR2={:.4f}'.format(np.nanmean(batch_var_r2s))
+        outString += ', pearson_mu={:.4f}'.format(np.nanmean(batch_pearson_mus))
+        outString += ', pearson_var={:.4f}'.format(np.nanmean(batch_pearson_vars))
+        outString += ', loss={:.4f}'.format(np.nanmean(batch_losses))
+
+        # Logging
+        if (e % 250 == 0) or (e + 1 == NUM_EPOCHS):
+            print2log(outString)
+        
+    # evaluate
+    if evaluate:
+        encoder.eval()
+        decoder.eval()
+        with torch.no_grad():
+            y_pred_mu, y_pred_var = decoder(encoder(x_train.double().to(device)))
+            # Get performance metrics
+            counts, logits = _convert_mean_disp_to_counts_logits(
+                        torch.clamp(
+                            y_pred_means.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        ),
+                        torch.clamp(
+                            y_pred_vars.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        )
+                    )
+            distr = NegativeBinomial(total_count=counts,
+                                     logits=logits)
+            nb_sample = distr.sample().cpu().numpy()
+            yp_m = nb_sample.mean(0)
+            yp_v = nb_sample.var(0)
+            # true means and variances
+            yt_m = X.detach().cpu().numpy().mean(axis=0)
+            yt_v = X.detach().cpu().numpy().var(axis=0)
+            pearson_mu,_ = pearsonr(yp_m, yt_m)
+            pearson_var,_ = pearsonr(yp_v, yt_v)
+            r2_mu = r2_score(yt_m, yp_m)
+            r2_var = r2_score(yt_v, yp_v)
+    else:
+        pearson_mu = None
+        pearson_var = None
+        r2_mu = None
+        r2_var = None
+    metrics = {
+        'pearson_mu': pearson_mu,
+        'pearson_var': pearson_var,
+        'r2_mu': r2_mu,
+        'r2_var': r2_var
+    }
+    return (metrics, decoder, encoder)
+
+
+def train_RNAseq_flowMatch_fold(model_params, device, x_1_train, x_2_train,z_1_train,z_2_train,flow,
+                    bs_1:int, bs_2:int, NUM_EPOCHS:int,
+                    translation_direction = '1 to 2'):
+    # Combine parameters and create optimizers/schedulers
+    allParams = list(flow.parameters())
+    optimizer = torch.optim.Adam(allParams, lr=model_params['encoding_lr'], weight_decay=0)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
+                                                step_size=model_params['schedule_step_enc'],
+                                                gamma=model_params['gamma_enc'])
+    flow_loss_fn = torch.nn.MSELoss()
+
+    # Get dataset sizes
+    N_1 = x_1_train.shape[0]
+    N_2 = x_2_train.shape[0]
+    all_losses = []
+    all_flow_losses = []
+    all_dist_losses = []
+    # Training loop
+    # loss_fn = torch.nn.MSELoss()
+    for e in range(NUM_EPOCHS):        
+        flow.train()
+        # Generate training batches
+        trainloader_1 = getSamples(N_1, bs_1)
+        trainloader_2 = getSamples(N_2, bs_2)
+        maxLen = max(len(trainloader_1), len(trainloader_2))
+        # Pad shorter trainloader if needed
+        if len(trainloader_1) < maxLen:
+            while len(trainloader_1) < maxLen:
+                trainloader_1 += getSamples(N_1, bs_1)[:maxLen - len(trainloader_1)]
+        if len(trainloader_2) < maxLen:
+            while len(trainloader_2) < maxLen:
+                trainloader_2 += getSamples(N_2, bs_2)[:maxLen - len(trainloader_2)]
+        # Iterate through batches
+        batch_losses = []
+        batch_flow_losses = []
+        batch_dist_losses = []
+        for j in range(maxLen):
+            dataIndex_1 = trainloader_1[j]
+            dataIndex_2 = trainloader_2[j]
+            # Get data for the batch
+            X_1 = x_1_train[dataIndex_1, :]#.cpu().numpy()#.double().to(device)
+            X_2 = x_2_train[dataIndex_2, :]#.cpu().numpy()#.double().to(device)
+            z_1 = z_1_train[dataIndex_1, :]#.double().to(device)
+            z_2 = z_2_train[dataIndex_2, :]#.double().to(device)
+            X_2_aligned, X_1_aligned, _,_ = transact_align_gpu(
+                X_2,        # source → will become Z_source
+                X_1,        # target → will become Z_target
+                n_src_pcs=75,
+                n_tgt_pcs=75,
+                n_pv=30,
+                kernel='rbf',
+                gamma=5e-4      # or whatever you tuned
+            )
+            X_1_aligned = X_1_aligned  - X_1_aligned.mean(0)
+            X_2_aligned = X_2_aligned  - X_2_aligned.mean(0)
+            C = X_1_aligned @ X_2_aligned.T
+            # Using z_1 and z_2 as the latent representations for flow matching
+            # Then in each iteration:
+            C = C/C.max()
+            optimizer.zero_grad()
+            if translation_direction == '1 to 2':
+                # Translate z1 to z2 with flow
+                if z_1.shape[0] == z_2.shape[0]:
+                    t = torch.rand(len(z_1), 1).double().to(device)
+                    z_t = (1 - t) * z_1 + t * z_2
+                    dz_t = z_2 - z_1
+                elif z_1.shape[0] > z_2.shape[0]:
+                    t = torch.rand(len(z_2), 1).double().to(device)
+                    z_t = (1 - t) * z_1[:z_2.shape[0]] + t * z_2
+                    dz_t = z_2 - z_1[:z_2.shape[0]]
+                else:
+                    t = torch.rand(len(z_1), 1).double().to(device)
+                    z_t = (1 - t) * z_1 + t * z_2[:z_1.shape[0]]
+                    dz_t = z_2[:z_1.shape[0]] - z_1
+                flow_loss = flow_loss_fn(flow(z_t, t), dz_t)
+                ## Conditioned based on initial correlation
+                n_steps = 10
+                time_steps = torch.linspace(0, 1.0, n_steps + 1, device=device, dtype=torch.double)
+                z12 = z_1.clone()
+                for step in range(n_steps):
+                    z12 = flow.step(z12, time_steps[step], time_steps[step + 1])
+                dist = torch.cdist(z12, z_2) * torch.nn.functional.relu(C)
+                dist = torch.sum(dist)
+            else:
+                # Translate now z2 to z1
+                if z_1.shape[0] == z_2.shape[0]:
+                    t = torch.rand(len(z_2), 1).double().to(device)
+                    z_t = (1 - t) * z_2 + t * z_1
+                    dz_t = z_1 - z_2
+                elif z_2.shape[0] > z_1.shape[0]:
+                    t = torch.rand(len(z_1), 1).double().to(device)
+                    z_t = (1 - t) * z_2[:z_1.shape[0]] + t * z_1
+                    dz_t = z_1 - z_2[:z_1.shape[0]]
+                else:
+                    t = torch.rand(len(z_2), 1).double().to(device)
+                    z_t = (1 - t) * z_2 + t * z_1[:z_2.shape[0]]
+                    dz_t = z_1[:z_2.shape[0]] - z_2
+                flow_loss = flow_loss_fn(flow(z_t, t), dz_t)
+                ## Conditioned based on initial correlation
+                n_steps = 10
+                time_steps = torch.linspace(0, 1.0, n_steps + 1, device=device, dtype=torch.double)
+                z21 = z_2.clone()
+                for step in range(n_steps):
+                    z21 = flow.step(z21, time_steps[step], time_steps[step + 1])
+                dist = torch.cdist(z_1, z21) * torch.nn.functional.relu(C)
+                dist = torch.sum(dist)
+            loss = model_params['flow_lambda'] * flow_loss + model_params['conditional_flow_lambda']*dist
+            loss.backward(retain_graph=True)
+            optimizer.step()
+
+            batch_losses.append(loss.item())
+            batch_flow_losses.append(flow_loss.item())
+            batch_dist_losses.append(dist.item())
+
+        scheduler.step()
+        outString = 'Epoch={:.0f}/{:.0f}'.format(e+1,NUM_EPOCHS)
+        outString += ', distance loss={:.4f}'.format(np.nanmean(batch_dist_losses))
+        outString += ', flow loss={:.4f}'.format(np.nanmean(batch_flow_losses))
+        outString += ', loss={:.4f}'.format(np.nanmean(batch_losses))
+
+        all_losses.append(np.nanmean(batch_losses))
+        all_flow_losses.append(np.nanmean(batch_flow_losses))
+        all_dist_losses.append(np.nanmean(batch_dist_losses))
+
+        # Logging
+        # if (e % 250 == 0) or (e + 1 == NUM_EPOCHS):
+        print2log(outString)
+
+    flow.eval()
+    with torch.no_grad():
+        if translation_direction == '1 to 2':
+            n_steps = 10
+            time_steps = torch.linspace(0, 1.0, n_steps + 1, device=device, dtype=torch.double)
+            ztran = z_1_train.clone()
+            for step in range(n_steps):
+                ztran = flow.step(ztran, time_steps[step], time_steps[step + 1])
+        else:
+            n_steps = 10
+            time_steps = torch.linspace(0, 1.0, n_steps + 1, device=device, dtype=torch.double)
+            ztran = z_2_train.clone()
+            for step in range(n_steps):
+                ztran = flow.step(ztran, time_steps[step], time_steps[step + 1])
+    return (ztran,flow)
+
+
+def validate_RNAseq_flowMatch_fold(device, x_1_test, x_2_test,
+                              encoder_1, encoder_2,flow,
+                              translation_direction='1 to 2'):
+    # Evaluation mode
+    encoder_1.eval()
+    encoder_2.eval()
+    flow.eval()
+    
+    with torch.no_grad():
+        # Prepare test data
+        x_1 = x_1_test.double().to(device)
+        x_2 = x_2_test.double().to(device)
+        # Generate latent variables
+        z_latent_base_1 = encoder_1(x_1)
+        z_latent_base_2 = encoder_2(x_2)
+
+        if translation_direction == '1 to 2':
+            n_steps = 10
+            time_steps = torch.linspace(0, 1.0, n_steps + 1, device=device, dtype=torch.double)
+            ztran = z_latent_base_1.clone()
+            for step in range(n_steps):
+                ztran = flow.step(ztran, time_steps[step], time_steps[step + 1])
+        else:
+            n_steps = 10
+            time_steps = torch.linspace(0, 1.0, n_steps + 1, device=device, dtype=torch.double)
+            ztran = z_latent_base_2.clone()
+            for step in range(n_steps):
+                ztran = flow.step(ztran, time_steps[step], time_steps[step + 1])
+    
+    return ztran

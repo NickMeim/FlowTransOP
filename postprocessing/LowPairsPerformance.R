@@ -408,13 +408,19 @@ SimPairMax_results_extreme <- load_extremely_fewpairs_translation(
   total_samples_full = n_avail,
   method_label = "FlowTransOP (pairs+sim max agg.)"
 )
+SimPairSum_results_extreme <- load_extremely_fewpairs_translation(
+  file_path = "../results/FlowMatch_extremely_fewPairs_A375_HT29_PairAndSimilarity_sumAgg/A375_HT29_ExtremelyfewPairs_translation.csv",
+  total_samples_full = n_avail,
+  method_label = "FlowTransOP (pairs+sim sum agg.)"
+)
 
 ## Merge and visualize-------------
 results_all <- bind_rows(results_both,
                          SimPairMax_results_generalised,
                          SimPairMax_results_extreme,
                          SimPairMean_results_generalised,
-                         SimPairSum_results_generalised)
+                         SimPairSum_results_generalised,
+                         SimPairSum_results_extreme)
 
 ## First compare aggregation methods
 pagg <- ggplot(results_all  %>% filter(metric=='pearson translation') %>%
@@ -468,7 +474,7 @@ ggpaired(tmp,
 final_vis_res <- results_all  %>% filter(metric=='pearson translation') %>%
   # filter(number_paired_samples<50) %>%
   filter(!(method %in% c("FlowTransOP (pairs+sim mean agg.)",
-                         "FlowTransOP (pairs+sim sum agg.)")))
+                         "FlowTransOP (pairs+sim max agg.)")))
 
 ## Check statistical significance at x = 32
 vals_auto <- atanh(final_vis_res %>%

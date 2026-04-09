@@ -316,7 +316,7 @@ class SimpleANN(torch.nn.Module):
 
 
 class VarDecoder(torch.nn.Module):
-    def __init__(self, latent_dim, hidden_layers, out_dim,dropRate=0.1, activation=None, bias=True,loss='nb'):
+    def __init__(self, latent_dim, hidden_layers, out_dim,dropRate=0.1, dropIn=0, bn=0.6, activation=None, bias=True,loss='nb', dtype=torch.double):
 
         super(VarDecoder, self).__init__()
 
@@ -327,30 +327,27 @@ class VarDecoder(torch.nn.Module):
         self.num_hidden_layers = len(hidden_layers)
         self.bn = torch.nn.ModuleList()
         self.linear_layers = torch.nn.ModuleList()
-        self.linear_layers.append(torch.nn.Linear(latent_dim, hidden_layers[0], bias=bias))
-        self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[0], momentum=0.6))
+        self.linear_layers.append(torch.nn.Linear(latent_dim, hidden_layers[0], bias=bias, dtype=dtype))
+        self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[0], momentum=bn, dtype=dtype))
         for i in range(1, len(hidden_layers)):
-            self.linear_layers.append(torch.nn.Linear(hidden_layers[i - 1], hidden_layers[i], bias=bias))
-            self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[i], momentum=0.6))
-        # for i in range(1,num_hidden_layers + 1):
-        #     self.linear_layers.append(torch.nn.Linear(latent_dim * (2 ** (i - 1)), latent_dim * (2 ** i),
-        #                                                           bias=bias))
-        #     self.bn.append(torch.nn.BatchNorm1d(num_features=latent_dim * (2 ** i), momentum=0.6))
-
-        #self.output_linear = torch.nn.Linear(hidden_layers[-1],
-        #                                     2*out_dim,
-        #                                     bias=False)
+            self.linear_layers.append(torch.nn.Linear(hidden_layers[i - 1], hidden_layers[i], bias=bias, dtype=dtype))
+            self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[i], momentum=bn, dtype=dtype))
+        
         self.out_var = torch.nn.Linear(hidden_layers[-1],
                                        out_dim,
-                                       bias=False)
+                                       bias=False, 
+                                       dtype=dtype)
         self.out_mu = torch.nn.Linear(hidden_layers[-1],
                                        out_dim,
-                                       bias=False)
+                                       bias=False, 
+                                       dtype=dtype)
 
         if activation is not None:
             self.activation = activation
-        # self.bn = nn.BatchNorm1d(num_features=latent_dim, momentum=0.6, dtype=torch.double)
         self.dropout = torch.nn.Dropout(dropRate)
+        self.drop_in = dropIn
+        if dropIn > 0:
+            self.drop_input = torch.nn.Dropout(dropIn)
         self.relu = torch.nn.LeakyReLU()
 
         self.init_emb()
@@ -363,26 +360,21 @@ class VarDecoder(torch.nn.Module):
                     m.bias.data.fill_(0.0)
 
     def forward(self, x):
+        if self.dropIn > 0:
+            x = self.drop_input(x)
         for i in range(self.num_hidden_layers):
             x = self.linear_layers[i](x)
             x = self.bn[i](x)
             x = self.activation(x)
             x = self.dropout(x)
-
-        #output = self.output_linear(x)
-        #dim = output.size(1) // 2
-        #output = torch.cat((self.relu(output[:, :dim]), output[:, dim:]), dim=1)
         if self.loss == 'gauss':
             # convert variance estimates to a positive value in [1e-3, \infty)
             gene_means = torch.nn.functional.softplus(self.relu(self.out_mu(x))).add(1e-3)
             gene_vars = torch.nn.functional.softplus(self.relu(self.out_var(x))).add(1e-3)
         if self.loss == 'nb':
             gene_means = torch.nn.functional.softplus(self.relu(self.out_mu(x))).add(1e-3)
-            gene_vars = torch.nn.functional.softplus(self.relu(self.out_var(x))).add(1e-3)
-
-        #output = torch.cat([gene_means, gene_vars], dim=1)
-        
-        return gene_means,gene_vars#output
+            gene_vars = torch.nn.functional.softplus(self.relu(self.out_var(x))).add(1e-3)        
+        return gene_means,gene_vars
 
     def L2Regularization(self, L2):
 

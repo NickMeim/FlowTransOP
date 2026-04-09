@@ -8,12 +8,15 @@ from pathlib import Path
 import torch
 import numpy as np
 from archs4_workflow import ARCHS4DataLoader, load_splits
-from models import Decoder, SimpleEncoder, Flow, GaussianDecoder,VarDecoder,ElementWiseLinear
-from trainingUtils import NBLoss,_convert_mean_disp_to_counts_logits, train_flowMatch_fold, validate_flowMatch_fold,train_count_AE_fold
+from models import VarDecoder,SimpleEncoder, Flow
+from results.models import ElementWiseLinear
+from trainingUtils import train_RNAseq_flowMatch_fold, validate_RNAseq_flowMatch_fold,train_RNAseq_AE_fold, _convert_mean_disp_to_counts_logits
 from utility import *
 from transact_utility_gpu import *
-from evaluationUtils import pearson_r, r_square
-import pandas as pd
+from evaluationUtils import pearson_r
+from sklearn.metrics import r2_score
+from scipy.stats import pearsonr
+from torch.distributions import NegativeBinomial
 import logging
 from logging import FileHandler
 import warnings
@@ -30,26 +33,26 @@ def main():
     parser.add_argument("--fold", type=int, required=True)
     # Training parameters
     parser.add_argument('--batch_size', type=int, default=1024, help='Batch size for traiming.')
-    parser.add_argument('--epochs', type=int, default=20, help='Number of epochs for training.')
+    parser.add_argument('--epochs', type=int, default=10, help='Number of epochs for training.')
     parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility.')
-    parser.add_argument('--enc_l2_reg', type=float, default=1e-06, help='L2 regularization for the encoder.')
-    parser.add_argument('--dec_l2_reg', type=float, default=1e-06, help='L2 regularization for the decoder.')
+    parser.add_argument('--enc_l2_reg', type=float, default=0.001, help='L2 regularization for the encoder.')
+    parser.add_argument('--dec_l2_reg', type=float, default=0.001, help='L2 regularization for the decoder.')
     parser.add_argument('--encoding_lr', type=float, default=0.001, help='Learning rate for the encoder.')
-    parser.add_argument('--schedule_step_enc', type=int, default=8, help='Step size for the encoder learning rate scheduler.')
+    parser.add_argument('--schedule_step_enc', type=int, default=5, help='Step size for the encoder learning rate scheduler.')
     parser.add_argument('--gamma_enc', type=float, default=0.8, help='Gamma for the encoder learning rate scheduler.')
     parser.add_argument('--autoencoder_wd', type=float, default=0.0, help='Weight decay for the autoencoder.')
     # Model parameters
-    parser.add_argument('--encoder_1_hiddens', type=int, nargs='+', default=[4096,2048,1024,512], help='Hidden layer sizes for encoder 1.')
-    parser.add_argument('--encoder_2_hiddens', type=int, nargs='+', default=[4096,2048,1024,512], help='Hidden layer sizes for encoder 2.')
-    parser.add_argument('--latent_dim', type=int, default=512, help='Dimension of the latent space.')
-    parser.add_argument('--decoder_1_hiddens', type=int, nargs='+', default=[512,768,2048, 4096], help='Hidden layer sizes for decoder 1.')
-    parser.add_argument('--decoder_2_hiddens', type=int, nargs='+', default=[512,768,2048, 4096], help='Hidden layer sizes for decoder 2.')
-    parser.add_argument('--dropout_decoder', type=float, default=0.1, help='Dropout rate for the decoder.')
-    parser.add_argument('--dropout_encoder', type=float, default=0.1, help='Dropout rate for the encoder.')
+    parser.add_argument('--encoder_1_hiddens', type=int, nargs='+', default=[384, 256], help='Hidden layer sizes for encoder 1.')
+    parser.add_argument('--encoder_2_hiddens', type=int, nargs='+', default=[384, 256], help='Hidden layer sizes for encoder 2.')
+    parser.add_argument('--latent_dim', type=int, default=128, help='Dimension of the latent space.')
+    parser.add_argument('--decoder_1_hiddens', type=int, nargs='+', default=[256, 384], help='Hidden layer sizes for decoder 1.')
+    parser.add_argument('--decoder_2_hiddens', type=int, nargs='+', default=[256, 384], help='Hidden layer sizes for decoder 2.')
+    parser.add_argument('--dropout_decoder', type=float, default=0.2, help='Dropout rate for the decoder.')
+    parser.add_argument('--dropout_encoder', type=float, default=0.2, help='Dropout rate for the encoder.')
     parser.add_argument('--bn_decoder', type=float, default=0.6, help='Use batch normalization in the decoder.')
     parser.add_argument('--bn_encoder', type=float, default=0.6, help='Use batch normalization in the encoder.')
     parser.add_argument('--dropout_input_encoder', type=float, default=0.5, help='Dropout rate for the imput of the encoder.')
-    parser.add_argument('--dropout_input_decoder', type=float, default=0, help='Dropout rate for the imput of the decoder.')
+    parser.add_argument('--dropout_input_decoder', type=float, default=0.2, help='Dropout rate for the imput of the decoder.')
     parser.add_argument('--encoder_activation', type=str, 
                         choices=['LeakyReLU', 'ReLU', 'ELU', 'Sigmoid'],  
                         help='Activation function used between layers of the encoder',
@@ -113,7 +116,6 @@ def main():
         'gamma_enc': args.gamma_enc,
         'batch_size': args.batch_size,
         'epochs': args.epochs,
-        'no_folds': args.no_folds,
         'enc_l2_reg': args.enc_l2_reg,
         'dec_l2_reg': args.dec_l2_reg,
         'autoencoder_wd': args.autoencoder_wd,
@@ -134,7 +136,7 @@ def main():
     )
     
     # Load fold data - returns DataFrames
-    print(f"Loading fold {args.fold}...")
+    print2log(f"Loading fold {args.fold}...")
     human_train_df, human_val_df = loader.load_fold_data(
         human_folds[args.fold], "human"
     )
@@ -148,46 +150,42 @@ def main():
     X_human_val = torch.tensor(human_val_df.values).float().to(device)
     X_mouse_val = torch.tensor(mouse_val_df.values).float().to(device)
     
-    print(f"Human train: {X_human.shape}, val: {X_human_val.shape}")
-    print(f"Mouse train: {X_mouse.shape}, val: {X_mouse_val.shape}")
+    print2log(f"Human train: {X_human.shape}, val: {X_human_val.shape}")
+    print2log(f"Mouse train: {X_mouse.shape}, val: {X_mouse_val.shape}")
     
     # ====== NORMAL MODEL ======
-    print("\n=== Training NORMAL model ===")
+    print2log("\n=== Training NORMAL model ===")
     
     # Initialize models (your pattern)
     encoder_human = torch.nn.Sequential(ElementWiseLinear(X_human.shape[1]),
-                                        SimpleEncoder(X_human.shape[1],
-                                        model_params['encoder_1_hiddens'],
-                                        model_params['latent_dim'],
-                                        dropRate=model_params['dropout_encoder'],
-                                        bn=model_params['bn_encoder'],
-                                        activation=model_params['encoder_activation'],
-                                        dropIn=model_params['dropout_input_encoder'])).to(device)
+                                        SimpleEncoder(X_human.shape[1], model_params['encoder_1_hiddens'], model_params['latent_dim'],
+                                                      dropRate=model_params['dropout_encoder'], bn=model_params['bn_encoder'],
+                                                      activation=model_params['encoder_activation'],dropIn=model_params['dropout_input_encoder'],
+                                                      dtype=torch.float)).to(device)
     encoder_mouse = torch.nn.Sequential(ElementWiseLinear(X_mouse.shape[1]),
-                                        SimpleEncoder(X_mouse.shape[1],
-                                        model_params['encoder_2_hiddens'],
-                                        model_params['latent_dim'],
-                                        dropRate=model_params['dropout_encoder'],
-                                        bn=model_params['bn_encoder'],
-                                        activation=model_params['encoder_activation'],
-                                        dropIn=model_params['dropout_input_encoder'])).to(device)
-    decoder_human = VarDecoder(model_params['latent_dim'],model_params['decoder_1_hiddens'],X_human.shape[1],
-                           dropRate=model_params['dropout_decoder'],
-                           activation=model_params['decoder_activation']).to(device)
-    decoder_mouse = VarDecoder(model_params['latent_dim'],model_params['decoder_2_hiddens'],X_mouse.shape[1],
-                           dropRate=model_params['dropout_decoder'],
-                           activation=model_params['decoder_activation']).to(device)
+                                        SimpleEncoder(X_mouse.shape[1], model_params['encoder_2_hiddens'], model_params['latent_dim'],
+                                                      dropRate=model_params['dropout_encoder'], bn=model_params['bn_encoder'],
+                                                      activation=model_params['encoder_activation'],dropIn=model_params['dropout_input_encoder'],
+                                                      dtype=torch.float)).to(device)
+    decoder_human = VarDecoder(model_params['latent_dim'], model_params['decoder_2_hiddens'], X_human.shape[1],
+                            dropRate=model_params['dropout_decoder'], bn=model_params['bn_decoder'],
+                            activation=model_params['decoder_activation'],dropIn=model_params['dropout_input_decoder'],
+                                  dtype=torch.float).to(device)
+    decoder_mouse = VarDecoder(model_params['latent_dim'], model_params['decoder_2_hiddens'], X_mouse.shape[1],
+                            dropRate=model_params['dropout_decoder'], bn=model_params['bn_decoder'],
+                            activation=model_params['decoder_activation'],dropIn=model_params['dropout_input_decoder'],
+                                  dtype=torch.float).to(device)
     flow_h2m = Flow(model_params['latent_dim'], int(model_params['latent_dim']/2),dtype=torch.float).to(device)
     # flow_m2h = Flow(model_params['latent_dim'], int(model_params['latent_dim']/2),dtype=torch.float).to(device)
     
     # Train autoencoders - YOUR FUNCTIONS
-    _, decoder_human, encoder_human = train_count_AE_fold(
+    _, decoder_human, encoder_human = train_RNAseq_AE_fold(
         model_params, device, X_human, 
         decoder_human, encoder_human,
         model_params['batch_size'], model_params['epochs'],
         evaluate=False
     )
-    _, decoder_mouse, encoder_mouse = train_count_AE_fold(
+    _, decoder_mouse, encoder_mouse = train_RNAseq_AE_fold(
         model_params, device, X_mouse,
         decoder_mouse, encoder_mouse,
         model_params['batch_size'], model_params['epochs'],
@@ -202,29 +200,80 @@ def main():
         # Generate latent variables
         z_latent_base_1 = encoder_human(X_human_val)
         z_latent_base_2 = encoder_mouse(X_mouse_val)
-        # reconstruction results
-        y_pred_1 = decoder_human(z_latent_base_1)
-        y_pred_2 = decoder_mouse(z_latent_base_2)
-        # evaluate pearson correlation (pearson_r) of reconstruction
-        r_human = pearson_r(y_pred_1, X_human_val).detach().cpu().numpy()
-        r_mouse = pearson_r(y_pred_2, X_mouse_val).detach().cpu().numpy()
+        y_mu_human_val, y_var_human_val = decoder_human(z_latent_base_1)
+        y_mu_mouse_val, y_var_mouse_val = decoder_mouse(z_latent_base_2)
+        # y_mu_train_human, y_var_train_human = decoder_human(Z_human)
+        # y_mu_train_mouse, y_var_train_mouse = decoder_mouse(Z_mouse)
 
-    print2log(f"Validation Reconstruction Pearson Correlation - Human: {np.nanmean(r_human):.4f}, Mouse: {np.nanmean(r_mouse):.4f}")
-    
+        # Get performance metrics
+        counts_human_val, logits_human_val = _convert_mean_disp_to_counts_logits(
+                        torch.clamp(
+                            y_mu_human_val.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        ),
+                        torch.clamp(
+                            y_var_human_val.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        )
+                    )
+        distr_human = NegativeBinomial(total_count=counts_human_val,
+                                     logits=logits_human_val)
+        nb_sample_human = distr_human.sample().cpu().numpy()
+        yp_mu_human = nb_sample_human.mean(0)
+        yp_var_human = nb_sample_human.var(0)
+        # true means and variances
+        yt_m = X_human_val.detach().cpu().numpy().mean(axis=0)
+        yt_v = X_human_val.detach().cpu().numpy().var(axis=0)
+        pearson_mu_human,_ = pearsonr(yp_mu_human, yt_m)
+        pearson_var_human,_ = pearsonr(yp_var_human, yt_v)
+        r2_mu_human = r2_score(yt_m, yp_mu_human)
+        r2_var_human = r2_score(yt_v, yp_var_human)
+
+        # For mouse
+        counts_mouse_val, logits_mouse_val = _convert_mean_disp_to_counts_logits(
+                        torch.clamp(
+                            y_mu_mouse_val.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        ),
+                        torch.clamp(
+                            y_var_mouse_val.detach(),
+                            min=1e-4,                    
+                            max=1e4,
+                        )
+                    )
+        distr_mouse = NegativeBinomial(total_count=counts_mouse_val,
+                                        logits=logits_mouse_val)
+        nb_sample_mouse = distr_mouse.sample().cpu().numpy()
+        yp_mu_mouse = nb_sample_mouse.mean(0)    
+        yp_var_mouse = nb_sample_mouse.var(0)
+        # true means and variances
+        yt_m = X_mouse_val.detach().cpu().numpy().mean(axis=0)
+        yt_v = X_mouse_val.detach().cpu().numpy().var(axis=0)
+        pearson_mu_mouse,_ = pearsonr(yp_mu_mouse, yt_m)
+        pearson_var_mouse,_ = pearsonr(yp_var_mouse, yt_v)
+        r2_mu_mouse = r2_score(yt_m, yp_mu_mouse)
+        r2_var_mouse = r2_score(yt_v, yp_var_mouse)
+
+    print2log(f"Validation Reconstruction Pearson Correlation - Human: mu={pearson_mu_human:.4f}, var={pearson_var_human:.4f}; Mouse: {pearson_mu_mouse:.4f}, var={pearson_var_mouse:.4f}")
+    print2log(f"Validation Reconstruction R² - Human: mu={r2_mu_human:.4f}, var={r2_var_human:.4f}; Mouse: {r2_mu_mouse:.4f}, var={r2_var_mouse:.4f}")
+
     # Get latent representations
     with torch.no_grad():
         Z_human = encoder_human(X_human.to(device))
         Z_mouse = encoder_mouse(X_mouse.to(device))
-    
+
     # Train flow models
-    _, _, flow_h2m = train_flowMatch_fold(
+    z_h2m, flow_h2m = train_RNAseq_flowMatch_fold(
         model_params, device,
         X_human, X_mouse,
         Z_human, Z_mouse,
         decoder_human, decoder_mouse,
         flow_h2m,
         model_params['batch_size'], model_params['batch_size'], model_params['epochs'],
-        tanslation_direction='1 to 2'
+        translation_direction ='1 to 2'
     )
     
     # Save normal model
@@ -235,35 +284,50 @@ def main():
         'decoder_mouse': decoder_mouse.state_dict(),
         'flow_h2m': flow_h2m.state_dict(),
     }, MODEL_DIR / f"fold_{args.fold}_normal.pt")
+
+    # Evaluate flow model on validation data
+    flow_h2m.eval()
+    with torch.no_grad():
+        z_h2m_val = validate_RNAseq_flowMatch_fold(
+            model_params, device,
+            X_human_val, X_mouse_val,
+            encoder_human, encoder_mouse,
+            flow_h2m,
+            translation_direction='1 to 2'
+        )
+
+    # Save validation latent variables
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_h2m_val.npy", z_h2m_val.cpu().numpy())
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_human_val.npy", Z_human.cpu().numpy())
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_mouse_val.npy", Z_mouse.cpu().numpy())
+    # Save train latent variables
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_h2m_train.npy", z_h2m.cpu().numpy())
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_human_train.npy", Z_human.cpu().numpy())
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_mouse_train.npy", Z_mouse.cpu().numpy())
     
     
     # ====== PERMUTED MODEL ======
-    print("\n=== Training PERMUTED model ===")
+    print2log("\n=== Training PERMUTED model ===")
     
     # Reinitialize models
     encoder_human_perm = torch.nn.Sequential(ElementWiseLinear(X_human.shape[1]),
-                                        SimpleEncoder(X_human.shape[1],
-                                        model_params['encoder_1_hiddens'],
-                                        model_params['latent_dim'],
-                                        dropRate=model_params['dropout_encoder'],
-                                        bn=model_params['bn_encoder'],
-                                        activation=model_params['encoder_activation'],
-                                        dropIn=model_params['dropout_input_encoder'])).to(device)
+                                        SimpleEncoder(X_human.shape[1], model_params['encoder_1_hiddens'], model_params['latent_dim'],
+                                                      dropRate=model_params['dropout_encoder'], bn=model_params['bn_encoder'],
+                                                      activation=model_params['encoder_activation'],dropIn=model_params['dropout_input_encoder'],
+                                                      dtype=torch.float)).to(device)
     encoder_mouse_perm = torch.nn.Sequential(ElementWiseLinear(X_mouse.shape[1]),
-                                        SimpleEncoder(X_mouse.shape[1],
-                                        model_params['encoder_2_hiddens'],
-                                        model_params['latent_dim'],
-                                        dropRate=model_params['dropout_encoder'],
-                                        bn=model_params['bn_encoder'],
-                                        activation=model_params['encoder_activation'],
-                                        dropIn=model_params['dropout_input_encoder'])).to(device)
-    decoder_human_perm = VarDecoder(model_params['latent_dim'],model_params['decoder_1_hiddens'],X_human.shape[1],
-                           dropRate=model_params['dropout_decoder'],
-                           activation=model_params['decoder_activation']).to(device)
-    decoder_mouse_perm = VarDecoder(model_params['latent_dim'],model_params['decoder_2_hiddens'],X_mouse.shape[1],
-                           dropRate=model_params['dropout_decoder'],
-                           activation=model_params['decoder_activation']).to(device)
-    
+                                        SimpleEncoder(X_mouse.shape[1], model_params['encoder_2_hiddens'], model_params['latent_dim'],
+                                                      dropRate=model_params['dropout_encoder'], bn=model_params['bn_encoder'],
+                                                      activation=model_params['encoder_activation'],dropIn=model_params['dropout_input_encoder'],
+                                                      dtype=torch.float)).to(device)
+    decoder_human_perm = VarDecoder(model_params['latent_dim'], model_params['decoder_2_hiddens'], X_human.shape[1],
+                            dropRate=model_params['dropout_decoder'], bn=model_params['bn_decoder'],
+                            activation=model_params['decoder_activation'],dropIn=model_params['dropout_input_decoder'],
+                                  dtype=torch.float).to(device)
+    decoder_mouse_perm = VarDecoder(model_params['latent_dim'], model_params['decoder_2_hiddens'], X_mouse.shape[1],
+                            dropRate=model_params['dropout_decoder'], bn=model_params['bn_decoder'],
+                            activation=model_params['decoder_activation'],dropIn=model_params['dropout_input_decoder'],
+                                  dtype=torch.float).to(device)
     flow_h2m_perm = Flow(model_params['latent_dim'], int(model_params['latent_dim']/2), dtype=torch.float).to(device)
     # flow_m2h_perm = Flow(model_params['latent_dim'], int(model_params['latent_dim']/2),dtype=torch.float).to(device)
     
@@ -274,13 +338,13 @@ def main():
     X_mouse_permuted = X_mouse[:, perm_idx_mouse]
     
     # Train with permuted data
-    _, decoder_human_perm, encoder_human_perm = train_count_AE_fold(
+    _, decoder_human_perm, encoder_human_perm = train_RNAseq_AE_fold(
         model_params, device, X_human_permuted,
         decoder_human_perm, encoder_human_perm,
         model_params['batch_size'], model_params['epochs'],
         evaluate=False
     )
-    _, decoder_mouse_perm, encoder_mouse_perm = train_count_AE_fold(
+    _, decoder_mouse_perm, encoder_mouse_perm = train_RNAseq_AE_fold(
         model_params, device, X_mouse_permuted,
         decoder_mouse_perm, encoder_mouse_perm,
         model_params['batch_size'], model_params['epochs'],
@@ -295,28 +359,76 @@ def main():
         # Generate latent variables
         z_latent_base_1 = encoder_human_perm(X_human_val)
         z_latent_base_2 = encoder_mouse_perm(X_mouse_val)
-        # reconstruction results
-        y_pred_1 = decoder_human_perm(z_latent_base_1)
-        y_pred_2 = decoder_mouse_perm(z_latent_base_2)
-        # evaluate pearson correlation (pearson_r) of reconstruction
-        r_human_perm = pearson_r(y_pred_1, X_human_val).detach().cpu().numpy()
-        r_mouse_perm = pearson_r(y_pred_2, X_mouse_val).detach().cpu().numpy()
+        y_mu_human_val, y_var_human_val = decoder_human_perm(z_latent_base_1)
+        y_mu_mouse_val, y_var_mouse_val = decoder_mouse_perm(z_latent_base_2)
+        # y_mu_train_human, y_var_train_human = decoder_human_perm(Z_human_perm)
+        # y_mu_train_mouse, y_var_train_mouse = decoder_mouse_perm(Z_mouse_perm)
+        # Get performance metrics
+        counts_human_val_perm, logits_human_val_perm = _convert_mean_disp_to_counts_logits(
+                        torch.clamp(
+                            y_mu_human_val.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        ),
+                        torch.clamp(
+                            y_var_human_val.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        )
+                    )
+        distr_human_perm = NegativeBinomial(total_count=counts_human_val_perm,
+                                     logits=logits_human_val_perm)
+        nb_sample_human_perm = distr_human_perm.sample().cpu().numpy()
+        yp_mu_human_perm = nb_sample_human_perm.mean(0)
+        yp_var_human_perm = nb_sample_human_perm.var(0)
+        # true means and variances
+        # same as already caculated
+        counts_mouse_val_perm, logits_mouse_val_perm = _convert_mean_disp_to_counts_logits(
+                        torch.clamp(
+                            y_mu_mouse_val.detach(),
+                            min=1e-4,
+                            max=1e4,
+                        ),
+                        torch.clamp(
+                            y_var_mouse_val.detach(),
+                            min=1e-4,
+                            max=1e4,                    
+                        )
+                    )
+        distr_mouse_perm = NegativeBinomial(total_count=counts_mouse_val_perm,
+                                     logits=logits_mouse_val_perm)
+        nb_sample_mouse_perm = distr_mouse_perm.sample().cpu().numpy()
+        yp_mu_mouse_perm = nb_sample_mouse_perm.mean(0)
+        yp_var_mouse_perm = nb_sample_mouse_perm.var(0)
+        # true means and variances
+        # same as already caculated
+        # Get performance metrics
+        pearson_mu_mouse_perm,_ = pearsonr(yp_mu_mouse_perm, yt_m)
+        pearson_var_mouse_perm,_ = pearsonr(yp_var_mouse_perm, yt_v)
+        r2_mu_mouse_perm = r2_score(yt_m, yp_mu_mouse_perm)
+        r2_var_mouse_perm = r2_score(yt_v, yp_var_mouse_perm)
+        # For human
+        pearson_mu_human_perm,_ = pearsonr(yp_mu_human_perm, yt_m)
+        pearson_var_human_perm,_ = pearsonr(yp_var_human_perm, yt_v)
+        r2_mu_human_perm = r2_score(yt_m, yp_mu_human_perm)
+        r2_var_human_perm = r2_score(yt_v, yp_var_human_perm)
 
-    print2log(f"Shuffled X Validation Reconstruction Pearson Correlation - Human: {np.nanmean(r_human_perm):.4f}, Mouse: {np.nanmean(r_mouse_perm):.4f}")
-    
+    print2log(f"Shuffled X Validation Reconstruction Pearson Correlation - Human: mu={pearson_mu_human_perm:.4f}, var={pearson_var_human_perm:.4f}, Mouse: mu={pearson_mu_mouse_perm:.4f}, var={pearson_var_mouse_perm:.4f}")
+    print2log(f"Shuffled X Validation Reconstruction R² - Human: mu={r2_mu_human_perm:.4f}, var={r2_var_human_perm:.4f}, Mouse: mu={r2_mu_mouse_perm:.4f}, var={r2_var_mouse_perm:.4f}")
+
     # Get latent representations
     with torch.no_grad():
         Z_human_perm = encoder_human_perm(X_human_permuted)
         Z_mouse_perm = encoder_mouse_perm(X_mouse_permuted)
     
-    pearson_h2m_perm, _, flow_h2m_perm = train_flowMatch_fold(
+    z_h2m_perm, flow_h2m_perm = train_RNAseq_flowMatch_fold(
         model_params, device,
         X_human_permuted, X_mouse_permuted,
         Z_human_perm, Z_mouse_perm,
         decoder_human_perm, decoder_mouse_perm,
         flow_h2m_perm,
         model_params['batch_size'], model_params['batch_size'], model_params['epochs'],
-        tanslation_direction='1 to 2'
+        translation_direction='1 to 2'
     )
     
     # Save permuted model
@@ -327,23 +439,25 @@ def main():
         'decoder_mouse': decoder_mouse_perm.state_dict(),
         'flow_h2m': flow_h2m_perm.state_dict(),
     }, MODEL_DIR / f"fold_{args.fold}_permuted.pt")
+
+
+    # Evaluate flow model on validation data
+    flow_h2m_perm.eval()
+    with torch.no_grad():
+        z_h2m_val_perm = validate_RNAseq_flowMatch_fold(
+            model_params, device,
+            X_human_val, X_mouse_val,
+            encoder_human_perm, encoder_mouse_perm,
+            flow_h2m_perm,
+            translation_direction='1 to 2'
+        )
     
-    print(f"Permuted model - Pearson: {pearson_h2m_perm:.4f}")
+    # Save validation latent variables
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_h2m_val_perm.npy", z_h2m_val_perm.cpu().numpy())
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_human_val_perm.npy", Z_human_perm.cpu().numpy())
+    np.save(MODEL_DIR / f"fold_{args.fold}_z_mouse_val_perm.npy", Z_mouse_perm.cpu().numpy())
     
-    # Save results summary
-    results = {
-        'fold': args.fold,
-        'human_pearson': r_human_perm.tolist(),
-        'mouse_pearson': r_mouse_perm.tolist(),
-        'permuted_human_pearson': r_human_perm.tolist(),
-        'permuted_mouse_pearson': r_mouse_perm.tolist()
-    }
-    
-    import json
-    with open(MODEL_DIR / f"fold_{args.fold}_results.json", 'w') as f:
-        json.dump(results, f, indent=2)
-    
-    print(f"\n✓ Fold {args.fold} complete!")
+    print2log(f"\n✓ Fold {args.fold} complete!")
 
 if __name__ == "__main__":
     main()
