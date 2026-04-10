@@ -8,8 +8,7 @@ from pathlib import Path
 import torch
 import numpy as np
 from archs4_workflow import ARCHS4DataLoader, load_splits
-from models import VarDecoder,SimpleEncoder, Flow
-from results.models import ElementWiseLinear
+from models import VarDecoder,SimpleEncoder, Flow, ElementWiseLinear
 from trainingUtils import train_RNAseq_flowMatch_fold, validate_RNAseq_flowMatch_fold,train_RNAseq_AE_fold, _convert_mean_disp_to_counts_logits
 from utility import *
 from transact_utility_gpu import *

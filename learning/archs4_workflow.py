@@ -352,9 +352,9 @@ class ARCHS4DataLoader:
     def _load_gene_info(self):
         """Load gene names from both species."""
         with h5py.File(self.human_file, "r") as f:
-            self.human_genes = [x.decode("UTF-8") for x in f["meta/genes/gene_symbol"][:]]
+            self.human_genes = [x.decode("UTF-8") for x in f["meta/genes/symbol"][:]]
         with h5py.File(self.mouse_file, "r") as f:
-            self.mouse_genes = [x.decode("UTF-8") for x in f["meta/genes/gene_symbol"][:]]
+            self.mouse_genes = [x.decode("UTF-8") for x in f["meta/genes/symbol"][:]]
 
         print(f"Human genes: {len(self.human_genes):,}")
         print(f"Mouse genes: {len(self.mouse_genes):,}")
@@ -375,7 +375,7 @@ class ARCHS4DataLoader:
         all_batches = []
 
         with h5py.File(h5_file, "r") as f:
-            genes = [x.decode("UTF-8") for x in f["meta/genes/gene_symbol"][:]]
+            genes = [x.decode("UTF-8") for x in f["meta/genes/symbol"][:]]
             sample_ids = [x.decode("UTF-8") for x in f["meta/samples/geo_accession"][:]]
 
             for i in range(0, len(indices), batch_size):
