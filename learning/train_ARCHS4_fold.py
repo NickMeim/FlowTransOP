@@ -77,38 +77,26 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fold", type=int, required=True)
     # Training parameters
-    parser.add_argument('--batch_size', type=int, default=1024, help='Batch size for traiming.')
-    parser.add_argument('--epochs', type=int, default=10, help='Number of epochs for training.')
-    parser.add_argument('--epochs', type=int, default=10, help='Number of epochs for training.')
+    parser.add_argument('--batch_size', type=int, default=4096, help='Batch size for traiming.')
+    parser.add_argument('--epochs', type=int, default=100, help='Number of epochs for training.')
     parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility.')
     parser.add_argument('--enc_l2_reg', type=float, default=0.001, help='L2 regularization for the encoder.')
     parser.add_argument('--dec_l2_reg', type=float, default=0.001, help='L2 regularization for the decoder.')
-    parser.add_argument('--enc_l2_reg', type=float, default=0.001, help='L2 regularization for the encoder.')
-    parser.add_argument('--dec_l2_reg', type=float, default=0.001, help='L2 regularization for the decoder.')
     parser.add_argument('--encoding_lr', type=float, default=0.001, help='Learning rate for the encoder.')
-    parser.add_argument('--schedule_step_enc', type=int, default=5, help='Step size for the encoder learning rate scheduler.')
-    parser.add_argument('--schedule_step_enc', type=int, default=5, help='Step size for the encoder learning rate scheduler.')
+    parser.add_argument('--schedule_step_enc', type=int, default=20, help='Step size for the encoder learning rate scheduler.')
     parser.add_argument('--gamma_enc', type=float, default=0.8, help='Gamma for the encoder learning rate scheduler.')
     parser.add_argument('--autoencoder_wd', type=float, default=0.0, help='Weight decay for the autoencoder.')
     # Model parameters
-    parser.add_argument('--encoder_1_hiddens', type=int, nargs='+', default=[384, 256], help='Hidden layer sizes for encoder 1.')
-    parser.add_argument('--encoder_2_hiddens', type=int, nargs='+', default=[384, 256], help='Hidden layer sizes for encoder 2.')
-    parser.add_argument('--latent_dim', type=int, default=128, help='Dimension of the latent space.')
-    parser.add_argument('--decoder_1_hiddens', type=int, nargs='+', default=[256, 384], help='Hidden layer sizes for decoder 1.')
-    parser.add_argument('--decoder_2_hiddens', type=int, nargs='+', default=[256, 384], help='Hidden layer sizes for decoder 2.')
-    parser.add_argument('--dropout_decoder', type=float, default=0.2, help='Dropout rate for the decoder.')
-    parser.add_argument('--dropout_encoder', type=float, default=0.2, help='Dropout rate for the encoder.')
-    parser.add_argument('--encoder_1_hiddens', type=int, nargs='+', default=[384, 256], help='Hidden layer sizes for encoder 1.')
-    parser.add_argument('--encoder_2_hiddens', type=int, nargs='+', default=[384, 256], help='Hidden layer sizes for encoder 2.')
-    parser.add_argument('--latent_dim', type=int, default=128, help='Dimension of the latent space.')
-    parser.add_argument('--decoder_1_hiddens', type=int, nargs='+', default=[256, 384], help='Hidden layer sizes for decoder 1.')
-    parser.add_argument('--decoder_2_hiddens', type=int, nargs='+', default=[256, 384], help='Hidden layer sizes for decoder 2.')
+    parser.add_argument('--encoder_1_hiddens', type=int, nargs='+', default=[4096, 2048, 1024, 512], help='Hidden layer sizes for encoder 1.')
+    parser.add_argument('--encoder_2_hiddens', type=int, nargs='+', default=[4096, 2048, 1024, 512], help='Hidden layer sizes for encoder 2.')
+    parser.add_argument('--latent_dim', type=int, default=512, help='Dimension of the latent space.')
+    parser.add_argument('--decoder_1_hiddens', type=int, nargs='+', default=[512, 1024, 2048, 4096], help='Hidden layer sizes for decoder 1.')
+    parser.add_argument('--decoder_2_hiddens', type=int, nargs='+', default=[512, 1024, 2048, 4096], help='Hidden layer sizes for decoder 2.')
     parser.add_argument('--dropout_decoder', type=float, default=0.2, help='Dropout rate for the decoder.')
     parser.add_argument('--dropout_encoder', type=float, default=0.2, help='Dropout rate for the encoder.')
     parser.add_argument('--bn_decoder', type=float, default=0.6, help='Use batch normalization in the decoder.')
     parser.add_argument('--bn_encoder', type=float, default=0.6, help='Use batch normalization in the encoder.')
     parser.add_argument('--dropout_input_encoder', type=float, default=0.5, help='Dropout rate for the imput of the encoder.')
-    parser.add_argument('--dropout_input_decoder', type=float, default=0.2, help='Dropout rate for the imput of the decoder.')
     parser.add_argument('--dropout_input_decoder', type=float, default=0.2, help='Dropout rate for the imput of the decoder.')
     parser.add_argument('--encoder_activation', type=str, 
                         choices=['LeakyReLU', 'ReLU', 'ELU', 'Sigmoid'],  
@@ -252,7 +240,7 @@ def main():
         decoder_human, decoder_mouse,
         flow_h2m,
         model_params['batch_size'], model_params['batch_size'], model_params['epochs'],
-        translation_direction='1 to 2'
+        translation_direction ='1 to 2'
     )
     
     # Save normal model

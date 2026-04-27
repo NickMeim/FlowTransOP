@@ -154,6 +154,18 @@ def reg_structure(X, A, L=1, tau=.05, eps=1e-8):
         r_S += d_js / l
     return r_S / L
 
+def _l2_safe(module, reg):
+    """Call .L2Regularization on the module if it has one, else sum over children that do."""
+    if hasattr(module, 'L2Regularization') and not isinstance(module, torch.nn.Sequential):
+        return module.L2Regularization(reg)
+    total = 0.0
+    for m in module.modules():
+        if m is module:
+            continue
+        if hasattr(m, 'L2Regularization'):
+            total = total + m.L2Regularization(reg)
+    return total
+
 class MultipleOptimizer:
     def __init__(self, *op):
         self.optimizers = op
@@ -2060,7 +2072,7 @@ def train_RNAseq_AE_fold(model_params, device, x_train,
             y_pred_means, y_pred_vars = decoder(z)
             # calculate loss
             fitLoss = recon_criterion(y_pred_means, X, y_pred_vars)
-            L2Loss = decoder.L2Regularization(model_params['dec_l2_reg']) + encoder.L2Regularization(model_params['enc_l2_reg'])
+            L2Loss = _l2_safe(decoder, model_params['dec_l2_reg']) + _l2_safe(encoder, model_params['enc_l2_reg'])
             loss = fitLoss + L2Loss
             loss.backward()
             optimizer.step()
@@ -2103,7 +2115,7 @@ def train_RNAseq_AE_fold(model_params, device, x_train,
         outString += ', loss={:.4f}'.format(np.nanmean(batch_losses))
 
         # Logging
-        if (e % 250 == 0) or (e + 1 == NUM_EPOCHS):
+        if (e % 10 == 0) or (e + 1 == NUM_EPOCHS):
             print2log(outString)
         
     # evaluate
@@ -2175,8 +2187,8 @@ def train_RNAseq_AE_fold_gauss(model_params, device, x_train,
             z = encoder(X)
             y_pred_means, y_pred_vars = decoder(z)
             fitLoss = recon_criterion(y_pred_means, X, y_pred_vars)
-            L2Loss = (decoder.L2Regularization(model_params['dec_l2_reg'])
-                      + encoder.L2Regularization(model_params['enc_l2_reg']))
+            L2Loss = (_l2_safe(decoder, model_params['dec_l2_reg'])
+                      + _l2_safe(encoder, model_params['enc_l2_reg']))
             loss = fitLoss + L2Loss
             loss.backward()
             optimizer.step()
@@ -2192,7 +2204,7 @@ def train_RNAseq_AE_fold_gauss(model_params, device, x_train,
             batch_var_r2s.append(r2_score(yt_v, yp_v))
             batch_losses.append(loss.item())
         scheduler.step()
-        if (e % 250 == 0) or (e + 1 == NUM_EPOCHS):
+        if (e % 10 == 0) or (e + 1 == NUM_EPOCHS):
             print2log('Epoch={:.0f}/{:.0f}, muR2={:.4f}, varR2={:.4f}, '
                       'pearson_mu={:.4f}, pearson_var={:.4f}, loss={:.4f}'.format(
                           e+1, NUM_EPOCHS,
