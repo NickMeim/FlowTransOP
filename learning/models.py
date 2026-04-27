@@ -329,7 +329,12 @@ class VarDecoder(torch.nn.Module):
         self.linear_layers = torch.nn.ModuleList()
         self.linear_layers.append(torch.nn.Linear(latent_dim, hidden_layers[0], bias=bias, dtype=dtype))
         self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[0], momentum=bn, dtype=dtype))
+        self.linear_layers.append(torch.nn.Linear(latent_dim, hidden_layers[0], bias=bias, dtype=dtype))
+        self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[0], momentum=bn, dtype=dtype))
         for i in range(1, len(hidden_layers)):
+            self.linear_layers.append(torch.nn.Linear(hidden_layers[i - 1], hidden_layers[i], bias=bias, dtype=dtype))
+            self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[i], momentum=bn, dtype=dtype))
+        
             self.linear_layers.append(torch.nn.Linear(hidden_layers[i - 1], hidden_layers[i], bias=bias, dtype=dtype))
             self.bn.append(torch.nn.BatchNorm1d(num_features=hidden_layers[i], momentum=bn, dtype=dtype))
         
@@ -360,6 +365,8 @@ class VarDecoder(torch.nn.Module):
                     m.bias.data.fill_(0.0)
 
     def forward(self, x):
+        if self.dropIn > 0:
+            x = self.drop_input(x)
         if self.dropIn > 0:
             x = self.drop_input(x)
         for i in range(self.num_hidden_layers):
