@@ -11,7 +11,6 @@ from models import VarDecoder,SimpleEncoder, Flow, ElementWiseLinear
 from trainingUtils import train_RNAseq_AE_fold_gauss, train_RNAseq_flowMatch_fold, validate_RNAseq_flowMatch_fold
 from utility import *
 from transact_utility_gpu import *
-from evaluationUtils import pearson_r
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
 import logging
@@ -78,7 +77,7 @@ def main():
     parser.add_argument("--fold", type=int, required=True)
     # Training parameters
     parser.add_argument('--batch_size', type=int, default=4096, help='Batch size for traiming.')
-    parser.add_argument('--epochs', type=int, default=100, help='Number of epochs for training.')
+    parser.add_argument('--epochs', type=int, default=30, help='Number of epochs for training.')
     parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility.')
     parser.add_argument('--enc_l2_reg', type=float, default=0.001, help='L2 regularization for the encoder.')
     parser.add_argument('--dec_l2_reg', type=float, default=0.001, help='L2 regularization for the decoder.')
@@ -110,6 +109,9 @@ def main():
     parser.add_argument('--flow_lambda', type=float, default=1., help='Flow matrix regularization parameter.')
     parser.add_argument('--conditional_flow_lambda', type=float, default=1e-3, help='Flow matching regularization parameter.')
     args = parser.parse_args()
+
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
 
     log_file ='logs/ARCHS4_fold_' + str(args.fold) + '.log'
 
@@ -186,7 +188,7 @@ def main():
                     dropRate=model_params['dropout_encoder'], bn=model_params['bn_encoder'],
                     activation=model_params['encoder_activation'], dropIn=model_params['dropout_input_encoder'],
                     dtype=torch.float)).to(device)
-    decoder_human = VarDecoder(model_params['latent_dim'], model_params['decoder_2_hiddens'], X_human.shape[1],
+    decoder_human = VarDecoder(model_params['latent_dim'], model_params['decoder_1_hiddens'], X_human.shape[1],
                             dropRate=model_params['dropout_decoder'], bn=model_params['bn_decoder'],
                             activation=model_params['decoder_activation'], dropIn=model_params['dropout_input_decoder'],
                             loss='gauss', dtype=torch.float).to(device)            # <- gauss
@@ -199,10 +201,12 @@ def main():
     # === AE training — Gaussian variant ===
     _, decoder_human, encoder_human = train_RNAseq_AE_fold_gauss(
         model_params, device, X_human, decoder_human, encoder_human,
-        model_params['batch_size'], model_params['epochs'], evaluate=False)
+        model_params['batch_size'], model_params['epochs'], evaluate=False,
+        plot_label=f'human_fold{args.fold}')
     _, decoder_mouse, encoder_mouse = train_RNAseq_AE_fold_gauss(
         model_params, device, X_mouse, decoder_mouse, encoder_mouse,
-        model_params['batch_size'], model_params['epochs'], evaluate=False)
+        model_params['batch_size'], model_params['epochs'], evaluate=False,
+        plot_label=f'mouse_fold{args.fold}')
 
     # === Validation — direct Gaussian, batched (no NB sampling) ===
     def gauss_recon_metrics(encoder, decoder, X_lazy, device, bs=4096):
@@ -237,10 +241,10 @@ def main():
         model_params, device,
         X_human, X_mouse,
         Z_human, Z_mouse,
-        decoder_human, decoder_mouse,
         flow_h2m,
         model_params['batch_size'], model_params['batch_size'], model_params['epochs'],
-        translation_direction ='1 to 2'
+        translation_direction='1 to 2',
+        plot_label=f'fold{args.fold}'
     )
     
     # Save normal model
@@ -250,6 +254,7 @@ def main():
         'decoder_human': decoder_human.state_dict(),
         'decoder_mouse': decoder_mouse.state_dict(),
         'flow_h2m': flow_h2m.state_dict(),
+        'args':vars(args),
     }, MODEL_DIR / f"fold_{args.fold}_normal.pt")
 
     # Evaluate flow model on validation data
@@ -284,8 +289,6 @@ def main():
 
     X_human_permuted     = PermutedLazy(X_human,     perm_idx_human)
     X_mouse_permuted     = PermutedLazy(X_mouse,     perm_idx_mouse)
-    X_human_val_permuted = PermutedLazy(X_human_val, perm_idx_human)
-    X_mouse_val_permuted = PermutedLazy(X_mouse_val, perm_idx_mouse)
 
     # Reinitialize models — Gaussian decoder, float dtype
     encoder_human_perm = torch.nn.Sequential(
@@ -302,7 +305,7 @@ def main():
                     activation=model_params['encoder_activation'],
                     dropIn=model_params['dropout_input_encoder'],
                     dtype=torch.float)).to(device)
-    decoder_human_perm = VarDecoder(model_params['latent_dim'], model_params['decoder_2_hiddens'],
+    decoder_human_perm = VarDecoder(model_params['latent_dim'], model_params['decoder_1_hiddens'],
                                     X_human.shape[1],
                                     dropRate=model_params['dropout_decoder'], bn=model_params['bn_decoder'],
                                     activation=model_params['decoder_activation'],
@@ -322,18 +325,18 @@ def main():
         model_params, device, X_human_permuted,
         decoder_human_perm, encoder_human_perm,
         model_params['batch_size'], model_params['epochs'],
-        evaluate=False)
+        evaluate=False, plot_label=f'permuted_human_fold{args.fold}')
     _, decoder_mouse_perm, encoder_mouse_perm = train_RNAseq_AE_fold_gauss(
         model_params, device, X_mouse_permuted,
         decoder_mouse_perm, encoder_mouse_perm,
         model_params['batch_size'], model_params['epochs'],
-        evaluate=False)
+        evaluate=False, plot_label=f'permuted_mouse_fold{args.fold}')
 
     # Validation reconstruction metrics — direct Gaussian, batched, no NB sampling
     pm_h_p, pv_h_p, r2m_h_p, r2v_h_p = gauss_recon_metrics(
-        encoder_human_perm, decoder_human_perm, X_human_val_permuted, device)
+        encoder_human_perm, decoder_human_perm, X_human_val, device)
     pm_m_p, pv_m_p, r2m_m_p, r2v_m_p = gauss_recon_metrics(
-        encoder_mouse_perm, decoder_mouse_perm, X_mouse_val_permuted, device)
+        encoder_mouse_perm, decoder_mouse_perm, X_mouse_val, device)
 
     print2log(f"Shuffled X Validation Pearson - Human: mu={pm_h_p:.4f}, var={pv_h_p:.4f}; "
             f"Mouse: mu={pm_m_p:.4f}, var={pv_m_p:.4f}")
@@ -349,10 +352,9 @@ def main():
         model_params, device,
         X_human_permuted, X_mouse_permuted,
         Z_human_perm.to(device), Z_mouse_perm.to(device),
-        decoder_human_perm, decoder_mouse_perm,
         flow_h2m_perm,
         model_params['batch_size'], model_params['batch_size'], model_params['epochs'],
-        translation_direction='1 to 2')
+        translation_direction='1 to 2', plot_label=f'permuted_fold{args.fold}')
 
     # Save permuted model
     torch.save({
@@ -363,20 +365,21 @@ def main():
         'flow_h2m':      flow_h2m_perm.state_dict(),
         'perm_idx_human': perm_idx_human,
         'perm_idx_mouse': perm_idx_mouse,
+        'args':vars(args),
     }, MODEL_DIR / f"fold_{args.fold}_permuted.pt")
 
     # Evaluate flow model on permuted validation data
     flow_h2m_perm.eval()
     with torch.no_grad():
         z_h2m_val_perm = validate_RNAseq_flowMatch_fold(device,
-                                                        X_human_val_permuted, X_mouse_val_permuted,
+                                                        X_human_val, X_mouse_val,
                                                         encoder_human_perm, encoder_mouse_perm,
                                                         flow_h2m_perm,
                                                         translation_direction='1 to 2')
 
     # Compute permuted val latent reps separately for saving
-    Z_human_val_perm = encode_all(encoder_human_perm, X_human_val_permuted, device)
-    Z_mouse_val_perm = encode_all(encoder_mouse_perm, X_mouse_val_permuted, device)
+    Z_human_val_perm = encode_all(encoder_human_perm, X_human_val, device)
+    Z_mouse_val_perm = encode_all(encoder_mouse_perm, X_mouse_val, device)
     # Save validation latent variables
     np.save(MODEL_DIR / f"fold_{args.fold}_z_h2m_val_perm.npy",   z_h2m_val_perm.cpu().numpy())
     np.save(MODEL_DIR / f"fold_{args.fold}_z_human_val_perm.npy", Z_human_val_perm.numpy())

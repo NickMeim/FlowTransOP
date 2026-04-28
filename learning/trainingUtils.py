@@ -2040,7 +2040,11 @@ def train_GeneralFM_fold(model_params, device,
 def train_RNAseq_AE_fold(model_params, device, x_train,
                     decoder, encoder,
                     bs:int, NUM_EPOCHS:int,
-                    evaluate:bool=True):
+                    evaluate:bool=True,
+                    plot_label: str = ''):
+    import os
+    from matplotlib import pyplot as plt
+
     # Combine parameters and create optimizers/schedulers
     allParams = list(decoder.parameters()) + list(encoder.parameters())
     optimizer = torch.optim.Adam(allParams, lr=model_params['encoding_lr'], weight_decay=0)
@@ -2050,20 +2054,29 @@ def train_RNAseq_AE_fold(model_params, device, x_train,
     recon_criterion = NBLoss()
     # Get dataset sizes
     N = x_train.shape[0]
-    batch_pearson_mus = []
-    batch_pearson_vars = []
-    batch_mu_r2s = []
-    batch_var_r2s = []
-    batch_losses = []
+
+    # Per-epoch trackers (mean and std across batches within each epoch)
+    epoch_loss_mean        = []
+    epoch_loss_std         = []
+    epoch_pearson_mu_mean  = []
+    epoch_pearson_mu_std   = []
+    epoch_pearson_var_mean = []
+    epoch_pearson_var_std  = []
+
     # Training loop
-    for e in range(NUM_EPOCHS):        
+    for e in range(NUM_EPOCHS):
         decoder.train()
         encoder.train()
         # Generate training batches
         trainloader = getSamples(N, bs)
+        batch_pearson_mus = []
+        batch_pearson_vars = []
+        batch_mu_r2s = []
+        batch_var_r2s = []
+        batch_losses = []
         # Iterate through batches
         for j in range(len(trainloader)):
-            dataIndex = trainloader[j]            
+            dataIndex = trainloader[j]
             X = x_train[dataIndex, :].double().to(device)
             optimizer.zero_grad()
             # encode
@@ -2105,18 +2118,47 @@ def train_RNAseq_AE_fold(model_params, device, x_train,
             batch_mu_r2s.append(r2_score(yt_m, yp_m))
             batch_var_r2s.append(r2_score(yt_v, yp_v))
             batch_losses.append(loss.item())
-        
+
         scheduler.step()
+        epoch_loss_mean.append(np.nanmean(batch_losses))
+        epoch_loss_std.append(np.nanstd(batch_losses))
+        epoch_pearson_mu_mean.append(np.nanmean(batch_pearson_mus))
+        epoch_pearson_mu_std.append(np.nanstd(batch_pearson_mus))
+        epoch_pearson_var_mean.append(np.nanmean(batch_pearson_vars))
+        epoch_pearson_var_std.append(np.nanstd(batch_pearson_vars))
+
         outString = 'Epoch={:.0f}/{:.0f}'.format(e+1,NUM_EPOCHS)
         outString += ', muR2={:.4f}'.format(np.nanmean(batch_mu_r2s))
         outString += ', varR2={:.4f}'.format(np.nanmean(batch_var_r2s))
-        outString += ', pearson_mu={:.4f}'.format(np.nanmean(batch_pearson_mus))
-        outString += ', pearson_var={:.4f}'.format(np.nanmean(batch_pearson_vars))
-        outString += ', loss={:.4f}'.format(np.nanmean(batch_losses))
+        outString += ', pearson_mu={:.4f}'.format(epoch_pearson_mu_mean[-1])
+        outString += ', pearson_var={:.4f}'.format(epoch_pearson_var_mean[-1])
+        outString += ', loss={:.4f}'.format(epoch_loss_mean[-1])
 
         # Logging
-        if (e % 10 == 0) or (e + 1 == NUM_EPOCHS):
+        if (e % 5 == 0) or (e + 1 == NUM_EPOCHS):
             print2log(outString)
+
+    # Save training curves figure
+    os.makedirs('training_plots', exist_ok=True)
+    fname_tag = f'_{plot_label}' if plot_label else ''
+    epochs_arr = np.arange(1, NUM_EPOCHS + 1)
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+
+    def _fill_ae(ax, mean, std, title, ylabel, color):
+        mean, std = np.array(mean), np.array(std)
+        ax.plot(epochs_arr, mean, color=color)
+        ax.fill_between(epochs_arr, mean - std, mean + std, alpha=0.3, color=color)
+        ax.set_title(title); ax.set_xlabel('Epoch'); ax.set_ylabel(ylabel)
+
+    _fill_ae(axes[0], epoch_loss_mean,        epoch_loss_std,        'Loss',             'Loss', 'steelblue')
+    _fill_ae(axes[1], epoch_pearson_mu_mean,  epoch_pearson_mu_std,  'Pearson r (mean)', 'r',    'darkorange')
+    _fill_ae(axes[2], epoch_pearson_var_mean, epoch_pearson_var_std, 'Pearson r (var)',  'r',    'seagreen')
+    plt.suptitle('AE training (NB)', fontsize=13)
+    plt.tight_layout()
+    fig_path = os.path.join('training_plots', f'ae_nb{fname_tag}.png')
+    fig.savefig(fig_path, dpi=150); plt.close(fig)
+    print2log(f'Training plot saved to {os.path.abspath(fig_path)}')
+
         
     # evaluate
     if evaluate:
@@ -2165,8 +2207,12 @@ def train_RNAseq_AE_fold(model_params, device, x_train,
 def train_RNAseq_AE_fold_gauss(model_params, device, x_train,
                                decoder, encoder,
                                bs:int, NUM_EPOCHS:int,
-                               evaluate:bool=True):
+                               evaluate:bool=True,
+                               plot_label: str = ''):
     """Same as train_RNAseq_AE_fold but with Gaussian NLL — for log1p+quantile-normalized data."""
+    import os
+    from matplotlib import pyplot as plt
+
     allParams = list(decoder.parameters()) + list(encoder.parameters())
     optimizer = torch.optim.Adam(allParams, lr=model_params['encoding_lr'], weight_decay=0)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
@@ -2174,12 +2220,20 @@ def train_RNAseq_AE_fold_gauss(model_params, device, x_train,
                                                 gamma=model_params['gamma_enc'])
     recon_criterion = torch.nn.GaussianNLLLoss(reduction='mean', eps=1e-6)
     N = x_train.shape[0]
-    batch_pearson_mus, batch_pearson_vars = [], []
-    batch_mu_r2s, batch_var_r2s, batch_losses = [], [], []
+
+    # Per-epoch trackers (mean and std across batches within each epoch)
+    epoch_loss_mean        = []
+    epoch_loss_std         = []
+    epoch_pearson_mu_mean  = []
+    epoch_pearson_mu_std   = []
+    epoch_pearson_var_mean = []
+    epoch_pearson_var_std  = []
 
     for e in range(NUM_EPOCHS):
         decoder.train(); encoder.train()
         trainloader = getSamples(N, bs)
+        batch_pearson_mus, batch_pearson_vars = [], []
+        batch_mu_r2s, batch_var_r2s, batch_losses = [], [], []
         for j in range(len(trainloader)):
             dataIndex = trainloader[j]
             X = x_train[dataIndex, :].float().to(device)        # was .double()
@@ -2204,13 +2258,40 @@ def train_RNAseq_AE_fold_gauss(model_params, device, x_train,
             batch_var_r2s.append(r2_score(yt_v, yp_v))
             batch_losses.append(loss.item())
         scheduler.step()
-        if (e % 10 == 0) or (e + 1 == NUM_EPOCHS):
+        epoch_loss_mean.append(np.nanmean(batch_losses))
+        epoch_loss_std.append(np.nanstd(batch_losses))
+        epoch_pearson_mu_mean.append(np.nanmean(batch_pearson_mus))
+        epoch_pearson_mu_std.append(np.nanstd(batch_pearson_mus))
+        epoch_pearson_var_mean.append(np.nanmean(batch_pearson_vars))
+        epoch_pearson_var_std.append(np.nanstd(batch_pearson_vars))
+        if (e % 5 == 0) or (e + 1 == NUM_EPOCHS):
             print2log('Epoch={:.0f}/{:.0f}, muR2={:.4f}, varR2={:.4f}, '
                       'pearson_mu={:.4f}, pearson_var={:.4f}, loss={:.4f}'.format(
                           e+1, NUM_EPOCHS,
                           np.nanmean(batch_mu_r2s), np.nanmean(batch_var_r2s),
-                          np.nanmean(batch_pearson_mus), np.nanmean(batch_pearson_vars),
-                          np.nanmean(batch_losses)))
+                          epoch_pearson_mu_mean[-1], epoch_pearson_var_mean[-1],
+                          epoch_loss_mean[-1]))
+
+    # Save training curves figure
+    os.makedirs('training_plots', exist_ok=True)
+    fname_tag = f'_{plot_label}' if plot_label else ''
+    epochs = np.arange(1, NUM_EPOCHS + 1)
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+
+    def _fill_ae(ax, mean, std, title, ylabel, color):
+        mean, std = np.array(mean), np.array(std)
+        ax.plot(epochs, mean, color=color)
+        ax.fill_between(epochs, mean - std, mean + std, alpha=0.3, color=color)
+        ax.set_title(title); ax.set_xlabel('Epoch'); ax.set_ylabel(ylabel)
+
+    _fill_ae(axes[0], epoch_loss_mean,        epoch_loss_std,        'Loss',               'Loss', 'steelblue')
+    _fill_ae(axes[1], epoch_pearson_mu_mean,  epoch_pearson_mu_std,  'Pearson r (mean)',   'r',    'darkorange')
+    _fill_ae(axes[2], epoch_pearson_var_mean, epoch_pearson_var_std, 'Pearson r (var)',    'r',    'seagreen')
+    plt.suptitle('AE training (Gaussian)', fontsize=13)
+    plt.tight_layout()
+    fig_path = os.path.join('training_plots', f'ae_gauss{fname_tag}.png')
+    fig.savefig(fig_path, dpi=150); plt.close(fig)
+    print2log(f'Training plot saved to {os.path.abspath(fig_path)}')
 
     pearson_mu = pearson_var = r2_mu = r2_var = None
     if evaluate:
@@ -2247,7 +2328,11 @@ def train_RNAseq_AE_fold_gauss(model_params, device, x_train,
 
 def train_RNAseq_flowMatch_fold(model_params, device, x_1_train, x_2_train,z_1_train,z_2_train,flow,
                     bs_1:int, bs_2:int, NUM_EPOCHS:int,
-                    translation_direction = '1 to 2'):
+                    translation_direction = '1 to 2',
+                    plot_label: str = ''):
+    import os
+    from matplotlib import pyplot as plt
+
     # Combine parameters and create optimizers/schedulers
     allParams = list(flow.parameters())
     optimizer = torch.optim.Adam(allParams, lr=model_params['encoding_lr'], weight_decay=0)
@@ -2259,12 +2344,17 @@ def train_RNAseq_flowMatch_fold(model_params, device, x_1_train, x_2_train,z_1_t
     # Get dataset sizes
     N_1 = x_1_train.shape[0]
     N_2 = x_2_train.shape[0]
-    all_losses = []
-    all_flow_losses = []
-    all_dist_losses = []
+
+    # Per-epoch trackers (mean and std across batches)
+    epoch_loss_mean      = []
+    epoch_loss_std       = []
+    epoch_flow_loss_mean = []
+    epoch_flow_loss_std  = []
+    epoch_dist_loss_mean = []
+    epoch_dist_loss_std  = []
+
     # Training loop
-    # loss_fn = torch.nn.MSELoss()
-    for e in range(NUM_EPOCHS):        
+    for e in range(NUM_EPOCHS):
         flow.train()
         # Generate training batches
         trainloader_1 = getSamples(N_1, bs_1)
@@ -2360,18 +2450,40 @@ def train_RNAseq_flowMatch_fold(model_params, device, x_1_train, x_2_train,z_1_t
             batch_dist_losses.append(dist.item())
 
         scheduler.step()
+        epoch_loss_mean.append(np.nanmean(batch_losses))
+        epoch_loss_std.append(np.nanstd(batch_losses))
+        epoch_flow_loss_mean.append(np.nanmean(batch_flow_losses))
+        epoch_flow_loss_std.append(np.nanstd(batch_flow_losses))
+        epoch_dist_loss_mean.append(np.nanmean(batch_dist_losses))
+        epoch_dist_loss_std.append(np.nanstd(batch_dist_losses))
+
         outString = 'Epoch={:.0f}/{:.0f}'.format(e+1,NUM_EPOCHS)
-        outString += ', distance loss={:.4f}'.format(np.nanmean(batch_dist_losses))
-        outString += ', flow loss={:.4f}'.format(np.nanmean(batch_flow_losses))
-        outString += ', loss={:.4f}'.format(np.nanmean(batch_losses))
-
-        all_losses.append(np.nanmean(batch_losses))
-        all_flow_losses.append(np.nanmean(batch_flow_losses))
-        all_dist_losses.append(np.nanmean(batch_dist_losses))
-
-        # Logging
-        # if (e % 250 == 0) or (e + 1 == NUM_EPOCHS):
+        outString += ', distance loss={:.4f}'.format(epoch_dist_loss_mean[-1])
+        outString += ', flow loss={:.4f}'.format(epoch_flow_loss_mean[-1])
+        outString += ', loss={:.4f}'.format(epoch_loss_mean[-1])
         print2log(outString)
+
+    # Save training curves figure
+    os.makedirs('training_plots', exist_ok=True)
+    safe_dir = translation_direction.replace(' ', '_')
+    fname_tag = f'_{plot_label}' if plot_label else ''
+    epochs = np.arange(1, NUM_EPOCHS + 1)
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+
+    def _fill(ax, mean, std, title, color):
+        mean, std = np.array(mean), np.array(std)
+        ax.plot(epochs, mean, color=color)
+        ax.fill_between(epochs, mean - std, mean + std, alpha=0.3, color=color)
+        ax.set_title(title); ax.set_xlabel('Epoch'); ax.set_ylabel('Loss')
+
+    _fill(axes[0], epoch_loss_mean,      epoch_loss_std,      'Total Loss',    'steelblue')
+    _fill(axes[1], epoch_flow_loss_mean, epoch_flow_loss_std, 'Flow Loss',     'darkorange')
+    _fill(axes[2], epoch_dist_loss_mean, epoch_dist_loss_std, 'Distance Loss', 'seagreen')
+    plt.suptitle(f'Flow training — direction: {translation_direction}', fontsize=13)
+    plt.tight_layout()
+    fig_path = os.path.join('training_plots', f'flow_{safe_dir}{fname_tag}.png')
+    fig.savefig(fig_path, dpi=150); plt.close(fig)
+    print2log(f'Training plot saved to {os.path.abspath(fig_path)}')
 
     flow.eval()
     with torch.no_grad():
