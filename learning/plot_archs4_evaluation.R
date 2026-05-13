@@ -13,6 +13,7 @@ suppressPackageStartupMessages({
 eval_dir <- normalizePath(file.path("..", "archs4", "evaluation"), mustWork = TRUE)
 out_dir <- file.path(eval_dir, "figures_flowtransop")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+unlink(file.path(out_dir, "cycle_pergene_fold_summary.csv"))
 
 model_levels <- c("FlowTransOP", "permuted_mouse", "permuted_human", "permuted_both")
 baseline_levels <- setdiff(model_levels, "FlowTransOP")
@@ -167,20 +168,12 @@ paired_wilcox_against_flow <- function(data, baselines, value_col = "score", low
 }
 
 cycle_ps_files <- list.files(eval_dir, "^cycle_(human|mouse)_persample_fold([0-9]+)\\.csv$", full.names = TRUE)
-cycle_pg_files <- list.files(eval_dir, "^cycle_(human|mouse)_pergene_fold([0-9]+)\\.csv$", full.names = TRUE)
 orth_files <- list.files(eval_dir, "^orthologue_(h2m|m2h)_fold([0-9]+)\\.csv$", full.names = TRUE)
+orth_summary_files <- list.files(eval_dir, "^orthologue_(h2m|m2h)_summary_fold([0-9]+)\\.csv$", full.names = TRUE)
 mmd_files <- list.files(eval_dir, "^mmd_fold([0-9]+)\\.csv$", full.names = TRUE)
 expression_mmd_files <- list.files(eval_dir, "^expression_mmd_fold([0-9]+)\\.csv$", full.names = TRUE)
 
 cycle_ps <- read_many(cycle_ps_files, "^cycle_(human|mouse)_persample_fold([0-9]+)\\.csv$", "cycle_persample") %>%
-  mutate(
-    species = str_to_title(species_or_direction),
-    fold = coalesce(fold, fold_from_file),
-    model_type = as.character(model_type),
-    model_label = factor(model_labels[model_type], levels = model_labels[model_levels])
-  )
-
-cycle_pg <- read_many(cycle_pg_files, "^cycle_(human|mouse)_pergene_fold([0-9]+)\\.csv$", "cycle_pergene") %>%
   mutate(
     species = str_to_title(species_or_direction),
     fold = coalesce(fold, fold_from_file),
@@ -196,6 +189,22 @@ orth <- read_many(orth_files, "^orthologue_(h2m|m2h)_fold([0-9]+)\\.csv$", "orth
     model_type = as.character(model_type),
     model_label = factor(model_labels[model_type], levels = model_labels[model_levels])
   )
+
+orth_summary_raw <- read_many(orth_summary_files, "^orthologue_(h2m|m2h)_summary_fold([0-9]+)\\.csv$", "orthologue_summary")
+orth_summary_available <- nrow(orth_summary_raw) > 0 &&
+  all(c("gene_marginal_r_mean", "gene_marginal_r_var") %in% names(orth_summary_raw))
+orth_summary_wide <- if (orth_summary_available) {
+  orth_summary_raw %>%
+    mutate(
+      direction = recode(species_or_direction, h2m = "Human to mouse", m2h = "Mouse to human"),
+      species = recode(species_or_direction, h2m = "Mouse", m2h = "Human"),
+      fold = coalesce(fold, fold_from_file),
+      model_type = as.character(model_type),
+      model_label = factor(model_labels[model_type], levels = model_labels[model_levels])
+    )
+} else {
+  tibble()
+}
 
 mmd <- if (length(mmd_files) == 0) {
   tibble()
@@ -241,24 +250,21 @@ cycle_ps_summary <- cycle_ps %>%
     score_name = "Mean per-sample Pearson r"
   )
 
-cycle_pg_summary <- cycle_pg %>%
-  group_by(species, fold, model_type, model_label) %>%
-  summarise(
-    mean_r_mu = mean(r_mu, na.rm = TRUE),
-    median_r_mu = median(r_mu, na.rm = TRUE),
-    mean_r_var = mean(r_var, na.rm = TRUE),
-    median_r_var = median(r_var, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-cycle_pg_long <- cycle_pg_summary %>%
-  select(species, fold, model_type, model_label, mean_r_mu, mean_r_var) %>%
-  pivot_longer(c(mean_r_mu, mean_r_var), names_to = "metric_raw", values_to = "score") %>%
+cycle_gm_long <- cycle_ps %>%
+  select(species, fold, model_type, model_label, gene_marginal_r_mean, gene_marginal_r_var) %>%
+  pivot_longer(c(gene_marginal_r_mean, gene_marginal_r_var),
+               names_to = "metric_raw", values_to = "score") %>%
   mutate(
     family = "Cycle consistency",
-    metric = recode(metric_raw, mean_r_mu = "Per-gene mean", mean_r_var = "Per-gene variance"),
-    metric_order = recode(metric_raw, mean_r_mu = 2L, mean_r_var = 3L),
-    score_name = recode(metric_raw, mean_r_mu = "Mean per-gene r_mu", mean_r_var = "Mean per-gene r_var")
+    metric = recode(metric_raw,
+                    gene_marginal_r_mean = "Gene-marginal mean",
+                    gene_marginal_r_var = "Gene-marginal variance"),
+    metric_order = recode(metric_raw,
+                          gene_marginal_r_mean = 2L,
+                          gene_marginal_r_var = 3L),
+    score_name = recode(metric_raw,
+                        gene_marginal_r_mean = "Gene-marginal mean Pearson r",
+                        gene_marginal_r_var = "Gene-marginal variance prediction Pearson r")
   ) %>%
   select(family, metric, metric_order, species, fold, model_type, model_label, score, score_name)
 
@@ -277,9 +283,36 @@ orth_summary <- orth %>%
     score_name = "Mean per-sample orthologue Pearson r"
   )
 
-cycle_performance <- bind_rows(cycle_ps_summary, cycle_pg_long)
+orth_gm_long <- if (nrow(orth_summary_wide) > 0) {
+  orth_summary_wide %>%
+    select(species, direction, fold, model_type, model_label,
+           gene_marginal_r_mean, gene_marginal_r_var) %>%
+    pivot_longer(c(gene_marginal_r_mean, gene_marginal_r_var),
+                 names_to = "metric_raw", values_to = "score") %>%
+    transmute(
+      family = "Orthologue-mediated",
+      metric = recode(metric_raw,
+                      gene_marginal_r_mean = paste0("Orthologue\n", direction, "\ngene-marginal mean"),
+                      gene_marginal_r_var = paste0("Orthologue\n", direction, "\ngene-marginal variance")),
+      metric_order = recode(metric_raw,
+                            gene_marginal_r_mean = 5L,
+                            gene_marginal_r_var = 6L),
+      species,
+      fold,
+      model_type,
+      model_label,
+      score,
+      score_name = recode(metric_raw,
+                          gene_marginal_r_mean = "Orthologue gene-marginal mean Pearson r",
+                          gene_marginal_r_var = "Orthologue gene-marginal variance Pearson r")
+    )
+} else {
+  tibble()
+}
 
-orth_performance <- orth_summary
+cycle_performance <- bind_rows(cycle_ps_summary, cycle_gm_long)
+
+orth_performance <- bind_rows(orth_summary, orth_gm_long)
 
 performance <- bind_rows(cycle_performance, orth_performance) %>%
   filter(!is.na(score), !is.na(model_label)) %>%
@@ -333,9 +366,11 @@ cycle_stats_labels <- stats_by_panel %>%
   group_by(family, metric, metric_order, species) %>%
   arrange(baseline, .by_group = TRUE) %>%
   mutate(
+    n_refs = n(),
     xmin = match(model_labels["FlowTransOP"], levels(cycle_plot_data$model_label)),
     xmax = match(as.character(baseline_label), levels(cycle_plot_data$model_label)),
-    y = y_max + (row_number() * 0.10 * pmax(y_max - y_min, 0.1)),
+    x = xmax,
+    y = pmin(y_max + (row_number() * 0.10 * pmax(y_max - y_min, 0.1)), 1.17),
     y_tip = y - 0.022 * pmax(y_max - y_min, 0.1),
     xmid = (xmin + xmax) / 2,
     label = p_stars(p_adj_holm)
@@ -353,9 +388,11 @@ orth_stats_labels <- stats_by_panel %>%
   group_by(family, metric, metric_order, species) %>%
   arrange(baseline, .by_group = TRUE) %>%
   mutate(
+    n_refs = n(),
     xmin = match(model_labels["FlowTransOP"], levels(orth_plot_data$model_label)),
     xmax = match(as.character(baseline_label), levels(orth_plot_data$model_label)),
-    y = y_max + (row_number() * 0.12 * pmax(y_max - y_min, 0.1)),
+    x = xmax,
+    y = pmin(y_max + (row_number() * 0.12 * pmax(y_max - y_min, 0.1)), 1.17),
     y_tip = y - 0.025 * pmax(y_max - y_min, 0.1),
     xmid = (xmin + xmax) / 2,
     label = p_stars(p_adj_holm)
@@ -377,12 +414,13 @@ summary_table <- performance %>%
 write_csv(performance, file.path(out_dir, "archs4_performance_for_boxplots.csv"))
 write_csv(summary_table, file.path(out_dir, "archs4_performance_summary.csv"))
 write_csv(stats_by_panel, file.path(out_dir, "archs4_paired_wilcoxon_stats.csv"))
-write_csv(cycle_pg_summary, file.path(out_dir, "cycle_pergene_fold_summary.csv"))
 
 caption <- paste(
   "Statistics: paired one-sided Wilcoxon signed-rank tests on fold-level scores, testing FlowTransOP better than each baseline; Holm-adjusted within each panel.",
-  paste0("Cycle per-sample files: ", length(cycle_ps_files), " | cycle per-gene files: ", length(cycle_pg_files),
-         " | orthologue files: ", length(orth_files), " | MMD files: ", length(mmd_files))
+  paste0("Cycle per-sample files: ", length(cycle_ps_files),
+         " | orthologue files: ", length(orth_files),
+         " | orthologue summary files: ", length(orth_summary_files),
+         " | MMD files: ", length(mmd_files))
 )
 
 p_main <- ggplot(cycle_plot_data, aes(x = model_label, y = score, fill = as.character(model_type))) +
@@ -395,37 +433,45 @@ p_main <- ggplot(cycle_plot_data, aes(x = model_label, y = score, fill = as.char
     color = "grey15"
   ) +
   geom_segment(
-    data = cycle_stats_labels,
+    data = cycle_stats_labels %>% filter(n_refs > 1),
     aes(x = xmin, xend = xmax, y = y, yend = y),
     inherit.aes = FALSE,
     linewidth = 0.28,
     color = "grey25"
   ) +
   geom_segment(
-    data = cycle_stats_labels,
+    data = cycle_stats_labels %>% filter(n_refs > 1),
     aes(x = xmin, xend = xmin, y = y, yend = y_tip),
     inherit.aes = FALSE,
     linewidth = 0.28,
     color = "grey25"
   ) +
   geom_segment(
-    data = cycle_stats_labels,
+    data = cycle_stats_labels %>% filter(n_refs > 1),
     aes(x = xmax, xend = xmax, y = y, yend = y_tip),
     inherit.aes = FALSE,
     linewidth = 0.28,
     color = "grey25"
   ) +
   geom_text(
-    data = cycle_stats_labels,
+    data = cycle_stats_labels %>% filter(n_refs > 1),
     aes(x = xmid, y = y, label = label),
     inherit.aes = FALSE,
     vjust = -0.18,
     size = 3.6,
     color = "grey20"
   ) +
+  geom_text(
+    data = cycle_stats_labels %>% filter(n_refs == 1),
+    aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    vjust = -0.18,
+    size = 4.5,
+    color = "grey20"
+  ) +
   facet_grid(metric ~ species, scales = "free_y") +
   scale_fill_manual(values = model_cols, breaks = model_levels, labels = model_labels[model_levels], drop = FALSE) +
-  scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.06, 0.20))) +
+  scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5, expand = expansion(mult = c(0.06, 0.20))) +
   labs(
     title = "ARCHS4 FlowTransOP Cycle Consistency",
     subtitle = "All permutation ablations are shown; through-species-only permutations can preserve the home-space encoder/decoder reconstruction path",
@@ -463,32 +509,40 @@ if (nrow(orth_plot_data) > 0) {
       color = "grey15"
     ) +
     geom_segment(
-      data = orth_stats_labels,
+      data = orth_stats_labels %>% filter(n_refs > 1),
     aes(x = xmin, xend = xmax, y = y, yend = y),
     inherit.aes = FALSE,
       linewidth = 0.35,
       color = "grey25"
     ) +
     geom_segment(
-      data = orth_stats_labels,
+      data = orth_stats_labels %>% filter(n_refs > 1),
       aes(x = xmin, xend = xmin, y = y, yend = y_tip),
       inherit.aes = FALSE,
       linewidth = 0.35,
       color = "grey25"
     ) +
     geom_segment(
-      data = orth_stats_labels,
+      data = orth_stats_labels %>% filter(n_refs > 1),
       aes(x = xmax, xend = xmax, y = y, yend = y_tip),
       inherit.aes = FALSE,
       linewidth = 0.35,
       color = "grey25"
     ) +
     geom_text(
-      data = orth_stats_labels,
+      data = orth_stats_labels %>% filter(n_refs > 1),
       aes(x = xmid, y = y, label = label),
       inherit.aes = FALSE,
       vjust = -0.15,
       size = 4,
+      color = "grey20"
+    ) +
+    geom_text(
+      data = orth_stats_labels %>% filter(n_refs == 1),
+      aes(x = x, y = y, label = label),
+      inherit.aes = FALSE,
+      vjust = -0.15,
+      size = 5,
       color = "grey20"
     ) +
     facet_grid(metric ~ species, scales = "free_y") +
@@ -500,7 +554,7 @@ if (nrow(orth_plot_data) > 0) {
       x = NULL,
       y = "Pearson correlation",
       fill = NULL,
-      caption = "Statistics: paired two-sided Wilcoxon signed-rank tests on fold-level scores; Holm-adjusted within panel. * p <= 0.05, ** p <= 0.01, *** p <= 0.001; ns otherwise."
+      caption = "Statistics: paired one-sided Wilcoxon signed-rank tests on fold-level scores, testing higher FlowTransOP performance; Holm-adjusted within panel. * p <= 0.05, ** p <= 0.01, *** p <= 0.001; ns otherwise."
     ) +
     coord_cartesian(clip = "off") +
     theme_bw(base_size = 12) +
@@ -531,7 +585,11 @@ if (nrow(mmd) > 0) {
         base <- .x %>% filter(model_type == base_name) %>% select(fold, baseline_score = mmd)
         paired <- inner_join(flow, base, by = "fold")
         p_val <- if (nrow(paired) >= 3) {
-          tryCatch(wilcox.test(paired$flow, paired$baseline_score, paired = TRUE, exact = FALSE)$p.value, error = function(e) NA_real_)
+          tryCatch(
+            wilcox.test(paired$flow, paired$baseline_score, paired = TRUE,
+                        alternative = "less", exact = FALSE)$p.value,
+            error = function(e) NA_real_
+          )
         } else NA_real_
         tibble(
           baseline = base_name,
@@ -607,7 +665,7 @@ if (nrow(mmd) > 0) {
       aes(x = xmid, y = y, label = label),
       inherit.aes = FALSE,
       vjust = -0.15,
-      size = 4,
+      size = 4.5,
       color = "grey20"
     ) +
     facet_wrap(~ direction, scales = "free_y") +
@@ -620,7 +678,7 @@ if (nrow(mmd) > 0) {
       x = NULL,
       y = expression(MMD^2),
       fill = NULL,
-      caption = "Latent-space MMD excludes the untranslated-source comparison because FlowTransOP uses direction-specific, non-global latent spaces. Statistics: paired Wilcoxon tests with Holm correction; * p <= 0.05, ** p <= 0.01, *** p <= 0.001."
+      caption = "Latent-space MMD excludes the untranslated-source comparison because FlowTransOP uses direction-specific, non-global latent spaces. Statistics: paired one-sided Wilcoxon tests for lower FlowTransOP MMD with Holm correction; * p <= 0.05, ** p <= 0.01, *** p <= 0.001."
     ) +
     coord_cartesian(clip = "off") +
     theme_bw(base_size = 12) +

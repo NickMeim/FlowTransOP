@@ -14,4 +14,6 @@ preprocessing/preprocessed_data/drug_landmarks.csv
 preprocessing/preprocessed_data/CellPairs/drug_landmarks.csv
 preprocessing/preprocessed_data/drug_triplets_dataset.rds
 preprocessing/preprocessed_data/drug_quadruplets_dataset.rds
+learning/evaluate_tissue.py
+learning.evaluate_tissue.sh
 .Rproj.user

@@ -229,20 +229,17 @@ def get_cycle_components(comp, cycle_species, mode):
 
 @torch.no_grad()
 def run_cycle(X_lazy, enc, flow_f, flow_b, dec, device, bs=2048):
-    """Returns (sample_pearsons (N,), r_mu (G,), r_var (G,),
-                gene_marginal_r_mu, gene_marginal_r_var) â€” last two are scalars.
+    """Returns (sample_pearsons (N,), gene_marginal_r_mean, gene_marginal_r_var).
 
     - sample_pearsons[i]: per-sample Pearson(mu_pred[i], x[i]) across genes.
-    - r_mu[g]:  per-gene sample-level Pearson(mu_pred[:, g], x[:, g]) across samples.
-    - r_var[g]: per-gene Pearson(var_pred[:, g], (x - mu_pred)[:, g]^2) across samples.
-    - gene_marginal_r_mu:  cross-gene Pearson(mean_g(mu_pred), mean_g(x))   â€” TRAINING-STYLE
-    - gene_marginal_r_var: cross-gene Pearson(mean_g(var_pred), var_g(x))   â€” TRAINING-STYLE
+    - gene_marginal_r_mean: cross-gene Pearson(mean_g(mu_pred), mean_g(x)).
+    - gene_marginal_r_var:  cross-gene Pearson(mean_g(var_pred), var_g(x)).
     """
     enc.eval(); dec.eval(); flow_f.eval(); flow_b.eval()
     N, G = X_lazy.shape
     sample_r = np.zeros(N, dtype=np.float64)
-    sx = np.zeros(G); sy = np.zeros(G); sxy = np.zeros(G); sx2 = np.zeros(G); sy2 = np.zeros(G)
-    sxv = np.zeros(G); syv = np.zeros(G); sxyv = np.zeros(G); sx2v = np.zeros(G); sy2v = np.zeros(G)
+    sx = np.zeros(G); sy = np.zeros(G); sy2 = np.zeros(G)
+    sxv = np.zeros(G)
     n_total = 0
 
     for c0 in range(0, N, bs):
@@ -259,20 +256,14 @@ def run_cycle(X_lazy, enc, flow_f, flow_b, dec, device, bs=2048):
 
         sample_r[c0:c1] = per_sample_pearson(mu_np, x_np)
 
-        sx  += mu_np.sum(axis=0); sy  += x_np.sum(axis=0); sxy += (mu_np * x_np).sum(axis=0)
-        sx2 += (mu_np**2).sum(axis=0); sy2 += (x_np**2).sum(axis=0)
+        sx  += mu_np.sum(axis=0)
+        sy  += x_np.sum(axis=0)
+        sy2 += (x_np**2).sum(axis=0)
 
-        sq_resid = (x_np - mu_np)**2
-        sxv  += v_np.sum(axis=0); syv  += sq_resid.sum(axis=0); sxyv += (v_np * sq_resid).sum(axis=0)
-        sx2v += (v_np**2).sum(axis=0); sy2v += (sq_resid**2).sum(axis=0)
+        sxv += v_np.sum(axis=0)
 
         n_total += (c1 - c0)
 
-    # Per-gene sample-level Pearsons
-    r_mu  = pearson_from_sums(sx,  sy,  sxy,  sx2,  sy2,  n_total)
-    r_var = pearson_from_sums(sxv, syv, sxyv, sx2v, sy2v, n_total)
-
-    # ---- Training-style cross-gene Pearson on gene marginals ----
     # mu marginal: mean of predicted mu per gene  vs  mean of true x per gene
     mean_mu_per_gene = sx / n_total
     mean_x_per_gene  = sy / n_total
@@ -283,45 +274,40 @@ def run_cycle(X_lazy, enc, flow_f, flow_b, dec, device, bs=2048):
     var_x_per_gene    = (sy2 / n_total) - mean_x_per_gene**2
     r_var_marginal, _ = pearsonr(mean_var_per_gene, var_x_per_gene)
 
-    return sample_r, r_mu, r_var, float(r_mu_marginal), float(r_var_marginal)
+    return sample_r, float(r_mu_marginal), float(r_var_marginal)
 
 
 def cycle_evaluation(comp, fold, device, log):
     modes = ['FlowTransOP', 'permuted_both', 'permuted_human', 'permuted_mouse']
 
-    for cycle_species, gene_path, val_lazy in [
-        ('human', "human", comp['val_h']),
-        ('mouse', "mouse", comp['val_m']),
+    for cycle_species, val_lazy in [
+        ('human', comp['val_h']),
+        ('mouse', comp['val_m']),
     ]:
         log(f"\n=== Cycle consistency: {cycle_species} ===")
-        genes = load_genes(gene_path)
-        rows_ps, rows_pg = [], []
+        rows_ps = []
 
         for mode in modes:
             log(f"  Mode: {mode}")
             enc, flow_f, flow_b, dec = get_cycle_components(comp, cycle_species, mode)
-            sample_r, r_mu, r_var, r_mu_marg, r_var_marg = run_cycle(
+            sample_r, r_mean_marg, r_var_marg = run_cycle(
                 val_lazy, enc, flow_f, flow_b, dec, device)
             log(f"    per-sample <r> = {sample_r.mean():.4f} | "
-                f"gene-marginal r_mu = {r_mu_marg:.4f} | r_var = {r_var_marg:.4f} | "
-                f"per-gene <r_mu> = {r_mu.mean():.4f} | <r_var> = {r_var.mean():.4f}")
+                f"gene-marginal mean r = {r_mean_marg:.4f} | "
+                f"gene-marginal variance r = {r_var_marg:.4f}")
 
             rows_ps.append({
                 'fold': fold,
                 'per_sample_mean':       float(sample_r.mean()),
-                'gene_marginal_r_mu':    r_mu_marg,    # training-style cross-gene Pearson
-                'gene_marginal_r_var':   r_var_marg,   # training-style cross-gene Pearson
+                'gene_marginal_r_mean':  r_mean_marg,
+                'gene_marginal_r_var':   r_var_marg,
                 'model_type': mode,
             })
-            for gi, gname in enumerate(genes):
-                rows_pg.append({'fold': fold, 'gene': str(gname),
-                                'r_pred': float(r_mu[gi]),
-                                'r_mu': float(r_mu[gi]),
-                                'r_var': float(r_var[gi]),
-                                'model_type': mode})
 
         pd.DataFrame(rows_ps).to_csv(EVAL_DIR / f"cycle_{cycle_species}_persample_fold{fold}.csv", index=False)
-        pd.DataFrame(rows_pg).to_csv(EVAL_DIR / f"cycle_{cycle_species}_pergene_fold{fold}.csv",   index=False)
+        stale = EVAL_DIR / f"cycle_{cycle_species}_pergene_fold{fold}.csv"
+        if stale.exists():
+            stale.unlink()
 
 
 # ----------------------------- 2. Orthologue-mediated -----------------------------
@@ -377,14 +363,14 @@ def orthologue_eval(comp, fold, device, log):
     modes_h2m = {
         'FlowTransOP':    (n['enc_h'], n['flow_h2m'], n['dec_m']),
         'permuted_both':  (p['enc_h'], p['flow_h2m'], p['dec_m']),
-        'permuted_human': (p['enc_h'], n['flow_h2m'], n['dec_m']),  # source side broken
-        'permuted_mouse': (n['enc_h'], n['flow_h2m'], p['dec_m']),  # target side broken
+        'permuted_human': (p['enc_h'], p['flow_h2m'], n['dec_m']),  # source side broken
+        'permuted_mouse': (n['enc_h'], p['flow_h2m'], p['dec_m']),  # target side broken
     }
     modes_m2h = {
         'FlowTransOP':    (n['enc_m'], n['flow_m2h'], n['dec_h']),
         'permuted_both':  (p['enc_m'], p['flow_m2h'], p['dec_h']),
-        'permuted_mouse': (p['enc_m'], n['flow_m2h'], n['dec_h']),  # source side broken
-        'permuted_human': (n['enc_m'], n['flow_m2h'], p['dec_h']),  # target side broken
+        'permuted_mouse': (p['enc_m'], p['flow_m2h'], n['dec_h']),  # source side broken
+        'permuted_human': (n['enc_m'], p['flow_m2h'], p['dec_h']),  # target side broken
     }
 
     # Pre-gather original val data restricted to orthologue genes (used as comparison vector)
@@ -392,101 +378,68 @@ def orthologue_eval(comp, fold, device, log):
     x_h_orth = gather_orthologue(comp['val_h'], h_idx)
     x_m_orth = gather_orthologue(comp['val_m'], m_idx)
 
-    # h2m leg:
-    #   - existing per-sample orthologue score compares translated mouse-orth genes
-    #     to the source human orthologue vector for each sample.
-    #   - new per-gene/gene-marginal scores compare translated mouse-orth genes
-    #     to matched target mouse validation data across samples.
-    rows_h2m, rows_h2m_pg, rows_h2m_summary = [], [], []
+    rows_h2m = []
+    rows_h2m_summary = []
     for mode, (enc, flow, dec) in modes_h2m.items():
         log(f"  h2m mode: {mode}")
         mu_pred = translate_full(comp['val_h'], enc, flow, dec, device, comp['Gm'])
         mu_pred_orth = mu_pred[:, m_idx]
         rs = per_sample_pearson(mu_pred_orth, x_h_orth)
+        r_mean_marg, r_var_marg = gene_marginal_mean_var_correlations(mu_pred_orth, x_h_orth)
         for i, r in enumerate(rs):
-            rows_h2m.append({'fold': fold, 'sample_idx': i,
+            rows_h2m.append({'fold': fold, 'direction': 'h2m', 'sample_idx': i,
                              'pearson': float(r), 'model_type': mode})
-
-        matched_n = min(mu_pred_orth.shape[0], x_m_orth.shape[0])
-        if mu_pred_orth.shape[0] != x_m_orth.shape[0]:
-            log(f"    h2m matched target comparison uses first {matched_n} samples "
-                f"(pred={mu_pred_orth.shape[0]}, target={x_m_orth.shape[0]})")
-        pred_match = mu_pred_orth[:matched_n]
-        target_match = x_m_orth[:matched_n]
-        r_gene = per_gene_pearson(pred_match, target_match)
-        r_mean_marg, r_var_marg = gene_marginal_mean_var_correlations(pred_match, target_match)
         rows_h2m_summary.append({
             'fold': fold,
             'direction': 'h2m',
-            'matched_n': matched_n,
-            'per_sample_mean_source_orth': float(rs.mean()),
-            'per_gene_mean_r': float(r_gene.mean()),
+            'n_samples': int(mu_pred_orth.shape[0]),
+            'n_orthologues': int(mu_pred_orth.shape[1]),
+            'per_sample_mean': float(rs.mean()),
             'gene_marginal_r_mean': r_mean_marg,
             'gene_marginal_r_var': r_var_marg,
             'model_type': mode,
         })
-        for j, (hi, mi) in enumerate(zip(h_idx, m_idx)):
-            rows_h2m_pg.append({
-                'fold': fold,
-                'direction': 'h2m',
-                'human_gene': str(h_genes[hi]),
-                'mouse_gene': str(m_genes[mi]),
-                'r_pred': float(r_gene[j]),
-                'model_type': mode,
-            })
         del mu_pred, mu_pred_orth
-        log(f"    sample mean r(source orth) = {rs.mean():.4f} | "
-            f"per-gene <r(target orth)> = {r_gene.mean():.4f} | "
-            f"gene-marginal mean r = {r_mean_marg:.4f} | var r = {r_var_marg:.4f}")
+        log(f"    sample mean r(source orthologues) = {rs.mean():.4f} | "
+            f"gene-marginal mean r = {r_mean_marg:.4f} | "
+            f"gene-marginal variance r = {r_var_marg:.4f}")
 
-    rows_m2h, rows_m2h_pg, rows_m2h_summary = [], [], []
+    rows_m2h = []
+    rows_m2h_summary = []
     for mode, (enc, flow, dec) in modes_m2h.items():
         log(f"  m2h mode: {mode}")
         mu_pred = translate_full(comp['val_m'], enc, flow, dec, device, comp['Gh'])
         mu_pred_orth = mu_pred[:, h_idx]
         rs = per_sample_pearson(mu_pred_orth, x_m_orth)
+        r_mean_marg, r_var_marg = gene_marginal_mean_var_correlations(mu_pred_orth, x_m_orth)
         for i, r in enumerate(rs):
-            rows_m2h.append({'fold': fold, 'sample_idx': i,
+            rows_m2h.append({'fold': fold, 'direction': 'm2h', 'sample_idx': i,
                              'pearson': float(r), 'model_type': mode})
-
-        matched_n = min(mu_pred_orth.shape[0], x_h_orth.shape[0])
-        if mu_pred_orth.shape[0] != x_h_orth.shape[0]:
-            log(f"    m2h matched target comparison uses first {matched_n} samples "
-                f"(pred={mu_pred_orth.shape[0]}, target={x_h_orth.shape[0]})")
-        pred_match = mu_pred_orth[:matched_n]
-        target_match = x_h_orth[:matched_n]
-        r_gene = per_gene_pearson(pred_match, target_match)
-        r_mean_marg, r_var_marg = gene_marginal_mean_var_correlations(pred_match, target_match)
         rows_m2h_summary.append({
             'fold': fold,
             'direction': 'm2h',
-            'matched_n': matched_n,
-            'per_sample_mean_source_orth': float(rs.mean()),
-            'per_gene_mean_r': float(r_gene.mean()),
+            'n_samples': int(mu_pred_orth.shape[0]),
+            'n_orthologues': int(mu_pred_orth.shape[1]),
+            'per_sample_mean': float(rs.mean()),
             'gene_marginal_r_mean': r_mean_marg,
             'gene_marginal_r_var': r_var_marg,
             'model_type': mode,
         })
-        for j, (hi, mi) in enumerate(zip(h_idx, m_idx)):
-            rows_m2h_pg.append({
-                'fold': fold,
-                'direction': 'm2h',
-                'human_gene': str(h_genes[hi]),
-                'mouse_gene': str(m_genes[mi]),
-                'r_pred': float(r_gene[j]),
-                'model_type': mode,
-            })
         del mu_pred, mu_pred_orth
-        log(f"    sample mean r(source orth) = {rs.mean():.4f} | "
-            f"per-gene <r(target orth)> = {r_gene.mean():.4f} | "
-            f"gene-marginal mean r = {r_mean_marg:.4f} | var r = {r_var_marg:.4f}")
+        log(f"    sample mean r(source orthologues) = {rs.mean():.4f} | "
+            f"gene-marginal mean r = {r_mean_marg:.4f} | "
+            f"gene-marginal variance r = {r_var_marg:.4f}")
 
     pd.DataFrame(rows_h2m).to_csv(EVAL_DIR / f"orthologue_h2m_fold{fold}.csv", index=False)
     pd.DataFrame(rows_m2h).to_csv(EVAL_DIR / f"orthologue_m2h_fold{fold}.csv", index=False)
-    pd.DataFrame(rows_h2m_pg).to_csv(EVAL_DIR / f"orthologue_h2m_pergene_fold{fold}.csv", index=False)
-    pd.DataFrame(rows_m2h_pg).to_csv(EVAL_DIR / f"orthologue_m2h_pergene_fold{fold}.csv", index=False)
     pd.DataFrame(rows_h2m_summary).to_csv(EVAL_DIR / f"orthologue_h2m_summary_fold{fold}.csv", index=False)
     pd.DataFrame(rows_m2h_summary).to_csv(EVAL_DIR / f"orthologue_m2h_summary_fold{fold}.csv", index=False)
+    for stale in [
+        EVAL_DIR / f"orthologue_h2m_pergene_fold{fold}.csv",
+        EVAL_DIR / f"orthologue_m2h_pergene_fold{fold}.csv",
+    ]:
+        if stale.exists():
+            stale.unlink()
 
 
 # ----------------------------- 3. MMD -----------------------------

@@ -102,14 +102,14 @@ def translation_modes(comp, direction):
         return {
             "FlowTransOP": (n["enc_h"], n["flow_h2m"], n["dec_m"]),
             "permuted_both": (p["enc_h"], p["flow_h2m"], p["dec_m"]),
-            "permuted_human": (p["enc_h"], n["flow_h2m"], n["dec_m"]),
+            "permuted_human": (p["enc_h"], p["flow_h2m"], n["dec_m"]),
             "permuted_mouse": (n["enc_h"], n["flow_h2m"], p["dec_m"]),
         }
     if direction == "m2h":
         return {
             "FlowTransOP": (n["enc_m"], n["flow_m2h"], n["dec_h"]),
             "permuted_both": (p["enc_m"], p["flow_m2h"], p["dec_h"]),
-            "permuted_mouse": (p["enc_m"], n["flow_m2h"], n["dec_h"]),
+            "permuted_mouse": (p["enc_m"], p["flow_m2h"], n["dec_h"]),
             "permuted_human": (n["enc_m"], n["flow_m2h"], p["dec_h"]),
         }
     raise ValueError(f"Unknown direction: {direction}")
