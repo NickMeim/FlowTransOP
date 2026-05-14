@@ -159,6 +159,77 @@ results_autotransop <- results_autotransop %>% group_by(metric,rds_basename) %>%
   # mutate(direct_translation=mean(direct_translation)) %>%
   ungroup()
 
+### Load extremely low pairs case
+n_avail <- 965.8333 # on average this is the training data size here
+load_extremely_fewpairs_translation <- function(
+    file_path,
+    total_samples_full,
+    method_label = "GeneralizedTransOP (paired)"
+) {
+  # file has at least: train, test, fold, n_pairs, repeat
+  df <- read_csv(file_path, show_col_types = FALSE)
+  
+  # 1) summarize repeats -> one number per n_pairs x fold
+  df_s <- df %>%
+    group_by(n_pairs, fold) %>%
+    summarise(
+      value = mean(test, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  # 2) compute paired % using your rule
+  #    This matches your earlier definition:
+  #    paired_ratio = 2*n_pairs / total_samples
+  df_s <- df_s %>%
+    mutate(
+      paired_percent_mu = 100 * (n_pairs / total_samples_full),
+      paired_percent_se = 0,
+      number_samples = total_samples_full,
+      number_paired_samples = n_pairs,
+      metric = "pearson translation",
+      direct_translation = NA_real_,
+      method = method_label,
+      rds_basename = paste0("A375_HT29_extreme_nPairs_", n_pairs)
+    )
+  
+  # 3) compute mean/sd across folds for each n_pairs
+  df_s <- df_s %>%
+    group_by(metric, rds_basename) %>%
+    mutate(
+      mean_value = mean(value, na.rm = TRUE),
+      std_value  = sd(value, na.rm = TRUE)
+    ) %>%
+    ungroup()
+  
+  # 4) return only the columns that match your merge schema
+  df_s %>%
+    select(
+      method,
+      fold,
+      direct_translation,
+      metric,
+      value,
+      rds_basename,
+      paired_percent_mu,
+      paired_percent_se,
+      number_samples,
+      number_paired_samples,
+      mean_value,
+      std_value
+    )
+}
+
+extreme_translation_file_autotransop <- "../results/AutoTransOP_extremely_fewPairs_A375_HT29/A375_HT29_ExtremelyfewPairs_AutoTransOP_translation.csv"
+results_autotransop_extreme <- load_extremely_fewpairs_translation(
+  file_path = extreme_translation_file_autotransop,
+  total_samples_full = n_avail,
+  method_label = "AutoTransOP"
+)
+results_autotransop <- bind_rows(
+  results_autotransop,
+  results_autotransop_extreme
+)
+
 ## sanity check
 dt_mean <- mean(results_autotransop$direct_translation, na.rm = TRUE)
 dt_ci <- 1.96 * sd(results_autotransop$direct_translation, na.rm = TRUE) / sqrt(30)
@@ -298,65 +369,6 @@ results_generalised_paired_merged <- results_generalised_paired %>%
   select(any_of(common_cols))
 
 ### Load generalised transop extremely low pairs case
-n_avail <- 965.8333 # on average this is the traning data size here
-load_extremely_fewpairs_translation <- function(
-    file_path,
-    total_samples_full,
-    method_label = "GeneralizedTransOP (paired)"
-) {
-  # file has: train, test, fold, n_pairs, repeat
-  df <- read_csv(file_path, show_col_types = FALSE)
-  
-  # 1) summarize repeats -> one number per n_pairs x fold
-  df_s <- df %>%
-    group_by(n_pairs, fold) %>%
-    summarise(
-      value = mean(test, na.rm = TRUE),
-      .groups = "drop"
-    )
-  
-  # 2) compute paired % using your rule
-  #    This matches your earlier definition:
-  #    paired_ratio = 2*n_pairs / total_samples
-  df_s <- df_s %>%
-    mutate(
-      paired_percent_mu = 100 * (n_pairs / total_samples_full),
-      paired_percent_se = 0,
-      number_samples = total_samples_full,
-      number_paired_samples = n_pairs,
-      metric = "pearson translation",
-      direct_translation = NA_real_,
-      method = method_label,
-      rds_basename = paste0("A375_HT29_extreme_nPairs_", n_pairs)
-    )
-  
-  # 3) compute mean/sd across folds for each n_pairs
-  df_s <- df_s %>%
-    group_by(metric, rds_basename) %>%
-    mutate(
-      mean_value = mean(value, na.rm = TRUE),
-      std_value  = sd(value, na.rm = TRUE)
-    ) %>%
-    ungroup()
-  
-  # 4) return only the columns that match your merge schema
-  df_s %>%
-    select(
-      method,
-      fold,
-      direct_translation,
-      metric,
-      value,
-      rds_basename,
-      paired_percent_mu,
-      paired_percent_se,
-      number_samples,
-      number_paired_samples,
-      mean_value,
-      std_value
-    )
-}
-
 extreme_translation_file_withpairs <- "../results/FlowMatch_extremely_fewPairs_A375_HT29_withPairs/A375_HT29_ExtremelyfewPairs_translation.csv"
 results_generalised_paired_extreme <- load_extremely_fewpairs_translation(
   file_path = extreme_translation_file_withpairs,

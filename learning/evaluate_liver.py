@@ -9,6 +9,7 @@ with the liver-only external test matrices written by preprocess_archs4.py:
   ../archs4/preprocessed/mouse_test_X.npy
 
 It combines the evaluation families from:
+  - ARCHS4 training: direct Gaussian reconstruction diagnostics
   - evaluate_translation.py: cycle consistency, orthologue translation, latent MMD
   - evaluate_tissue.py: liver-specific centroid/neighborhood diagnostics
   - evaluate_expression_mmd_archs4.py: expression-space MMD
@@ -28,6 +29,7 @@ import numpy as np
 import pandas as pd
 import torch
 from scipy.stats import pearsonr, spearmanr
+from sklearn.metrics import r2_score
 
 import evaluate_translation as et
 
@@ -205,6 +207,73 @@ def mmd_value(X, Y, max_n, seed):
 def background_rows(X_lazy, n_samples, rng):
     take = min(int(n_samples), len(X_lazy))
     return np.sort(rng.choice(len(X_lazy), size=take, replace=False))
+
+
+@torch.no_grad()
+def gauss_recon_metrics(encoder, decoder, X_lazy, device, bs=4096):
+    """Match train_ARCHS4_fold.py validation reconstruction metrics."""
+    encoder.eval()
+    decoder.eval()
+    N, G = X_lazy.shape
+    pred_mu_sum = np.zeros(G, dtype=np.float64)
+    pred_var_sum = np.zeros(G, dtype=np.float64)
+    true_sum = np.zeros(G, dtype=np.float64)
+    true_sq_sum = np.zeros(G, dtype=np.float64)
+    n_total = 0
+
+    for c0 in range(0, N, bs):
+        c1 = min(c0 + bs, N)
+        X = X_lazy[np.arange(c0, c1), :].to(device)
+        mu, var = decoder(encoder(X))
+        x_np = X.cpu().numpy()
+        pred_mu_sum += mu.cpu().numpy().sum(axis=0)
+        pred_var_sum += var.cpu().numpy().sum(axis=0)
+        true_sum += x_np.sum(axis=0)
+        true_sq_sum += (x_np ** 2).sum(axis=0)
+        n_total += c1 - c0
+
+    pred_mu = pred_mu_sum / n_total
+    pred_var = pred_var_sum / n_total
+    true_mu = true_sum / n_total
+    true_var = true_sq_sum / n_total - true_mu ** 2
+    pearson_mu, _ = pearsonr(pred_mu, true_mu)
+    pearson_var, _ = pearsonr(pred_var, true_var)
+    return {
+        "pearson_mu": float(pearson_mu),
+        "pearson_var": float(pearson_var),
+        "r2_mu": float(r2_score(true_mu, pred_mu)),
+        "r2_var": float(r2_score(true_var, pred_var)),
+    }
+
+
+def reconstruction_liver(comp, fold, device, bs, log):
+    log("\n=== Liver reconstruction ===")
+    rows = []
+    specs = [
+        ("human", comp["val_h"], comp["normal"]["enc_h"], comp["normal"]["dec_h"], "FlowTransOP"),
+        ("human", comp["val_h"], comp["permuted"]["enc_h"], comp["permuted"]["dec_h"], "permuted_both"),
+        ("mouse", comp["val_m"], comp["normal"]["enc_m"], comp["normal"]["dec_m"], "FlowTransOP"),
+        ("mouse", comp["val_m"], comp["permuted"]["enc_m"], comp["permuted"]["dec_m"], "permuted_both"),
+    ]
+    for species, X_lazy, enc, dec, model_type in specs:
+        metrics = gauss_recon_metrics(enc, dec, X_lazy, device, bs=bs)
+        rows.append({
+            "fold": fold,
+            "species": species,
+            "tissue": "liver",
+            "model_type": model_type,
+            "comparison": "reconstructed_liver_vs_liver_input",
+            "n_samples": len(X_lazy),
+            "n_features": X_lazy.shape[1],
+            **metrics,
+        })
+        log(f"  {species} {model_type}: "
+            f"Pearson mu={metrics['pearson_mu']:.4f}, var={metrics['pearson_var']:.4f}; "
+            f"R2 mu={metrics['r2_mu']:.4f}, var={metrics['r2_var']:.4f}")
+
+    out_path = EVAL_DIR / f"liver_reconstruction_fold{fold}.csv"
+    pd.DataFrame(rows).to_csv(out_path, index=False)
+    log(f"  wrote {out_path}")
 
 
 def cycle_liver(comp, fold, device, bs, log):
@@ -606,6 +675,8 @@ def evaluate_fold(args, device, log):
     comp = load_liver_components(args.fold, device)
     log(f"Liver samples: human={len(comp['val_h'])}, mouse={len(comp['val_m'])}")
 
+    if not args.skip_reconstruction:
+        reconstruction_liver(comp, args.fold, device, args.batch_size, log)
     if not args.skip_cycle:
         cycle_liver(comp, args.fold, device, args.batch_size, log)
     if not args.skip_orthologue:
@@ -644,6 +715,7 @@ def main():
     parser.add_argument("--background_samples", type=int, default=1000,
                         help="Rows per random non-liver background draw.")
     parser.add_argument("--nearest_k", type=int, default=10)
+    parser.add_argument("--skip_reconstruction", action="store_true")
     parser.add_argument("--skip_cycle", action="store_true")
     parser.add_argument("--skip_orthologue", action="store_true")
     parser.add_argument("--skip_latent_mmd", action="store_true")
