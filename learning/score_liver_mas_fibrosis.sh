@@ -6,7 +6,7 @@
 #SBATCH -n 1
 #SBATCH --nodes=1
 #SBATCH --mem=300G
-#SBATCH --gres=gpu:h200:1
+#SBATCH --gres=gpu:h200:2
 #SBATCH --time=06:00:00
 #SBATCH -J liver_mas_fibrosis
 #SBATCH --array=0-1
@@ -16,4 +16,18 @@
 module load miniforge/24.3.0-0
 mamba activate nikos
 
-python3 ./score_liver_mas_fibrosis.py --fold ${SLURM_ARRAY_TASK_ID}
+MODEL_SOURCE=${MODEL_SOURCE:-fold}
+TASK_ID=${SLURM_ARRAY_TASK_ID:-0}
+
+if [[ "${MODEL_SOURCE}" == "full_ensemble" ]]; then
+  OUT_DIR=${OUT_DIR:-../archs4/evaluation/liver_mas_fibrosis_full_ensemble}
+  python3 ./score_liver_mas_fibrosis.py \
+    --model_source full_ensemble \
+    --ensemble_id "${TASK_ID}" \
+    --ensemble_suffix_as_fold \
+    --out_dir "${OUT_DIR}"
+else
+  python3 ./score_liver_mas_fibrosis.py \
+    --model_source fold \
+    --fold "${TASK_ID}"
+fi

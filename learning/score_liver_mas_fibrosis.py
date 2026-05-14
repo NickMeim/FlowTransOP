@@ -3,7 +3,8 @@
 Score ARCHS4 liver subsets for NAS/MAS activity and fibrosis.
 
 This script uses the preprocessed liver test matrices written by the ARCHS4
-preprocessing scripts and the trained FlowTransOP fold checkpoints. It:
+preprocessing scripts and trained FlowTransOP fold or full-ensemble checkpoints.
+It:
 
 1. Selects the human Govaere et al. liver subset (GSE135251) from metadata,
    parses NAS and fibrosis labels, centers the expression matrix, and fits a
@@ -16,7 +17,11 @@ preprocessing scripts and the trained FlowTransOP fold checkpoints. It:
    rank-based NAS/MAS and fibrosis gene signatures inspired by VIPER/aREA.
 4. Fits an additional orthologue-only human PLSR/aREA scorer and applies it
    directly to untranslated mouse orthologue expression.
-5. Writes all-gene and orthologue-only human PLSR LOOCV predictions once.
+5. Fits PLSR, neural-network, and RBF-SVM scorers in expression and latent
+   spaces and applies them to the matching mouse representations.
+6. Writes all-gene and orthologue-only human PLSR LOOCV predictions once,
+   plus neural-network and RBF-SVM LOOCV predictions for expression,
+   orthologue, and latent feature spaces.
 
 Outputs are CSVs under ../archs4/evaluation/liver_mas_fibrosis by default.
 """
@@ -30,6 +35,9 @@ import pandas as pd
 import torch
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import GridSearchCV
+from sklearn.multioutput import MultiOutputRegressor
+from sklearn.svm import SVR
 
 import evaluate_translation as et
 
@@ -44,6 +52,11 @@ HUMAN_GSE = "GSE135251"
 MOUSE_GSE = "GSE196908"
 MOUSE_CDAA_GSE = "GSE269493"
 PLS_COMPONENTS = 8
+SVM_RBF_PARAM_GRID = {
+    "gamma": [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 1.5, 2],
+    "C": [1e-1, 1, 10, 100, 1000],
+}
+TARGET_NAMES = ("nas_score", "fibrosis_stage")
 
 SIGNATURES = {
     "MAS": {
@@ -286,31 +299,89 @@ def load_rows(matrix, rows):
     return np.asarray(matrix[rows, :], dtype=np.float32)
 
 
-def load_flowtransop_m2h(fold, human_dim, mouse_dim, model_dir, device):
-    normal_path = require_file(model_dir / f"fold_{fold}_normal.pt")
-    m2h_path = require_file(model_dir / f"fold_{fold}_normal_m2h.pt")
+def active_model_index(args):
+    return int(args.fold if args.model_source == "fold" else args.ensemble_id)
+
+
+def output_suffix(args):
+    if args.output_suffix:
+        return args.output_suffix
+    if args.model_source == "fold" or args.ensemble_suffix_as_fold:
+        return f"fold{active_model_index(args)}"
+    return f"ensemble{args.ensemble_id}"
+
+
+def model_checkpoint_paths(args):
+    if args.model_source == "fold":
+        return (
+            args.model_dir / f"fold_{args.fold}_normal.pt",
+            args.model_dir / f"fold_{args.fold}_normal_m2h.pt",
+        )
+    if args.model_source == "full_ensemble":
+        stem = f"{args.full_model_prefix}_{args.ensemble_id}"
+        return (
+            args.model_dir / f"{stem}_normal.pt",
+            args.model_dir / f"{stem}_normal_m2h.pt",
+        )
+    raise ValueError(f"Unknown model_source: {args.model_source}")
+
+
+def load_flowtransop_m2h(args, human_dim, mouse_dim, device):
+    normal_path, m2h_path = model_checkpoint_paths(args)
+    normal_path = require_file(normal_path)
 
     ckpt = torch.load(normal_path, map_location=device, weights_only=False)
-    ckpt_m2h = torch.load(m2h_path, map_location=device, weights_only=False)
-    args = ckpt["args"]
+    ckpt_args = ckpt["args"]
 
-    _, enc_m, dec_h, _, _ = et.build_models(args, human_dim, mouse_dim, device)
+    enc_h, enc_m, dec_h, _, _ = et.build_models(ckpt_args, human_dim, mouse_dim, device)
+    enc_h.load_state_dict(ckpt["encoder_human"])
     enc_m.load_state_dict(ckpt["encoder_mouse"])
     dec_h.load_state_dict(ckpt["decoder_human"])
 
-    flow_m2h = et.Flow(args["latent_dim"], args["latent_dim"] // 2, dtype=torch.float).to(device)
-    flow_m2h.load_state_dict(ckpt_m2h["flow_m2h"])
+    flow_m2h = et.Flow(
+        ckpt_args["latent_dim"], ckpt_args["latent_dim"] // 2, dtype=torch.float
+    ).to(device)
+    if m2h_path.exists():
+        ckpt_m2h = torch.load(m2h_path, map_location=device, weights_only=False)
+        flow_m2h.load_state_dict(ckpt_m2h["flow_m2h"])
+    elif "flow_m2h" in ckpt:
+        flow_m2h.load_state_dict(ckpt["flow_m2h"])
+    else:
+        raise FileNotFoundError(
+            f"Could not find mouse->human flow in {m2h_path} or {normal_path}."
+        )
 
+    enc_h.eval()
     enc_m.eval()
     flow_m2h.eval()
     dec_h.eval()
-    return enc_m, flow_m2h, dec_h
+    return enc_h, enc_m, flow_m2h, dec_h
 
 
 @torch.no_grad()
-def translate_mouse_to_human(mouse_matrix, mouse_rows, enc_m, flow_m2h, dec_h, device, batch_size):
+def encode_human_latent(human_matrix, enc_h, device, batch_size):
+    latents = []
+    for start in range(0, human_matrix.shape[0], batch_size):
+        stop = min(start + batch_size, human_matrix.shape[0])
+        block = np.asarray(human_matrix[start:stop, :], dtype=np.float32)
+        x = torch.from_numpy(np.ascontiguousarray(block)).to(device)
+        latents.append(enc_h(x).cpu().numpy())
+    return np.concatenate(latents, axis=0).astype(np.float32)
+
+
+@torch.no_grad()
+def translate_mouse_to_human_and_latent(
+    mouse_matrix,
+    mouse_rows,
+    enc_m,
+    flow_m2h,
+    dec_h,
+    device,
+    batch_size,
+):
     out_dim = int(dec_h.out_mu.out_features)
     translated = np.empty((len(mouse_rows), out_dim), dtype=np.float32)
+    latents = []
     for start in range(0, len(mouse_rows), batch_size):
         stop = min(start + batch_size, len(mouse_rows))
         block = np.asarray(mouse_matrix[mouse_rows[start:stop], :], dtype=np.float32)
@@ -319,6 +390,15 @@ def translate_mouse_to_human(mouse_matrix, mouse_rows, enc_m, flow_m2h, dec_h, d
         z_h = et.flow_step_n(flow_m2h, z)
         mu, _ = dec_h(z_h)
         translated[start:stop] = mu.cpu().numpy()
+        latents.append(z_h.cpu().numpy())
+    translated_latent = np.concatenate(latents, axis=0).astype(np.float32)
+    return translated, translated_latent
+
+
+def translate_mouse_to_human(mouse_matrix, mouse_rows, enc_m, flow_m2h, dec_h, device, batch_size):
+    translated, _ = translate_mouse_to_human_and_latent(
+        mouse_matrix, mouse_rows, enc_m, flow_m2h, dec_h, device, batch_size
+    )
     return translated
 
 
@@ -332,6 +412,225 @@ def fit_plsr_scorer(X_centered, y, n_components):
     model = PLSRegression(n_components=max_components, scale=False)
     model.fit(X_centered, y)
     return model, max_components
+
+
+def parse_hidden_layers(hidden_layers):
+    layers = []
+    for token in str(hidden_layers).split(","):
+        token = token.strip()
+        if token:
+            layers.append(int(token))
+    if not layers:
+        raise ValueError("--nn_hidden_layers must contain at least one integer.")
+    return layers
+
+
+def build_feed_forward_regressor(input_dim, output_dim, hidden_layers, dropout):
+    layers = []
+    last_dim = input_dim
+    for hidden_dim in hidden_layers:
+        layers.extend(
+            [
+                torch.nn.Linear(last_dim, hidden_dim),
+                torch.nn.ReLU(),
+            ]
+        )
+        if dropout > 0:
+            layers.append(torch.nn.Dropout(dropout))
+        last_dim = hidden_dim
+    layers.append(torch.nn.Linear(last_dim, output_dim))
+    return torch.nn.Sequential(*layers)
+
+
+def fit_neural_regressor(X, y, args, device):
+    X = np.asarray(X, dtype=np.float32)
+    y = np.asarray(y, dtype=np.float32)
+    x_mean = X.mean(axis=0, dtype=np.float64).astype(np.float32)
+    x_scale = X.std(axis=0, dtype=np.float64).astype(np.float32)
+    x_scale[x_scale < 1e-6] = 1.0
+    X_scaled = (X - x_mean) / x_scale
+
+    hidden_layers = parse_hidden_layers(args.nn_hidden_layers)
+    torch.manual_seed(args.nn_seed)
+    if device.type == "cuda":
+        torch.cuda.manual_seed_all(args.nn_seed)
+
+    model = build_feed_forward_regressor(
+        X_scaled.shape[1],
+        y.shape[1],
+        hidden_layers,
+        args.nn_dropout,
+    ).to(device)
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=args.nn_lr,
+        weight_decay=args.nn_weight_decay,
+    )
+    loss_fn = torch.nn.MSELoss()
+    generator = torch.Generator(device="cpu")
+    generator.manual_seed(args.nn_seed)
+
+    best_loss = np.inf
+    best_state = None
+    batch_size = min(max(1, args.nn_batch_size), X_scaled.shape[0])
+    X_tensor = torch.from_numpy(np.ascontiguousarray(X_scaled))
+    y_tensor = torch.from_numpy(np.ascontiguousarray(y))
+
+    for _ in range(args.nn_epochs):
+        model.train()
+        order = torch.randperm(X_scaled.shape[0], generator=generator)
+        epoch_loss = 0.0
+        for start in range(0, X_scaled.shape[0], batch_size):
+            idx = order[start:start + batch_size]
+            xb = X_tensor[idx].to(device)
+            yb = y_tensor[idx].to(device)
+            optimizer.zero_grad(set_to_none=True)
+            pred = model(xb)
+            loss = loss_fn(pred, yb)
+            loss.backward()
+            optimizer.step()
+            epoch_loss += float(loss.detach().cpu()) * len(idx)
+        epoch_loss /= X_scaled.shape[0]
+        if epoch_loss < best_loss:
+            best_loss = epoch_loss
+            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+
+    if best_state is not None:
+        model.load_state_dict(best_state)
+    model.eval()
+    return {
+        "kind": "neural_net",
+        "model": model,
+        "x_mean": x_mean,
+        "x_scale": x_scale,
+        "train_loss": float(best_loss),
+        "hidden_layers": ",".join(str(x) for x in hidden_layers),
+    }
+
+
+@torch.no_grad()
+def predict_neural_regressor(bundle, X, device, batch_size):
+    X = np.asarray(X, dtype=np.float32)
+    X_scaled = (X - bundle["x_mean"]) / bundle["x_scale"]
+    model = bundle["model"].to(device)
+    model.eval()
+    preds = np.empty((X_scaled.shape[0], len(TARGET_NAMES)), dtype=np.float32)
+    for start in range(0, X_scaled.shape[0], batch_size):
+        stop = min(start + batch_size, X_scaled.shape[0])
+        xb = torch.from_numpy(np.ascontiguousarray(X_scaled[start:stop])).to(device)
+        preds[start:stop] = model(xb).cpu().numpy()
+    return preds
+
+
+def fit_svm_rbf_regressor(X, y, args):
+    X = np.asarray(X, dtype=np.float32)
+    y = np.asarray(y, dtype=np.float32)
+    cv = min(args.svm_cv, X.shape[0])
+    if cv < 2:
+        raise ValueError("At least two human samples are required for RBF-SVM CV.")
+    grid = GridSearchCV(
+        estimator=SVR(kernel="rbf"),
+        param_grid=SVM_RBF_PARAM_GRID,
+        cv=cv,
+        n_jobs=args.svm_jobs,
+    )
+    model = MultiOutputRegressor(grid)
+    model.fit(X, y)
+    return {"kind": "svm_rbf", "model": model, "cv": int(cv)}
+
+
+def fit_ml_model_set(X, y, args, device, plsr_model=None, plsr_components=None):
+    models = {}
+    if plsr_model is None:
+        plsr_model, plsr_components = fit_plsr_scorer(
+            X, y, n_components=args.pls_components
+        )
+    models["plsr"] = {
+        "kind": "plsr",
+        "model": plsr_model,
+        "components": int(plsr_components),
+    }
+    if not args.skip_nn:
+        models["neural_net"] = fit_neural_regressor(X, y, args, device)
+    if not args.skip_svm_rbf:
+        models["svm_rbf"] = fit_svm_rbf_regressor(X, y, args)
+    return models
+
+
+def predict_ml_model_set(models, X, args, device):
+    predictions = {}
+    for model_name, bundle in models.items():
+        if bundle["kind"] == "plsr":
+            pred = bundle["model"].predict(X)
+        elif bundle["kind"] == "neural_net":
+            pred = predict_neural_regressor(bundle, X, device, args.batch_size)
+        elif bundle["kind"] == "svm_rbf":
+            pred = bundle["model"].predict(np.asarray(X, dtype=np.float32))
+        else:
+            raise ValueError(f"Unknown model kind: {bundle['kind']}")
+        predictions[model_name] = np.asarray(pred, dtype=np.float32)
+    return predictions
+
+
+def ml_prediction_long_frame(
+    sample_ids,
+    models,
+    X,
+    args,
+    device,
+    input_space,
+    gene_space,
+    observed=None,
+):
+    frames = []
+    predictions = predict_ml_model_set(models, X, args, device)
+    for model_name, pred in predictions.items():
+        frame = pd.DataFrame(
+            {
+                "sample_id": np.asarray(sample_ids).astype(str),
+                "model_type": model_name,
+                "input_space": input_space,
+                "gene_space": gene_space,
+                "predicted_nas_score": pred[:, 0],
+                "predicted_fibrosis_stage": pred[:, 1],
+            }
+        )
+        if observed is not None:
+            frame.insert(1, "observed_nas_score", np.asarray(observed)[:, 0])
+            frame.insert(2, "observed_fibrosis_stage", np.asarray(observed)[:, 1])
+        frames.append(frame)
+    return pd.concat(frames, ignore_index=True)
+
+
+def summarize_ml_model_set(models, X, y, args, device, input_space, gene_space):
+    rows = []
+    predictions = predict_ml_model_set(models, X, args, device)
+    for model_name, pred in predictions.items():
+        row = {
+            "model_type": model_name,
+            "input_space": input_space,
+            "gene_space": gene_space,
+            "n_samples": int(X.shape[0]),
+            "n_features": int(X.shape[1]),
+            "train_rmse_nas": float(mean_squared_error(y[:, 0], pred[:, 0]) ** 0.5),
+            "train_rmse_fibrosis": float(mean_squared_error(y[:, 1], pred[:, 1]) ** 0.5),
+            "train_r2_nas": float(r2_score(y[:, 0], pred[:, 0])),
+            "train_r2_fibrosis": float(r2_score(y[:, 1], pred[:, 1])),
+        }
+        bundle = models[model_name]
+        if bundle["kind"] == "plsr":
+            row["pls_components_used"] = int(bundle["components"])
+        elif bundle["kind"] == "neural_net":
+            row["nn_hidden_layers"] = bundle["hidden_layers"]
+            row["nn_train_loss"] = float(bundle["train_loss"])
+            row["nn_epochs"] = int(args.nn_epochs)
+        elif bundle["kind"] == "svm_rbf":
+            estimators = bundle["model"].estimators_
+            row["svm_cv"] = int(bundle["cv"])
+            row["svm_best_params_nas"] = repr(estimators[0].best_params_)
+            row["svm_best_params_fibrosis"] = repr(estimators[1].best_params_)
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 def signature_regulon_frame():
@@ -495,6 +794,72 @@ def loocv_plsr_predictions(X, y, sample_ids, n_components, gene_space):
     return pd.DataFrame(rows)
 
 
+def loocv_ml_predictions(X, y, sample_ids, args, device, input_space, gene_space):
+    rows = []
+    sample_ids = np.asarray(sample_ids).astype(str)
+    X = np.asarray(X, dtype=np.float32)
+    y = np.asarray(y, dtype=np.float32)
+
+    for held_out in range(X.shape[0]):
+        train_mask = np.ones(X.shape[0], dtype=bool)
+        train_mask[held_out] = False
+        X_train = X[train_mask]
+        y_train = y[train_mask]
+        center = X_train.mean(axis=0, dtype=np.float64).astype(np.float32)
+        X_train_centered = X_train - center
+        X_test_centered = X[held_out:held_out + 1] - center
+
+        if not args.skip_nn:
+            nn_model = fit_neural_regressor(X_train_centered, y_train, args, device)
+            nn_pred = predict_neural_regressor(
+                nn_model, X_test_centered, device, args.batch_size
+            )[0]
+            rows.append(
+                {
+                    "sample_id": sample_ids[held_out],
+                    "model_type": "neural_net",
+                    "input_space": input_space,
+                    "gene_space": gene_space,
+                    "observed_nas_score": float(y[held_out, 0]),
+                    "observed_fibrosis_stage": float(y[held_out, 1]),
+                    "predicted_loocv_nas_score": float(nn_pred[0]),
+                    "predicted_loocv_fibrosis_stage": float(nn_pred[1]),
+                    "n_train_samples": int(train_mask.sum()),
+                    "n_features": int(X.shape[1]),
+                    "nn_hidden_layers": nn_model["hidden_layers"],
+                    "nn_train_loss": float(nn_model["train_loss"]),
+                }
+            )
+            del nn_model
+            if device.type == "cuda":
+                torch.cuda.empty_cache()
+
+        if not args.skip_svm_rbf:
+            svm_model = fit_svm_rbf_regressor(X_train_centered, y_train, args)
+            svm_pred = svm_model["model"].predict(X_test_centered)[0]
+            estimators = svm_model["model"].estimators_
+            rows.append(
+                {
+                    "sample_id": sample_ids[held_out],
+                    "model_type": "svm_rbf",
+                    "input_space": input_space,
+                    "gene_space": gene_space,
+                    "observed_nas_score": float(y[held_out, 0]),
+                    "observed_fibrosis_stage": float(y[held_out, 1]),
+                    "predicted_loocv_nas_score": float(svm_pred[0]),
+                    "predicted_loocv_fibrosis_stage": float(svm_pred[1]),
+                    "n_train_samples": int(train_mask.sum()),
+                    "n_features": int(X.shape[1]),
+                    "svm_cv": int(svm_model["cv"]),
+                    "svm_best_params_nas": repr(estimators[0].best_params_),
+                    "svm_best_params_fibrosis": repr(estimators[1].best_params_),
+                }
+            )
+            del svm_model
+
+    return pd.DataFrame(rows)
+
+
 def score_frame(sample_ids, predictions, prefix):
     return pd.DataFrame(
         {
@@ -525,8 +890,17 @@ def attach_mouse_metadata(score_df, mouse_subset):
     )
 
 
-def write_loocv_if_needed(args, out_dir, X_human, X_human_orth, y_human, human_ids):
-    if args.skip_loocv or args.fold != args.loocv_write_fold:
+def write_loocv_if_needed(
+    args,
+    out_dir,
+    X_human,
+    X_human_orth,
+    y_human,
+    human_ids,
+    Z_human=None,
+    device=None,
+):
+    if args.skip_loocv or active_model_index(args) != args.loocv_write_fold:
         return []
     all_genes = loocv_plsr_predictions(
         X_human, y_human, human_ids, args.pls_components, "all_genes"
@@ -538,7 +912,49 @@ def write_loocv_if_needed(args, out_dir, X_human, X_human_orth, y_human, human_i
     orth_path = out_dir / "human_govaere_plsr_loocv_orthologues.csv"
     all_genes.to_csv(all_path, index=False)
     orthologues.to_csv(orth_path, index=False)
-    return [all_path, orth_path]
+    output_paths = [all_path, orth_path]
+
+    if not args.skip_ml_loocv:
+        if Z_human is None or device is None:
+            raise ValueError("Z_human and device are required for ML LOOCV.")
+        ml_loocv = pd.concat(
+            [
+                loocv_ml_predictions(
+                    X_human,
+                    y_human,
+                    human_ids,
+                    args,
+                    device,
+                    input_space="human_expression",
+                    gene_space="all_human_genes",
+                ),
+                loocv_ml_predictions(
+                    X_human_orth,
+                    y_human,
+                    human_ids,
+                    args,
+                    device,
+                    input_space="human_orthologue_expression",
+                    gene_space="orthologues",
+                ),
+                loocv_ml_predictions(
+                    Z_human,
+                    y_human,
+                    human_ids,
+                    args,
+                    device,
+                    input_space="human_latent",
+                    gene_space="latent",
+                ),
+            ],
+            ignore_index=True,
+        )
+        if not ml_loocv.empty:
+            ml_path = out_dir / "human_govaere_ml_loocv_predictions.csv"
+            ml_loocv.to_csv(ml_path, index=False)
+            output_paths.append(ml_path)
+
+    return output_paths
 
 
 def signature_score_frame(sample_ids, activity, predictions):
@@ -621,12 +1037,36 @@ def score_raw_mouse_orthologue_subset(
     return plsr_out, sig_out
 
 
+def score_mouse_ml_subset(
+    mouse_subset,
+    input_matrix,
+    models,
+    args,
+    device,
+    input_space,
+    gene_space,
+):
+    out = ml_prediction_long_frame(
+        mouse_subset.index.to_numpy(),
+        models,
+        input_matrix,
+        args,
+        device,
+        input_space=input_space,
+        gene_space=gene_space,
+        observed=None,
+    )
+    return attach_mouse_metadata(out, mouse_subset)
+
+
 def write_outputs(args, out_dir):
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("Requested CUDA but torch.cuda.is_available() is False.")
 
     out_dir.mkdir(parents=True, exist_ok=True)
+    run_index = active_model_index(args)
+    run_suffix = output_suffix(args)
 
     human_X = np.load(require_file(args.preproc_dir / "human_test_X.npy"), mmap_mode="r")
     mouse_X = np.load(require_file(args.preproc_dir / "mouse_test_X.npy"), mmap_mode="r")
@@ -671,6 +1111,42 @@ def write_outputs(args, out_dir):
     )
     human_orth_pred = pls_orth.predict(X_human_orth_centered)
 
+    enc_h, enc_m, flow_m2h, dec_h = load_flowtransop_m2h(
+        args, human_X.shape[1], mouse_X.shape[1], device
+    )
+    Z_human = encode_human_latent(X_human, enc_h, device, args.batch_size)
+    human_latent_center = Z_human.mean(axis=0, dtype=np.float64).astype(np.float32)
+    Z_human_centered = Z_human - human_latent_center
+
+    latent_pls, used_latent_components = fit_plsr_scorer(
+        Z_human_centered, y_human, n_components=args.pls_components
+    )
+
+    expression_ml_models = fit_ml_model_set(
+        X_human_centered,
+        y_human,
+        args,
+        device,
+        plsr_model=pls,
+        plsr_components=used_components,
+    )
+    orthologue_ml_models = fit_ml_model_set(
+        X_human_orth_centered,
+        y_human,
+        args,
+        device,
+        plsr_model=pls_orth,
+        plsr_components=used_orth_components,
+    )
+    latent_ml_models = fit_ml_model_set(
+        Z_human_centered,
+        y_human,
+        args,
+        device,
+        plsr_model=latent_pls,
+        plsr_components=used_latent_components,
+    )
+
     loocv_paths = write_loocv_if_needed(
         args,
         out_dir,
@@ -678,10 +1154,8 @@ def write_outputs(args, out_dir):
         X_human_orth,
         y_human,
         human_subset.index.to_numpy(),
-    )
-
-    enc_m, flow_m2h, dec_h = load_flowtransop_m2h(
-        args.fold, human_X.shape[1], mouse_X.shape[1], args.model_dir, device
+        Z_human=Z_human,
+        device=device,
     )
 
     human_activity, signature_targets = signed_rank_signature_activity(X_human_centered, human_genes)
@@ -742,8 +1216,55 @@ def write_outputs(args, out_dir):
         how="left",
     )
 
+    human_ml_out = pd.concat(
+        [
+            ml_prediction_long_frame(
+                human_subset.index.to_numpy(),
+                expression_ml_models,
+                X_human_centered,
+                args,
+                device,
+                input_space="human_expression",
+                gene_space="all_human_genes",
+                observed=y_human,
+            ),
+            ml_prediction_long_frame(
+                human_subset.index.to_numpy(),
+                orthologue_ml_models,
+                X_human_orth_centered,
+                args,
+                device,
+                input_space="human_orthologue_expression",
+                gene_space="orthologues",
+                observed=y_human,
+            ),
+            ml_prediction_long_frame(
+                human_subset.index.to_numpy(),
+                latent_ml_models,
+                Z_human_centered,
+                args,
+                device,
+                input_space="human_latent",
+                gene_space="latent",
+                observed=y_human,
+            ),
+        ],
+        ignore_index=True,
+    )
+    human_ml_out.insert(1, "fold", run_index)
+    human_ml_out.insert(2, "model_source", args.model_source)
+    if args.model_source == "full_ensemble":
+        human_ml_out.insert(3, "ensemble_id", args.ensemble_id)
+    human_ml_out = human_ml_out.merge(
+        human_subset[["characteristics_ch1", "source_name_ch1", "title"]],
+        left_on="sample_id",
+        right_index=True,
+        how="left",
+    )
+
     translated_outputs = {}
     raw_orth_outputs = {}
+    mouse_ml_outputs = {}
     for cohort_name, subset in mouse_subsets.items():
         translated_outputs[cohort_name] = score_translated_mouse_subset(
             subset,
@@ -769,11 +1290,65 @@ def write_outputs(args, out_dir):
             pls_orth,
             orth_signature_calibration,
         )
+        mouse_rows = rows_for_ids(subset.index.tolist(), mouse_ids, "mouse")
+        translated, translated_latent = translate_mouse_to_human_and_latent(
+            mouse_X,
+            mouse_rows,
+            enc_m,
+            flow_m2h,
+            dec_h,
+            device,
+            args.batch_size,
+        )
+        translated_centered = translated - human_center
+        translated_latent_centered = translated_latent - human_latent_center
+        X_mouse_orth = load_rows(mouse_X, mouse_rows)[:, mouse_orth_idx]
+        X_mouse_orth_centered = X_mouse_orth - human_orth_center
+
+        cohort_ml = pd.concat(
+            [
+                score_mouse_ml_subset(
+                    subset,
+                    translated_centered,
+                    expression_ml_models,
+                    args,
+                    device,
+                    input_space="translated_human",
+                    gene_space="all_human_genes",
+                ),
+                score_mouse_ml_subset(
+                    subset,
+                    X_mouse_orth_centered,
+                    orthologue_ml_models,
+                    args,
+                    device,
+                    input_space="raw_mouse_orthologues",
+                    gene_space="orthologues",
+                ),
+                score_mouse_ml_subset(
+                    subset,
+                    translated_latent_centered,
+                    latent_ml_models,
+                    args,
+                    device,
+                    input_space="translated_human_latent",
+                    gene_space="latent",
+                ),
+            ],
+            ignore_index=True,
+        )
+        cohort_ml.insert(1, "fold", run_index)
+        cohort_ml.insert(2, "model_source", args.model_source)
+        if args.model_source == "full_ensemble":
+            cohort_ml.insert(3, "ensemble_id", args.ensemble_id)
+        mouse_ml_outputs[cohort_name] = cohort_ml
 
     summary = pd.DataFrame(
         [
             {
-                "fold": args.fold,
+                "fold": run_index,
+                "model_source": args.model_source,
+                "ensemble_id": int(args.ensemble_id) if args.model_source == "full_ensemble" else np.nan,
                 "human_gse": args.human_gse,
                 "mouse_gse": args.mouse_gse,
                 "mouse_cdaa_gse": args.mouse_cdaa_gse,
@@ -787,6 +1362,8 @@ def write_outputs(args, out_dir):
                 "pls_components_requested": int(args.pls_components),
                 "pls_components_used": int(used_components),
                 "orthologue_pls_components_used": int(used_orth_components),
+                "latent_features": int(Z_human_centered.shape[1]),
+                "latent_pls_components_used": int(used_latent_components),
                 "human_train_rmse_nas": float(mean_squared_error(y_human[:, 0], human_pred[:, 0]) ** 0.5),
                 "human_train_rmse_fibrosis": float(mean_squared_error(y_human[:, 1], human_pred[:, 1]) ** 0.5),
                 "human_train_r2_nas": float(r2_score(y_human[:, 0], human_pred[:, 0])),
@@ -810,14 +1387,52 @@ def write_outputs(args, out_dir):
         [signature_summary, orth_signature_summary],
         ignore_index=True,
     )
+    ml_summary = pd.concat(
+        [
+            summarize_ml_model_set(
+                expression_ml_models,
+                X_human_centered,
+                y_human,
+                args,
+                device,
+                "human_expression",
+                "all_human_genes",
+            ),
+            summarize_ml_model_set(
+                orthologue_ml_models,
+                X_human_orth_centered,
+                y_human,
+                args,
+                device,
+                "human_orthologue_expression",
+                "orthologues",
+            ),
+            summarize_ml_model_set(
+                latent_ml_models,
+                Z_human_centered,
+                y_human,
+                args,
+                device,
+                "human_latent",
+                "latent",
+            ),
+        ],
+        ignore_index=True,
+    )
+    ml_summary.insert(0, "fold", run_index)
+    ml_summary.insert(1, "model_source", args.model_source)
+    if args.model_source == "full_ensemble":
+        ml_summary.insert(2, "ensemble_id", args.ensemble_id)
 
-    suffix = f"fold{args.fold}"
+    suffix = run_suffix
     human_path = out_dir / f"human_govaere_plsr_scores_{suffix}.csv"
     human_orth_path = out_dir / f"human_govaere_orthologue_plsr_scores_{suffix}.csv"
     summary_path = out_dir / f"plsr_summary_{suffix}.csv"
     human_signature_path = out_dir / f"human_govaere_signature_scores_{suffix}.csv"
     human_orth_signature_path = out_dir / f"human_govaere_orthologue_signature_scores_{suffix}.csv"
     signature_summary_path = out_dir / f"signature_summary_{suffix}.csv"
+    human_ml_path = out_dir / f"human_govaere_ml_model_scores_{suffix}.csv"
+    ml_summary_path = out_dir / f"ml_model_summary_{suffix}.csv"
     signature_regulon_path = out_dir / "signature_regulon.csv"
     orthologue_map_path = out_dir / "orthologue_gene_map.csv"
 
@@ -827,6 +1442,8 @@ def write_outputs(args, out_dir):
     human_sig_out.to_csv(human_signature_path, index=False)
     human_orth_sig_out.to_csv(human_orth_signature_path, index=False)
     signature_summary.to_csv(signature_summary_path, index=False)
+    human_ml_out.to_csv(human_ml_path, index=False)
+    ml_summary.to_csv(ml_summary_path, index=False)
     signature_regulon_frame().to_csv(signature_regulon_path, index=False)
     pd.DataFrame(
         {
@@ -844,6 +1461,8 @@ def write_outputs(args, out_dir):
         human_signature_path,
         human_orth_signature_path,
         signature_summary_path,
+        human_ml_path,
+        ml_summary_path,
         signature_regulon_path,
         orthologue_map_path,
     ]
@@ -863,13 +1482,45 @@ def write_outputs(args, out_dir):
         sig_out.to_csv(sig_path, index=False)
         output_paths.extend([plsr_path, sig_path])
 
+    for cohort_name, ml_out in mouse_ml_outputs.items():
+        ml_path = out_dir / f"{cohort_name}_ml_model_scores_{suffix}.csv"
+        ml_out.to_csv(ml_path, index=False)
+        output_paths.append(ml_path)
+
     for path in output_paths:
         print(f"Wrote: {path}")
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--model_source",
+        choices=["fold", "full_ensemble"],
+        default="fold",
+        help="Use CV fold checkpoints or full-data ensemble checkpoints.",
+    )
     parser.add_argument("--fold", type=int, default=0)
+    parser.add_argument(
+        "--ensemble_id",
+        type=int,
+        default=0,
+        help="Full-data ensemble member to load when --model_source full_ensemble.",
+    )
+    parser.add_argument(
+        "--full_model_prefix",
+        default="full_ensemble",
+        help="Checkpoint prefix for full ensemble models, before _<ensemble_id>_normal.pt.",
+    )
+    parser.add_argument(
+        "--output_suffix",
+        default=None,
+        help="Override output filename suffix. Defaults to foldN or ensembleN.",
+    )
+    parser.add_argument(
+        "--ensemble_suffix_as_fold",
+        action="store_true",
+        help="In full_ensemble mode, write files as fold<ensemble_id> for compatibility with the plotting script.",
+    )
     parser.add_argument("--data_dir", type=Path, default=DATA_DIR)
     parser.add_argument("--splits_dir", type=Path, default=None)
     parser.add_argument("--preproc_dir", type=Path, default=None)
@@ -880,16 +1531,32 @@ def parse_args():
     parser.add_argument("--mouse_cdaa_gse", default=MOUSE_CDAA_GSE)
     parser.add_argument("--pls_components", type=int, default=PLS_COMPONENTS)
     parser.add_argument("--batch_size", type=int, default=256)
+    parser.add_argument("--skip_nn", action="store_true", help="Skip neural-network scorers.")
+    parser.add_argument("--skip_svm_rbf", action="store_true", help="Skip RBF-SVM scorers.")
+    parser.add_argument("--nn_epochs", type=int, default=200)
+    parser.add_argument("--nn_batch_size", type=int, default=32)
+    parser.add_argument("--nn_hidden_layers", default="128,64")
+    parser.add_argument("--nn_dropout", type=float, default=0.1)
+    parser.add_argument("--nn_lr", type=float, default=1e-3)
+    parser.add_argument("--nn_weight_decay", type=float, default=1e-3)
+    parser.add_argument("--nn_seed", type=int, default=42)
+    parser.add_argument("--svm_cv", type=int, default=5)
+    parser.add_argument("--svm_jobs", type=int, default=-1)
     parser.add_argument(
         "--skip_loocv",
         action="store_true",
-        help="Skip human PLSR leave-one-out predictions.",
+        help="Skip all human leave-one-out predictions.",
+    )
+    parser.add_argument(
+        "--skip_ml_loocv",
+        action="store_true",
+        help="Skip neural-network and RBF-SVM human leave-one-out predictions.",
     )
     parser.add_argument(
         "--loocv_write_fold",
         type=int,
         default=0,
-        help="Only this fold writes the non-fold-specific LOOCV CSVs.",
+        help="Only this fold/ensemble index writes the non-run-specific LOOCV CSVs.",
     )
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = parser.parse_args()
