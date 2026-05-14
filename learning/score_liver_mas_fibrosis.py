@@ -14,6 +14,9 @@ preprocessing scripts and the trained FlowTransOP fold checkpoints. It:
    and fibrosis scores with the same PLSR model.
 3. Scores the same human and translated-mouse matrices with signed,
    rank-based NAS/MAS and fibrosis gene signatures inspired by VIPER/aREA.
+4. Fits an additional orthologue-only human PLSR/aREA scorer and applies it
+   directly to untranslated mouse orthologue expression.
+5. Writes all-gene and orthologue-only human PLSR LOOCV predictions once.
 
 Outputs are CSVs under ../archs4/evaluation/liver_mas_fibrosis by default.
 """
@@ -39,6 +42,7 @@ OUT_DIR = DATA_DIR / "evaluation" / "liver_mas_fibrosis"
 
 HUMAN_GSE = "GSE135251"
 MOUSE_GSE = "GSE196908"
+MOUSE_CDAA_GSE = "GSE269493"
 PLS_COMPONENTS = 8
 
 SIGNATURES = {
@@ -174,6 +178,94 @@ def select_mouse_nlrp3(meta, mouse_test_ids, accession=MOUSE_GSE):
             "No mouse Nlrp3A350V samples found for Control chow+placebo or "
             "GS-444217 in the liver metadata."
         )
+    selected["dataset"] = "GSE196908_Nlrp3A350V_GS444217"
+    selected["mouse_model"] = "Nlrp3A350V"
+    selected["time_point"] = "not_specified"
+    return selected
+
+
+def _matrix_limited_mouse_meta(meta, mouse_test_ids):
+    ids_in_matrix = pd.Index(mouse_test_ids.astype(str))
+    return meta.loc[meta.index.intersection(ids_in_matrix)].copy()
+
+
+def _contains(series, pattern, regex=False):
+    return series.astype(str).str.contains(pattern, case=False, regex=regex, na=False)
+
+
+def select_mouse_gan_dio_lanifibranor(meta, mouse_test_ids, accession=MOUSE_GSE):
+    meta = _matrix_limited_mouse_meta(meta, mouse_test_ids)
+    chars = meta["characteristics_ch1"].astype(str)
+
+    gse = series_mask(meta, accession)
+    if not gse.any():
+        gse = pd.Series(True, index=meta.index)
+
+    vehicle_12 = _contains(chars, "DIO-NASH Vehicle 12w")
+    vehicle_8 = _contains(chars, "DIO-NASH Vehicle 8w")
+    lani_12 = _contains(chars, "Lanifibranor 12w")
+    lani_8 = _contains(chars, "Lanifibranor 8w")
+
+    selected = meta.loc[gse & (vehicle_12 | vehicle_8 | lani_12 | lani_8)].copy()
+    if selected.empty:
+        raise ValueError(
+            "No GAN DIO-NASH Lanifibranor samples found for DIO-NASH Vehicle "
+            "8w/12w or Lanifibranor 8w/12w."
+        )
+
+    sel_chars = selected["characteristics_ch1"].astype(str)
+    selected["dataset"] = "GSE196908_GAN_DIO_NASH_Lanifibranor"
+    selected["mouse_model"] = "GAN DIO-NASH"
+    selected["mouse_treatment"] = np.where(
+        _contains(sel_chars, "Lanifibranor"),
+        "Lanifibranor",
+        "DIO-NASH Vehicle",
+    )
+    selected["time_point"] = np.where(_contains(sel_chars, "12w"), "12w", "8w")
+    return selected
+
+
+def select_mouse_cdaa_lanifibranor(meta, mouse_test_ids, accession=MOUSE_CDAA_GSE):
+    meta = _matrix_limited_mouse_meta(meta, mouse_test_ids)
+    chars = meta["characteristics_ch1"].astype(str)
+
+    gse = series_mask(meta, accession)
+    vehicle = _contains(chars, "CDAA-HFD vehicle")
+    lanifibranor = _contains(chars, "CDAA-HFD Lanifibranor")
+    chow = _contains(chars, r"tissue:\s*Liver\s*,\s*treatment:\s*Chow\s*$", regex=True)
+
+    if gse.any():
+        mask = gse & (vehicle | lanifibranor | chow)
+    else:
+        disease_protocols = meta.loc[vehicle | lanifibranor, "extract_protocol_ch1"].astype(str)
+        if disease_protocols.empty:
+            raise ValueError(
+                "No CDAA-HFD vehicle or CDAA-HFD Lanifibranor samples found "
+                "to anchor the GSE269493 selector."
+            )
+        shared_protocol = disease_protocols.mode().iloc[0]
+        same_protocol = meta["extract_protocol_ch1"].astype(str) == shared_protocol
+        mask = vehicle | lanifibranor | (chow & same_protocol)
+
+    selected = meta.loc[mask].copy()
+    if selected.empty:
+        raise ValueError(
+            "No GSE269493 CDAA-HFD vehicle/Lanifibranor/Chow samples found."
+        )
+
+    sel_chars = selected["characteristics_ch1"].astype(str)
+    selected["dataset"] = "GSE269493_CDAA_HFD_Lanifibranor"
+    selected["mouse_model"] = np.where(_contains(sel_chars, "CDAA-HFD"), "CDAA-HFD", "Healthy")
+    selected["mouse_treatment"] = np.select(
+        [
+            _contains(sel_chars, "CDAA-HFD Lanifibranor"),
+            _contains(sel_chars, "CDAA-HFD vehicle"),
+            _contains(sel_chars, r"treatment:\s*Chow", regex=True),
+        ],
+        ["Lanifibranor", "CDAA-HFD vehicle", "Chow"],
+        default="unknown",
+    )
+    selected["time_point"] = "not_specified"
     return selected
 
 
@@ -322,13 +414,11 @@ def signed_rank_signature_activity(X_centered, human_genes):
     return pd.DataFrame(activity), pd.DataFrame(meta_rows)
 
 
-def calibrate_signature_predictions(human_activity, mouse_activity, y_human):
+def fit_signature_calibration(human_activity, y_human):
     specs = [
         ("MAS", "nas_score", 0),
         ("Fibrosis stage", "fibrosis_stage", 1),
     ]
-    human_pred = pd.DataFrame(index=human_activity.index)
-    mouse_pred = pd.DataFrame(index=mouse_activity.index)
     calib_rows = []
 
     for signature, score_name, target_col in specs:
@@ -341,10 +431,6 @@ def calibrate_signature_predictions(human_activity, mouse_activity, y_human):
             slope, intercept = np.polyfit(x, y, deg=1)
 
         human_yhat = intercept + slope * x
-        mouse_yhat = intercept + slope * mouse_activity[signature].to_numpy(dtype=np.float64)
-        human_pred[f"predicted_signature_{score_name}"] = human_yhat
-        mouse_pred[f"predicted_signature_{score_name}"] = mouse_yhat
-
         calib_rows.append(
             {
                 "signature": signature,
@@ -356,7 +442,57 @@ def calibrate_signature_predictions(human_activity, mouse_activity, y_human):
             }
         )
 
-    return human_pred, mouse_pred, pd.DataFrame(calib_rows)
+    return pd.DataFrame(calib_rows)
+
+
+def calibrate_signature_predictions(human_activity, mouse_activity, y_human):
+    calibration = fit_signature_calibration(human_activity, y_human)
+    human_pred = apply_signature_calibration(human_activity, calibration)
+    mouse_pred = apply_signature_calibration(mouse_activity, calibration)
+    return human_pred, mouse_pred, calibration
+
+
+def apply_signature_calibration(activity, calibration):
+    predictions = pd.DataFrame(index=activity.index)
+    for _, row in calibration.iterrows():
+        signature = row["signature"]
+        target_score = row["target_score"]
+        predictions[f"predicted_signature_{target_score}"] = (
+            float(row["calibration_intercept"])
+            + float(row["calibration_slope"]) * activity[signature].to_numpy(dtype=np.float64)
+        )
+    return predictions
+
+
+def loocv_plsr_predictions(X, y, sample_ids, n_components, gene_space):
+    rows = []
+    sample_ids = np.asarray(sample_ids).astype(str)
+    for held_out in range(X.shape[0]):
+        train_mask = np.ones(X.shape[0], dtype=bool)
+        train_mask[held_out] = False
+        X_train = X[train_mask]
+        y_train = y[train_mask]
+        center = X_train.mean(axis=0, dtype=np.float64).astype(np.float32)
+        X_train_centered = X_train - center
+        model, used_components = fit_plsr_scorer(
+            X_train_centered, y_train, n_components=n_components
+        )
+        pred = model.predict(X[held_out:held_out + 1] - center)[0]
+        rows.append(
+            {
+                "sample_id": sample_ids[held_out],
+                "gene_space": gene_space,
+                "observed_nas_score": float(y[held_out, 0]),
+                "observed_fibrosis_stage": float(y[held_out, 1]),
+                "predicted_loocv_nas_score": float(pred[0]),
+                "predicted_loocv_fibrosis_stage": float(pred[1]),
+                "n_train_samples": int(train_mask.sum()),
+                "n_features": int(X.shape[1]),
+                "pls_components_requested": int(n_components),
+                "pls_components_used": int(used_components),
+            }
+        )
+    return pd.DataFrame(rows)
 
 
 def score_frame(sample_ids, predictions, prefix):
@@ -367,6 +503,42 @@ def score_frame(sample_ids, predictions, prefix):
             f"predicted_{prefix}_fibrosis_stage": predictions[:, 1],
         }
     )
+
+
+def attach_mouse_metadata(score_df, mouse_subset):
+    optional_cols = [
+        "dataset",
+        "mouse_model",
+        "mouse_genotype",
+        "mouse_treatment",
+        "time_point",
+        "characteristics_ch1",
+        "source_name_ch1",
+        "title",
+    ]
+    cols = [col for col in optional_cols if col in mouse_subset.columns]
+    return score_df.merge(
+        mouse_subset[cols],
+        left_on="sample_id",
+        right_index=True,
+        how="left",
+    )
+
+
+def write_loocv_if_needed(args, out_dir, X_human, X_human_orth, y_human, human_ids):
+    if args.skip_loocv or args.fold != args.loocv_write_fold:
+        return []
+    all_genes = loocv_plsr_predictions(
+        X_human, y_human, human_ids, args.pls_components, "all_genes"
+    )
+    orthologues = loocv_plsr_predictions(
+        X_human_orth, y_human, human_ids, args.pls_components, "orthologues"
+    )
+    all_path = out_dir / "human_govaere_plsr_loocv_all_genes.csv"
+    orth_path = out_dir / "human_govaere_plsr_loocv_orthologues.csv"
+    all_genes.to_csv(all_path, index=False)
+    orthologues.to_csv(orth_path, index=False)
+    return [all_path, orth_path]
 
 
 def signature_score_frame(sample_ids, activity, predictions):
@@ -383,6 +555,72 @@ def signature_score_frame(sample_ids, activity, predictions):
     )
 
 
+def score_translated_mouse_subset(
+    mouse_subset,
+    mouse_X,
+    mouse_ids,
+    enc_m,
+    flow_m2h,
+    dec_h,
+    human_center,
+    pls,
+    signature_calibration,
+    human_genes,
+    device,
+    batch_size,
+):
+    mouse_rows = rows_for_ids(mouse_subset.index.tolist(), mouse_ids, "mouse")
+    translated = translate_mouse_to_human(
+        mouse_X, mouse_rows, enc_m, flow_m2h, dec_h, device, batch_size
+    )
+    centered = translated - human_center
+
+    plsr_pred = pls.predict(centered)
+    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, "translated_human_plsr")
+    plsr_out.insert(1, "input_space", "translated_human")
+    plsr_out.insert(2, "gene_space", "all_human_genes")
+    plsr_out = attach_mouse_metadata(plsr_out, mouse_subset)
+
+    activity, _ = signed_rank_signature_activity(centered, human_genes)
+    signature_pred = apply_signature_calibration(activity, signature_calibration)
+    sig_out = signature_score_frame(mouse_subset.index.to_numpy(), activity, signature_pred)
+    sig_out.insert(1, "input_space", "translated_human")
+    sig_out.insert(2, "gene_space", "all_human_genes")
+    sig_out = attach_mouse_metadata(sig_out, mouse_subset)
+
+    return plsr_out, sig_out
+
+
+def score_raw_mouse_orthologue_subset(
+    mouse_subset,
+    mouse_X,
+    mouse_ids,
+    mouse_orth_idx,
+    human_orth_genes,
+    human_orth_center,
+    pls_orth,
+    orth_signature_calibration,
+):
+    mouse_rows = rows_for_ids(mouse_subset.index.tolist(), mouse_ids, "mouse")
+    X_mouse_orth = load_rows(mouse_X, mouse_rows)[:, mouse_orth_idx]
+    X_mouse_orth_centered = X_mouse_orth - human_orth_center
+
+    plsr_pred = pls_orth.predict(X_mouse_orth_centered)
+    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, "raw_mouse_orthologue_plsr")
+    plsr_out.insert(1, "input_space", "raw_mouse_orthologues")
+    plsr_out.insert(2, "gene_space", "orthologues")
+    plsr_out = attach_mouse_metadata(plsr_out, mouse_subset)
+
+    activity, _ = signed_rank_signature_activity(X_mouse_orth, human_orth_genes)
+    signature_pred = apply_signature_calibration(activity, orth_signature_calibration)
+    sig_out = signature_score_frame(mouse_subset.index.to_numpy(), activity, signature_pred)
+    sig_out.insert(1, "input_space", "raw_mouse_orthologues")
+    sig_out.insert(2, "gene_space", "orthologues")
+    sig_out = attach_mouse_metadata(sig_out, mouse_subset)
+
+    return plsr_out, sig_out
+
+
 def write_outputs(args, out_dir):
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
@@ -393,6 +631,7 @@ def write_outputs(args, out_dir):
     human_X = np.load(require_file(args.preproc_dir / "human_test_X.npy"), mmap_mode="r")
     mouse_X = np.load(require_file(args.preproc_dir / "mouse_test_X.npy"), mmap_mode="r")
     human_genes = np.load(require_file(args.preproc_dir / "human_genes.npy"), allow_pickle=True)
+    mouse_genes = np.load(require_file(args.preproc_dir / "mouse_genes.npy"), allow_pickle=True)
     human_ids = np.load(require_file(args.preproc_dir / "human_test_sample_ids.npy"), allow_pickle=True)
     mouse_ids = np.load(require_file(args.preproc_dir / "mouse_test_sample_ids.npy"), allow_pickle=True)
 
@@ -400,34 +639,61 @@ def write_outputs(args, out_dir):
     mouse_meta = read_metadata(args.splits_dir / "liver_metadata_mouse.csv")
 
     human_subset = select_human_govaere(human_meta, human_ids, args.human_gse)
-    mouse_subset = select_mouse_nlrp3(mouse_meta, mouse_ids, args.mouse_gse)
+    nlrp3_subset = select_mouse_nlrp3(mouse_meta, mouse_ids, args.mouse_gse)
+    gan_lani_subset = select_mouse_gan_dio_lanifibranor(mouse_meta, mouse_ids, args.mouse_gse)
+    cdaa_lani_subset = select_mouse_cdaa_lanifibranor(mouse_meta, mouse_ids, args.mouse_cdaa_gse)
+    mouse_subsets = {
+        "mouse_nlrp3": nlrp3_subset,
+        "mouse_gan_dio_lanifibranor": gan_lani_subset,
+        "mouse_cdaa_lanifibranor": cdaa_lani_subset,
+    }
 
     human_rows = rows_for_ids(human_subset.index.tolist(), human_ids, "human")
-    mouse_rows = rows_for_ids(mouse_subset.index.tolist(), mouse_ids, "mouse")
 
     X_human = load_rows(human_X, human_rows)
     y_human = human_subset[["nas_score", "fibrosis_stage"]].to_numpy(dtype=np.float32)
     human_center = X_human.mean(axis=0, dtype=np.float64).astype(np.float32)
     X_human_centered = X_human - human_center
 
+    human_orth_idx, mouse_orth_idx = et.build_orthologue_map(human_genes, mouse_genes)
+    human_orth_genes = human_genes[human_orth_idx]
+    X_human_orth = X_human[:, human_orth_idx]
+    human_orth_center = X_human_orth.mean(axis=0, dtype=np.float64).astype(np.float32)
+    X_human_orth_centered = X_human_orth - human_orth_center
+
     pls, used_components = fit_plsr_scorer(
         X_human_centered, y_human, n_components=args.pls_components
     )
     human_pred = pls.predict(X_human_centered)
 
+    pls_orth, used_orth_components = fit_plsr_scorer(
+        X_human_orth_centered, y_human, n_components=args.pls_components
+    )
+    human_orth_pred = pls_orth.predict(X_human_orth_centered)
+
+    loocv_paths = write_loocv_if_needed(
+        args,
+        out_dir,
+        X_human,
+        X_human_orth,
+        y_human,
+        human_subset.index.to_numpy(),
+    )
+
     enc_m, flow_m2h, dec_h = load_flowtransop_m2h(
         args.fold, human_X.shape[1], mouse_X.shape[1], args.model_dir, device
     )
-    translated_mouse = translate_mouse_to_human(
-        mouse_X, mouse_rows, enc_m, flow_m2h, dec_h, device, args.batch_size
-    )
-    translated_mouse_centered = translated_mouse - human_center
-    mouse_pred = pls.predict(translated_mouse_centered)
 
     human_activity, signature_targets = signed_rank_signature_activity(X_human_centered, human_genes)
-    mouse_activity, _ = signed_rank_signature_activity(translated_mouse_centered, human_genes)
-    human_signature_pred, mouse_signature_pred, signature_calibration = calibrate_signature_predictions(
-        human_activity, mouse_activity, y_human
+    signature_calibration = fit_signature_calibration(human_activity, y_human)
+    human_signature_pred = apply_signature_calibration(human_activity, signature_calibration)
+
+    human_orth_activity, orth_signature_targets = signed_rank_signature_activity(
+        X_human_orth_centered, human_orth_genes
+    )
+    orth_signature_calibration = fit_signature_calibration(human_orth_activity, y_human)
+    human_orth_signature_pred = apply_signature_calibration(
+        human_orth_activity, orth_signature_calibration
     )
 
     human_out = score_frame(human_subset.index.to_numpy(), human_pred, "plsr")
@@ -440,11 +706,12 @@ def write_outputs(args, out_dir):
         how="left",
     )
 
-    mouse_out = score_frame(mouse_subset.index.to_numpy(), mouse_pred, "translated_human_plsr")
-    mouse_out.insert(1, "mouse_genotype", mouse_subset["mouse_genotype"].to_numpy())
-    mouse_out.insert(2, "mouse_treatment", mouse_subset["mouse_treatment"].to_numpy())
-    mouse_out = mouse_out.merge(
-        mouse_subset[["characteristics_ch1", "source_name_ch1", "title"]],
+    human_orth_out = score_frame(human_subset.index.to_numpy(), human_orth_pred, "orthologue_plsr")
+    human_orth_out.insert(1, "observed_nas_score", human_subset["nas_score"].to_numpy())
+    human_orth_out.insert(2, "observed_fibrosis_stage", human_subset["fibrosis_stage"].to_numpy())
+    human_orth_out.insert(3, "gene_space", "orthologues")
+    human_orth_out = human_orth_out.merge(
+        human_subset[["characteristics_ch1", "source_name_ch1", "title"]],
         left_on="sample_id",
         right_index=True,
         how="left",
@@ -462,17 +729,46 @@ def write_outputs(args, out_dir):
         how="left",
     )
 
-    mouse_sig_out = signature_score_frame(
-        mouse_subset.index.to_numpy(), mouse_activity, mouse_signature_pred
+    human_orth_sig_out = signature_score_frame(
+        human_subset.index.to_numpy(), human_orth_activity, human_orth_signature_pred
     )
-    mouse_sig_out.insert(1, "mouse_genotype", mouse_subset["mouse_genotype"].to_numpy())
-    mouse_sig_out.insert(2, "mouse_treatment", mouse_subset["mouse_treatment"].to_numpy())
-    mouse_sig_out = mouse_sig_out.merge(
-        mouse_subset[["characteristics_ch1", "source_name_ch1", "title"]],
+    human_orth_sig_out.insert(1, "observed_nas_score", human_subset["nas_score"].to_numpy())
+    human_orth_sig_out.insert(2, "observed_fibrosis_stage", human_subset["fibrosis_stage"].to_numpy())
+    human_orth_sig_out.insert(3, "gene_space", "orthologues")
+    human_orth_sig_out = human_orth_sig_out.merge(
+        human_subset[["characteristics_ch1", "source_name_ch1", "title"]],
         left_on="sample_id",
         right_index=True,
         how="left",
     )
+
+    translated_outputs = {}
+    raw_orth_outputs = {}
+    for cohort_name, subset in mouse_subsets.items():
+        translated_outputs[cohort_name] = score_translated_mouse_subset(
+            subset,
+            mouse_X,
+            mouse_ids,
+            enc_m,
+            flow_m2h,
+            dec_h,
+            human_center,
+            pls,
+            signature_calibration,
+            human_genes,
+            device,
+            args.batch_size,
+        )
+        raw_orth_outputs[cohort_name] = score_raw_mouse_orthologue_subset(
+            subset,
+            mouse_X,
+            mouse_ids,
+            mouse_orth_idx,
+            human_orth_genes,
+            human_orth_center,
+            pls_orth,
+            orth_signature_calibration,
+        )
 
     summary = pd.DataFrame(
         [
@@ -480,47 +776,95 @@ def write_outputs(args, out_dir):
                 "fold": args.fold,
                 "human_gse": args.human_gse,
                 "mouse_gse": args.mouse_gse,
+                "mouse_cdaa_gse": args.mouse_cdaa_gse,
                 "human_samples": int(len(human_subset)),
-                "mouse_samples": int(len(mouse_subset)),
+                "mouse_nlrp3_samples": int(len(nlrp3_subset)),
+                "mouse_gan_dio_lanifibranor_samples": int(len(gan_lani_subset)),
+                "mouse_cdaa_lanifibranor_samples": int(len(cdaa_lani_subset)),
                 "human_features": int(human_X.shape[1]),
                 "mouse_features": int(mouse_X.shape[1]),
+                "orthologue_features": int(len(human_orth_idx)),
                 "pls_components_requested": int(args.pls_components),
                 "pls_components_used": int(used_components),
+                "orthologue_pls_components_used": int(used_orth_components),
                 "human_train_rmse_nas": float(mean_squared_error(y_human[:, 0], human_pred[:, 0]) ** 0.5),
                 "human_train_rmse_fibrosis": float(mean_squared_error(y_human[:, 1], human_pred[:, 1]) ** 0.5),
                 "human_train_r2_nas": float(r2_score(y_human[:, 0], human_pred[:, 0])),
                 "human_train_r2_fibrosis": float(r2_score(y_human[:, 1], human_pred[:, 1])),
+                "human_orthologue_train_rmse_nas": float(mean_squared_error(y_human[:, 0], human_orth_pred[:, 0]) ** 0.5),
+                "human_orthologue_train_rmse_fibrosis": float(mean_squared_error(y_human[:, 1], human_orth_pred[:, 1]) ** 0.5),
+                "human_orthologue_train_r2_nas": float(r2_score(y_human[:, 0], human_orth_pred[:, 0])),
+                "human_orthologue_train_r2_fibrosis": float(r2_score(y_human[:, 1], human_orth_pred[:, 1])),
             }
         ]
     )
     signature_summary = signature_targets.merge(
         signature_calibration, left_on="signature", right_on="signature", how="left"
     )
+    signature_summary.insert(1, "gene_space", "all_human_genes")
+    orth_signature_summary = orth_signature_targets.merge(
+        orth_signature_calibration, left_on="signature", right_on="signature", how="left"
+    )
+    orth_signature_summary.insert(1, "gene_space", "orthologues")
+    signature_summary = pd.concat(
+        [signature_summary, orth_signature_summary],
+        ignore_index=True,
+    )
 
     suffix = f"fold{args.fold}"
     human_path = out_dir / f"human_govaere_plsr_scores_{suffix}.csv"
-    mouse_path = out_dir / f"mouse_nlrp3_translated_plsr_scores_{suffix}.csv"
+    human_orth_path = out_dir / f"human_govaere_orthologue_plsr_scores_{suffix}.csv"
     summary_path = out_dir / f"plsr_summary_{suffix}.csv"
     human_signature_path = out_dir / f"human_govaere_signature_scores_{suffix}.csv"
-    mouse_signature_path = out_dir / f"mouse_nlrp3_translated_signature_scores_{suffix}.csv"
+    human_orth_signature_path = out_dir / f"human_govaere_orthologue_signature_scores_{suffix}.csv"
     signature_summary_path = out_dir / f"signature_summary_{suffix}.csv"
     signature_regulon_path = out_dir / "signature_regulon.csv"
+    orthologue_map_path = out_dir / "orthologue_gene_map.csv"
 
     human_out.to_csv(human_path, index=False)
-    mouse_out.to_csv(mouse_path, index=False)
+    human_orth_out.to_csv(human_orth_path, index=False)
     summary.to_csv(summary_path, index=False)
     human_sig_out.to_csv(human_signature_path, index=False)
-    mouse_sig_out.to_csv(mouse_signature_path, index=False)
+    human_orth_sig_out.to_csv(human_orth_signature_path, index=False)
     signature_summary.to_csv(signature_summary_path, index=False)
     signature_regulon_frame().to_csv(signature_regulon_path, index=False)
+    pd.DataFrame(
+        {
+            "human_gene": human_genes[human_orth_idx].astype(str),
+            "mouse_gene": mouse_genes[mouse_orth_idx].astype(str),
+            "human_gene_index": human_orth_idx,
+            "mouse_gene_index": mouse_orth_idx,
+        }
+    ).to_csv(orthologue_map_path, index=False)
 
-    print(f"Wrote human Govaere scores: {human_path}")
-    print(f"Wrote translated mouse scores: {mouse_path}")
-    print(f"Wrote PLSR summary: {summary_path}")
-    print(f"Wrote human signature scores: {human_signature_path}")
-    print(f"Wrote translated mouse signature scores: {mouse_signature_path}")
-    print(f"Wrote signature summary: {signature_summary_path}")
-    print(f"Wrote signature regulon: {signature_regulon_path}")
+    output_paths = [
+        human_path,
+        human_orth_path,
+        summary_path,
+        human_signature_path,
+        human_orth_signature_path,
+        signature_summary_path,
+        signature_regulon_path,
+        orthologue_map_path,
+    ]
+    output_paths.extend(loocv_paths)
+
+    for cohort_name, (plsr_out, sig_out) in translated_outputs.items():
+        plsr_path = out_dir / f"{cohort_name}_translated_plsr_scores_{suffix}.csv"
+        sig_path = out_dir / f"{cohort_name}_translated_signature_scores_{suffix}.csv"
+        plsr_out.to_csv(plsr_path, index=False)
+        sig_out.to_csv(sig_path, index=False)
+        output_paths.extend([plsr_path, sig_path])
+
+    for cohort_name, (plsr_out, sig_out) in raw_orth_outputs.items():
+        plsr_path = out_dir / f"{cohort_name}_raw_orthologue_plsr_scores_{suffix}.csv"
+        sig_path = out_dir / f"{cohort_name}_raw_orthologue_signature_scores_{suffix}.csv"
+        plsr_out.to_csv(plsr_path, index=False)
+        sig_out.to_csv(sig_path, index=False)
+        output_paths.extend([plsr_path, sig_path])
+
+    for path in output_paths:
+        print(f"Wrote: {path}")
 
 
 def parse_args():
@@ -533,8 +877,20 @@ def parse_args():
     parser.add_argument("--out_dir", type=Path, default=None)
     parser.add_argument("--human_gse", default=HUMAN_GSE)
     parser.add_argument("--mouse_gse", default=MOUSE_GSE)
+    parser.add_argument("--mouse_cdaa_gse", default=MOUSE_CDAA_GSE)
     parser.add_argument("--pls_components", type=int, default=PLS_COMPONENTS)
     parser.add_argument("--batch_size", type=int, default=256)
+    parser.add_argument(
+        "--skip_loocv",
+        action="store_true",
+        help="Skip human PLSR leave-one-out predictions.",
+    )
+    parser.add_argument(
+        "--loocv_write_fold",
+        type=int,
+        default=0,
+        help="Only this fold writes the non-fold-specific LOOCV CSVs.",
+    )
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = parser.parse_args()
 

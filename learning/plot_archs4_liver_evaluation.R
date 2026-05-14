@@ -273,6 +273,15 @@ expr_centroid <- read_folded("^liver_centroid_expression_fold[0-9]+\\.csv$") %>%
     feature_set = recode(feature_set, all_target_genes = "All target genes", orthologues = "Orthologues", latent = "Latent"),
     feature_set = factor(feature_set, levels = c("Orthologues", "All target genes", "Latent"))
   )
+reconstruction <- read_folded("^liver_reconstruction_fold[0-9]+\\.csv$") %>%
+  fmt_model(c("FlowTransOP", "permuted_both"))
+if (nrow(reconstruction) > 0) {
+  reconstruction <- reconstruction %>%
+    mutate(
+      species = str_to_title(species),
+      species = factor(species, levels = c("Human", "Mouse"))
+    )
+}
 
 if (nrow(cycle_ps) == 0) {
   stop("No liver cycle CSVs found in ", eval_dir)
@@ -323,6 +332,53 @@ p_cycle <- ggplot(cycle_perf, aes(model_label, value, fill = model_type)) +
   coord_cartesian(clip = "off") +
   theme_archs4(15)
 save_both(p_cycle, "liver_cycle_consistency_boxplots", 14, 10.5)
+
+if (nrow(reconstruction) > 0) {
+  reconstruction_perf <- reconstruction %>%
+    filter(model_type %in% plot_model_levels) %>%
+    select(fold, species, model_type, model_label, pearson_mu, pearson_var) %>%
+    pivot_longer(c(pearson_mu, pearson_var),
+                 names_to = "metric_raw", values_to = "value") %>%
+    mutate(
+      metric = recode(metric_raw,
+        pearson_mu = "Mean reconstruction Pearson",
+        pearson_var = "Variance reconstruction Pearson"
+      ),
+      metric = factor(metric, levels = c(
+        "Mean reconstruction Pearson", "Variance reconstruction Pearson"
+      )),
+      model_type = factor(model_type, levels = plot_model_levels),
+      model_label = factor(model_labels[as.character(model_type)], levels = model_labels[plot_model_levels]),
+      lower_better = FALSE
+    ) %>%
+    select(-metric_raw)
+  reconstruction_stats <- paired_stats(reconstruction_perf, c("species", "metric"), "permuted_both")
+  reconstruction_labels <- single_ref_labels(reconstruction_perf, c("species", "metric"), "permuted_both")
+  write_csv(reconstruction_perf, file.path(out_dir, "liver_reconstruction_plot_values.csv"))
+  write_csv(reconstruction_stats, file.path(out_dir, "liver_reconstruction_paired_wilcoxon_stats.csv"))
+
+  p_reconstruction <- ggplot(reconstruction_perf, aes(model_label, value, fill = model_type)) +
+    geom_hline(yintercept = 0, linewidth = 0.25, color = "grey70") +
+    geom_boxplot(width = 0.62, outlier.shape = NA, alpha = 0.86, color = "grey20") +
+    geom_point(position = position_jitter(width = 0.08, height = 0, seed = 60),
+               size = 1.7, alpha = 0.78, color = "grey15") +
+    geom_text(data = reconstruction_labels, aes(model_label, y, label = stars),
+              inherit.aes = FALSE, vjust = -0.15, size = 5.2, color = "grey20") +
+    facet_grid(metric ~ species, scales = "free_y") +
+    scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels]) +
+    scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
+    labs(
+      title = "External Liver Test: Reconstruction",
+      subtitle = "Direct Gaussian reconstruction metrics on held-out liver samples",
+      x = NULL,
+      y = "Metric value",
+      fill = NULL,
+      caption = "Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
+    ) +
+    coord_cartesian(clip = "off") +
+    theme_archs4(12)
+  save_both(p_reconstruction, "liver_reconstruction_evaluation_boxplots", 13, 10.5)
+}
 
 if (nrow(orth_ps) > 0) {
   orth_sample_perf <- orth_ps %>%
