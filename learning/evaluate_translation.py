@@ -27,8 +27,10 @@ Convention for ablation modes (cycle consistency only):
   - In human cycle (home=human)  : enc_h, dec_h are permuted, flows normal
   - In mouse cycle (through=human): both flows are permuted, enc_m/dec_m normal
 
-For orthologue eval and MMD, modes are simpler combinations of the
-3 component-stages used (encoder, flow, decoder).
+For orthologue eval, a species permutation always means that species'
+encoder, outbound flow, and decoder are taken from the permuted model:
+  - permuted_human: enc_h, flow_h2m, dec_h are permuted where present
+  - permuted_mouse: enc_m, flow_m2h, dec_m are permuted where present
 """
 import argparse
 from pathlib import Path
@@ -364,13 +366,13 @@ def orthologue_eval(comp, fold, device, log):
         'FlowTransOP':    (n['enc_h'], n['flow_h2m'], n['dec_m']),
         'permuted_both':  (p['enc_h'], p['flow_h2m'], p['dec_m']),
         'permuted_human': (p['enc_h'], p['flow_h2m'], n['dec_m']),  # source side broken
-        'permuted_mouse': (n['enc_h'], p['flow_h2m'], p['dec_m']),  # target side broken
+        'permuted_mouse': (n['enc_h'], n['flow_h2m'], p['dec_m']),  # target decoder broken
     }
     modes_m2h = {
         'FlowTransOP':    (n['enc_m'], n['flow_m2h'], n['dec_h']),
         'permuted_both':  (p['enc_m'], p['flow_m2h'], p['dec_h']),
         'permuted_mouse': (p['enc_m'], p['flow_m2h'], n['dec_h']),  # source side broken
-        'permuted_human': (n['enc_m'], p['flow_m2h'], p['dec_h']),  # target side broken
+        'permuted_human': (n['enc_m'], n['flow_m2h'], p['dec_h']),  # target decoder broken
     }
 
     # Pre-gather original val data restricted to orthologue genes (used as comparison vector)

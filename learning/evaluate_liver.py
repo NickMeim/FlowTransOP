@@ -538,8 +538,7 @@ def expression_mmd_liver(comp, fold, device, max_n, bs, seed, log,
     log(f"  baseline liver orthologue MMD={baseline_mmd:.6f}")
 
 
-def expression_centroid_liver(comp, fold, device, max_n, bs, seed, k, log,
-                              background_repeats=10, background_samples=1000):
+def expression_centroid_liver(comp, fold, device, max_n, bs, seed, k, log):
     log("\n=== Liver expression centroid/neighborhood diagnostics ===")
     h_genes = et.load_genes("human")
     m_genes = et.load_genes("mouse")
@@ -579,36 +578,6 @@ def expression_centroid_liver(comp, fold, device, max_n, bs, seed, k, log,
             )
             row.update(nearest_target_summary(pred, target, k=k))
             rows.append(row)
-        for repeat in range(background_repeats):
-            bg_rows = background_rows(comp["train_m"], background_samples, rng)
-            bg_all = gather_rows(comp["train_m"], bg_rows, cols=None, bs=bs)
-            bg_orth = bg_all[:, m_idx]
-            for feature_set, pred, target_liver, bg in [
-                ("all_target_genes", pred_all, target_mouse_all, bg_all),
-                ("orthologues", pred_all[:, m_idx], target_mouse_orth, bg_orth),
-            ]:
-                if mode == "FlowTransOP":
-                    row = centroid_row(
-                        target_liver, bg, fold, "h2m", "target_liver",
-                        "expression", feature_set,
-                        "real_target_liver_vs_random_non_liver_target"
-                    )
-                    row.update({
-                        "random_repeat": repeat,
-                        "background_n": int(bg.shape[0]),
-                    })
-                    row.update(nearest_target_summary(target_liver, bg, k=k))
-                    rows.append(row)
-                row = centroid_row(
-                    pred, bg, fold, "h2m", mode, "expression", feature_set,
-                    "translated_liver_source_vs_random_non_liver_target"
-                )
-                row.update({
-                    "random_repeat": repeat,
-                    "background_n": int(bg.shape[0]),
-                })
-                row.update(nearest_target_summary(pred, bg, k=k))
-                rows.append(row)
         del pred_all
 
     target_human_all = gather_rows(comp["val_h"], h_rows, cols=None, bs=bs)
@@ -625,36 +594,6 @@ def expression_centroid_liver(comp, fold, device, max_n, bs, seed, k, log,
             )
             row.update(nearest_target_summary(pred, target, k=k))
             rows.append(row)
-        for repeat in range(background_repeats):
-            bg_rows = background_rows(comp["train_h"], background_samples, rng)
-            bg_all = gather_rows(comp["train_h"], bg_rows, cols=None, bs=bs)
-            bg_orth = bg_all[:, h_idx]
-            for feature_set, pred, target_liver, bg in [
-                ("all_target_genes", pred_all, target_human_all, bg_all),
-                ("orthologues", pred_all[:, h_idx], target_human_orth, bg_orth),
-            ]:
-                if mode == "FlowTransOP":
-                    row = centroid_row(
-                        target_liver, bg, fold, "m2h", "target_liver",
-                        "expression", feature_set,
-                        "real_target_liver_vs_random_non_liver_target"
-                    )
-                    row.update({
-                        "random_repeat": repeat,
-                        "background_n": int(bg.shape[0]),
-                    })
-                    row.update(nearest_target_summary(target_liver, bg, k=k))
-                    rows.append(row)
-                row = centroid_row(
-                    pred, bg, fold, "m2h", mode, "expression", feature_set,
-                    "translated_liver_source_vs_random_non_liver_target"
-                )
-                row.update({
-                    "random_repeat": repeat,
-                    "background_n": int(bg.shape[0]),
-                })
-                row.update(nearest_target_summary(pred, bg, k=k))
-                rows.append(row)
         del pred_all
 
     pd.DataFrame(rows).to_csv(
@@ -688,9 +627,7 @@ def evaluate_fold(args, device, log):
     if not args.skip_liver_centroids:
         expression_centroid_liver(
             comp, args.fold, device, args.max_liver_centroid_samples,
-            args.batch_size, args.seed, args.nearest_k, log,
-            background_repeats=args.background_repeats,
-            background_samples=args.background_samples
+            args.batch_size, args.seed, args.nearest_k, log
         )
 
 

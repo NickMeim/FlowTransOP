@@ -16,7 +16,8 @@ dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 unlink(file.path(out_dir, "cycle_pergene_fold_summary.csv"))
 
 model_levels <- c("FlowTransOP", "permuted_mouse", "permuted_human", "permuted_both")
-baseline_levels <- setdiff(model_levels, "FlowTransOP")
+plot_model_levels <- c("FlowTransOP", "permuted_both")
+baseline_levels <- setdiff(plot_model_levels, "FlowTransOP")
 model_labels <- c(
   FlowTransOP = "FlowTransOP",
   permuted_mouse = "Permuted mouse",
@@ -328,21 +329,22 @@ if (nrow(performance) == 0) {
 }
 
 cycle_plot_data <- cycle_performance %>%
-  filter(!is.na(score), !is.na(model_label)) %>%
+  filter(!is.na(score), !is.na(model_label), model_type %in% plot_model_levels) %>%
   mutate(
     species = factor(species, levels = c("Human", "Mouse")),
     metric = factor(metric, levels = unique(metric[order(metric_order, metric)])),
-    model_type = factor(model_type, levels = model_levels),
-    model_label = factor(model_label, levels = model_labels[model_levels])
+    model_type = factor(model_type, levels = plot_model_levels),
+    model_label = factor(model_label, levels = model_labels[plot_model_levels])
   )
 
 orth_plot_data <- orth_performance %>%
-  filter(!is.na(score), !is.na(model_label)) %>%
+  filter(!is.na(score), !is.na(model_label), model_type %in% plot_model_levels, metric_order == 4) %>%
   mutate(
-    species = factor(species, levels = c("Human", "Mouse")),
+    direction = factor(str_remove(as.character(metric), "^Orthologue\n"),
+                       levels = c("Mouse to human", "Human to mouse")),
     metric = factor(metric, levels = unique(metric[order(metric_order, metric)])),
-    model_type = factor(model_type, levels = model_levels),
-    model_label = factor(model_label, levels = model_labels[model_levels])
+    model_type = factor(model_type, levels = plot_model_levels),
+    model_label = factor(model_label, levels = model_labels[plot_model_levels])
   )
 
 stats_by_panel <- performance %>%
@@ -378,7 +380,7 @@ cycle_stats_labels <- stats_by_panel %>%
   ungroup()
 
 orth_stats_labels <- stats_by_panel %>%
-  filter(family == "Orthologue-mediated", !is.na(p_adj_holm)) %>%
+  filter(family == "Orthologue-mediated", metric_order == 4, !is.na(p_adj_holm)) %>%
   left_join(
     orth_plot_data %>%
       group_by(family, metric, metric_order, species) %>%
@@ -388,6 +390,8 @@ orth_stats_labels <- stats_by_panel %>%
   group_by(family, metric, metric_order, species) %>%
   arrange(baseline, .by_group = TRUE) %>%
   mutate(
+    direction = factor(str_remove(as.character(metric), "^Orthologue\n"),
+                       levels = c("Mouse to human", "Human to mouse")),
     n_refs = n(),
     xmin = match(model_labels["FlowTransOP"], levels(orth_plot_data$model_label)),
     xmax = match(as.character(baseline_label), levels(orth_plot_data$model_label)),
@@ -470,27 +474,27 @@ p_main <- ggplot(cycle_plot_data, aes(x = model_label, y = score, fill = as.char
     color = "grey20"
   ) +
   facet_grid(metric ~ species, scales = "free_y") +
-  scale_fill_manual(values = model_cols, breaks = model_levels, labels = model_labels[model_levels], drop = FALSE) +
+  scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels], drop = FALSE) +
   scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5, expand = expansion(mult = c(0.06, 0.20))) +
   labs(
     title = "ARCHS4 FlowTransOP Cycle Consistency",
-    subtitle = "All permutation ablations are shown; through-species-only permutations can preserve the home-space encoder/decoder reconstruction path",
+    subtitle = "Permuted-both baseline shown for the permutation comparison",
     x = NULL,
     y = "Pearson correlation",
     fill = NULL,
     caption = paste(caption, "Significance: * p <= 0.05, ** p <= 0.01, *** p <= 0.001; ns otherwise.")
   ) +
-  theme_bw(base_size = 13) +
+  theme_bw(base_size = 16) +
   theme(
-    plot.title = element_text(face = "bold", size = 17),
-    plot.subtitle = element_text(size = 12, color = "grey30"),
-    plot.caption = element_text(hjust = 0, size = 9.5, color = "grey35"),
+    plot.title = element_text(face = "bold", size = 21),
+    plot.subtitle = element_text(size = 15, color = "grey30"),
+    plot.caption = element_text(hjust = 0, size = 11, color = "grey35"),
     panel.grid.minor = element_blank(),
     strip.background = element_rect(fill = "grey92", color = "grey70"),
-    strip.text = element_text(face = "bold", size = 13),
-    axis.title = element_text(size = 15),
-    axis.text = element_text(size = 12),
-    axis.text.x = element_text(angle = 30, hjust = 1, size = 12),
+    strip.text = element_text(face = "bold", size = 16),
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 15),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 15),
     legend.position = "bottom",
     plot.margin = margin(8, 22, 8, 8)
   )
@@ -545,34 +549,34 @@ if (nrow(orth_plot_data) > 0) {
       size = 5,
       color = "grey20"
     ) +
-    facet_grid(metric ~ species, scales = "free_y") +
-    scale_fill_manual(values = model_cols, breaks = model_levels, labels = model_labels[model_levels], drop = FALSE) +
+    facet_wrap(~ direction, nrow = 1, scales = "free_y") +
+    scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels], drop = FALSE) +
     scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5) +
     labs(
       title = "ARCHS4 FlowTransOP Orthologue-Mediated Evaluation",
-      subtitle = "All permutation ablations are shown; partial source/target permutations isolate one component and may not fully destroy orthologue signal",
+      subtitle = "Per-sample orthologue correlation by translation direction",
       x = NULL,
       y = "Pearson correlation",
       fill = NULL,
-      caption = "Statistics: paired one-sided Wilcoxon signed-rank tests on fold-level scores, testing higher FlowTransOP performance; Holm-adjusted within panel. * p <= 0.05, ** p <= 0.01, *** p <= 0.001; ns otherwise."
+      caption = "Statistics: paired one-sided Wilcoxon signed-rank tests comparing FlowTransOP with permuted both; Holm-adjusted within panel. * p <= 0.05, ** p <= 0.01, *** p <= 0.001; ns otherwise."
     ) +
     coord_cartesian(clip = "off") +
-    theme_bw(base_size = 12) +
+    theme_bw(base_size = 14) +
     theme(
-      plot.title = element_text(face = "bold", size = 15),
-      plot.subtitle = element_text(size = 10, color = "grey30"),
-      plot.caption = element_text(hjust = 0, size = 8, color = "grey35"),
+      plot.title = element_text(face = "bold", size = 18),
+      plot.subtitle = element_text(size = 13, color = "grey30"),
+      plot.caption = element_text(hjust = 0, size = 10, color = "grey35"),
       panel.grid.minor = element_blank(),
       strip.background = element_rect(fill = "grey92", color = "grey70"),
-      strip.text = element_text(face = "bold"),
-      axis.title = element_text(size = 13.7),
-      axis.text = element_text(size = 11.1),
-      axis.text.x = element_text(angle = 30, hjust = 1, size = 11.1),
+      strip.text = element_text(face = "bold", size = 13.5),
+      axis.title = element_text(size = 15.5),
+      axis.text = element_text(size = 12.5),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 12.5),
       legend.position = "bottom",
       plot.margin = margin(8, 22, 8, 8)
     )
-  ggsave(file.path(out_dir, "orthologue_evaluation_boxplots.png"), p_orth, width = 11, height = 5.5, dpi = 300)
-  ggsave(file.path(out_dir, "orthologue_evaluation_boxplots.pdf"), p_orth, width = 11, height = 5.5)
+  ggsave(file.path(out_dir, "orthologue_evaluation_boxplots.png"), p_orth, width = 10.5, height = 5.4, dpi = 300)
+  ggsave(file.path(out_dir, "orthologue_evaluation_boxplots.pdf"), p_orth, width = 10.5, height = 5.4)
 }
 
 if (nrow(mmd) > 0) {
@@ -688,7 +692,7 @@ if (nrow(mmd) > 0) {
       plot.caption = element_text(hjust = 0, size = 8, color = "grey35"),
       axis.title = element_text(size = 13.7),
       axis.text = element_text(size = 11.1),
-      axis.text.x = element_text(angle = 25, hjust = 1, size = 11.1),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 11.1),
       legend.position = "bottom",
       plot.margin = margin(8, 22, 8, 8)
     )
@@ -697,7 +701,7 @@ if (nrow(mmd) > 0) {
 }
 
 if (nrow(expression_mmd) > 0) {
-  expr_levels <- c("validation_orthologues", "FlowTransOP", "permuted_human", "permuted_mouse", "permuted_both")
+  expr_levels <- c("validation_orthologues", "FlowTransOP", "permuted_both")
   expr_plot_data <- expression_mmd %>%
     filter(model_type %in% expr_levels) %>%
     mutate(
@@ -708,11 +712,10 @@ if (nrow(expression_mmd) > 0) {
     )
 
   expr_stats <- expr_plot_data %>%
+    filter(model_type %in% plot_model_levels) %>%
     group_by(direction, species, feature_set) %>%
     group_modify(~ {
-      available <- as.character(unique(.x$model_type))
-      baselines <- setdiff(intersect(expr_levels, available), "FlowTransOP")
-      paired_wilcox_against_flow(.x, baselines = baselines, value_col = "mmd", lower_better = TRUE)
+      paired_wilcox_against_flow(.x, baselines = "permuted_both", value_col = "mmd", lower_better = TRUE)
     }) %>%
     ungroup() %>%
     mutate(
@@ -731,11 +734,8 @@ if (nrow(expression_mmd) > 0) {
     group_by(direction, species, feature_set) %>%
     arrange(baseline, .by_group = TRUE) %>%
     mutate(
-      xmin = match(model_labels["FlowTransOP"], model_labels[expr_levels]),
-      xmax = match(as.character(baseline_label), model_labels[expr_levels]),
-      y = y_max + (row_number() * 0.12 * pmax(y_max - y_min, 0.1)),
-      y_tip = y - 0.025 * pmax(y_max - y_min, 0.1),
-      xmid = (xmin + xmax) / 2,
+      model_label = factor(model_labels[baseline], levels = model_labels[expr_levels]),
+      y = y_max + 0.12 * pmax(y_max - y_min, 0.1),
       label = p_stars(p_adj_holm)
     ) %>%
     ungroup()
@@ -748,33 +748,12 @@ if (nrow(expression_mmd) > 0) {
       alpha = 0.8,
       color = "grey15"
     ) +
-    geom_segment(
-      data = expr_labels,
-      aes(x = xmin, xend = xmax, y = y, yend = y),
-      inherit.aes = FALSE,
-      linewidth = 0.35,
-      color = "grey25"
-    ) +
-    geom_segment(
-      data = expr_labels,
-      aes(x = xmin, xend = xmin, y = y, yend = y_tip),
-      inherit.aes = FALSE,
-      linewidth = 0.35,
-      color = "grey25"
-    ) +
-    geom_segment(
-      data = expr_labels,
-      aes(x = xmax, xend = xmax, y = y, yend = y_tip),
-      inherit.aes = FALSE,
-      linewidth = 0.35,
-      color = "grey25"
-    ) +
     geom_text(
       data = expr_labels,
-      aes(x = xmid, y = y, label = label),
+      aes(x = model_label, y = y, label = label),
       inherit.aes = FALSE,
       vjust = -0.15,
-      size = 4,
+      size = 4.7,
       color = "grey20"
     ) +
     facet_grid(feature_set ~ direction, scales = "free_y") +
@@ -786,7 +765,7 @@ if (nrow(expression_mmd) > 0) {
       x = NULL,
       y = expression(MMD^2),
       fill = NULL,
-      caption = "Validation orthologues is the same uncorrected source-vs-target validation baseline on matched orthologue genes; it is repeated in all-target-gene panels only as a visual reference. Statistics compare FlowTransOP to each available baseline within panel using paired Wilcoxon tests with Holm correction."
+      caption = "Validation orthologues is the same uncorrected source-vs-target validation baseline on matched orthologue genes; it is repeated in all-target-gene panels only as a visual reference. Statistics compare FlowTransOP to permuted both only."
     ) +
     coord_cartesian(clip = "off") +
     theme_bw(base_size = 12) +
@@ -799,7 +778,7 @@ if (nrow(expression_mmd) > 0) {
       strip.text = element_text(face = "bold", size = 12),
       axis.title = element_text(size = 13.7),
       axis.text = element_text(size = 11.1),
-      axis.text.x = element_text(angle = 30, hjust = 1, size = 11.1),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 11.1),
       legend.position = "bottom",
       plot.margin = margin(8, 26, 8, 8)
     )

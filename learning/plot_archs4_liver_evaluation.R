@@ -17,13 +17,19 @@ unlink(file.path(out_dir, c(
   "liver_expression_centroid_similarity.pdf",
   "liver_expression_centroid_specificity.png",
   "liver_expression_centroid_specificity.pdf",
+  "liver_expression_centroid_specificity_values.csv",
+  "liver_expression_centroid_specificity_all_genes.png",
+  "liver_expression_centroid_specificity_all_genes.pdf",
+  "liver_expression_centroid_specificity_orthologues.png",
+  "liver_expression_centroid_specificity_orthologues.pdf",
   "liver_expression_mmd_specificity.png",
   "liver_expression_mmd_specificity.pdf"
 )))
 
 model_levels <- c("FlowTransOP", "permuted_mouse", "permuted_human", "permuted_both")
-expr_levels <- c("liver_test_orthologues", model_levels)
-background_levels <- c("target_liver", "target_liver_permuted_space", model_levels)
+plot_model_levels <- c("FlowTransOP", "permuted_both")
+expr_levels <- c("liver_test_orthologues", plot_model_levels)
+background_levels <- c("target_liver", plot_model_levels)
 model_labels <- c(
   liver_test_orthologues = "Liver test orthologues",
   target_liver = "Real target liver",
@@ -228,7 +234,7 @@ theme_archs4 <- function(base_size = 12) {
       strip.text = element_text(face = "bold"),
       axis.title = element_text(size = base_size * 1.3),
       axis.text = element_text(size = base_size * 1.05),
-      axis.text.x = element_text(angle = 28, hjust = 1),
+      axis.text.x = element_text(angle = 0, hjust = 0.5),
       legend.position = "bottom",
       plot.margin = margin(8, 24, 8, 8)
     )
@@ -284,12 +290,15 @@ cycle_perf <- bind_rows(
     )) %>%
     select(-metric_raw)
 ) %>%
+  filter(model_type %in% plot_model_levels) %>%
   mutate(
+    model_type = factor(model_type, levels = plot_model_levels),
+    model_label = factor(model_labels[as.character(model_type)], levels = model_labels[plot_model_levels]),
     metric = factor(metric, levels = c("Per-sample", "Gene-marginal mean", "Gene-marginal variance")),
     lower_better = FALSE
   )
-cycle_stats <- paired_stats(cycle_perf, c("species", "metric"), setdiff(model_levels, "FlowTransOP"))
-cycle_labels <- bracket_labels(cycle_perf, c("species", "metric"), setdiff(model_levels, "FlowTransOP"))
+cycle_stats <- paired_stats(cycle_perf, c("species", "metric"), "permuted_both")
+cycle_labels <- single_ref_labels(cycle_perf, c("species", "metric"), "permuted_both")
 write_csv(cycle_perf, file.path(out_dir, "liver_cycle_plot_values.csv"))
 write_csv(cycle_stats, file.path(out_dir, "liver_cycle_paired_wilcoxon_stats.csv"))
 
@@ -298,9 +307,10 @@ p_cycle <- ggplot(cycle_perf, aes(model_label, value, fill = model_type)) +
   geom_boxplot(width = 0.62, outlier.shape = NA, alpha = 0.86, color = "grey20") +
   geom_point(position = position_jitter(width = 0.08, height = 0, seed = 61),
              size = 1.7, alpha = 0.78, color = "grey15") +
-  add_brackets(cycle_labels) +
+  geom_text(data = cycle_labels, aes(model_label, y, label = stars),
+            inherit.aes = FALSE, vjust = -0.15, size = 5.8, color = "grey20") +
   facet_grid(metric ~ species, scales = "free_y") +
-  scale_fill_manual(values = model_cols, breaks = model_levels, labels = model_labels[model_levels]) +
+  scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels]) +
   scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5, expand = expansion(mult = c(0.08, 0.18))) +
   labs(
     title = "External Liver Test: Cycle Consistency",
@@ -308,16 +318,21 @@ p_cycle <- ggplot(cycle_perf, aes(model_label, value, fill = model_type)) +
     x = NULL,
     y = "Pearson correlation",
     fill = NULL,
-    caption = "Statistics compare FlowTransOP to each permutation using paired one-sided Wilcoxon tests across folds with Holm correction."
+    caption = "Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
   ) +
   coord_cartesian(clip = "off") +
-  theme_archs4(12)
+  theme_archs4(15)
 save_both(p_cycle, "liver_cycle_consistency_boxplots", 14, 10.5)
 
 if (nrow(orth_ps) > 0) {
   orth_sample_perf <- orth_ps %>%
     group_by(fold, direction, model_type, model_label) %>%
     summarise(value = mean(pearson, na.rm = TRUE), .groups = "drop") %>%
+    filter(model_type %in% plot_model_levels) %>%
+    mutate(
+      model_type = factor(model_type, levels = plot_model_levels),
+      model_label = factor(model_labels[as.character(model_type)], levels = model_labels[plot_model_levels])
+    ) %>%
     mutate(metric = "Per-sample orthologues", lower_better = FALSE)
   orth_gm_perf <- if (nrow(orth_summary) > 0) {
     orth_summary %>%
@@ -336,10 +351,10 @@ if (nrow(orth_ps) > 0) {
   } else {
     tibble()
   }
-  orth_perf <- bind_rows(orth_sample_perf, orth_gm_perf) %>%
-    mutate(metric = factor(metric, levels = c("Per-sample orthologues", "Gene-marginal mean", "Gene-marginal variance")))
-  orth_stats <- paired_stats(orth_perf, c("direction", "metric"), setdiff(model_levels, "FlowTransOP"))
-  orth_labels <- bracket_labels(orth_perf, c("direction", "metric"), setdiff(model_levels, "FlowTransOP"))
+  orth_perf <- orth_sample_perf %>%
+    mutate(metric = factor(metric, levels = "Per-sample orthologues"))
+  orth_stats <- paired_stats(orth_perf, c("direction", "metric"), "permuted_both")
+  orth_labels <- single_ref_labels(orth_perf, c("direction", "metric"), "permuted_both")
   write_csv(orth_perf, file.path(out_dir, "liver_orthologue_plot_values.csv"))
   write_csv(orth_stats, file.path(out_dir, "liver_orthologue_paired_wilcoxon_stats.csv"))
 
@@ -348,21 +363,22 @@ if (nrow(orth_ps) > 0) {
     geom_boxplot(width = 0.62, outlier.shape = NA, alpha = 0.86, color = "grey20") +
     geom_point(position = position_jitter(width = 0.08, height = 0, seed = 62),
                size = 1.8, alpha = 0.78, color = "grey15") +
-    add_brackets(orth_labels) +
-    facet_grid(metric ~ direction, scales = "free_y") +
-    scale_fill_manual(values = model_cols, breaks = model_levels, labels = model_labels[model_levels]) +
+    geom_text(data = orth_labels, aes(model_label, y, label = stars),
+              inherit.aes = FALSE, vjust = -0.15, size = 5.5, color = "grey20") +
+    facet_wrap(~ direction, nrow = 1, scales = "free_y") +
+    scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels]) +
     scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5, expand = expansion(mult = c(0.08, 0.18))) +
     labs(
       title = "External Liver Test: Orthologue-Mediated Translation",
-      subtitle = "Per-sample orthologue correlation plus gene-marginal orthologue distribution agreement when summary CSVs are available",
+      subtitle = "Per-sample orthologue correlation by translation direction",
       x = NULL,
       y = "Pearson correlation",
       fill = NULL,
-      caption = "Statistics compare FlowTransOP to each permutation using paired one-sided Wilcoxon tests across folds with Holm correction."
+      caption = "Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
     ) +
     coord_cartesian(clip = "off") +
-    theme_archs4(12)
-  save_both(p_orth, "liver_orthologue_evaluation_boxplots", 12.5, 8.5)
+    theme_archs4(14)
+  save_both(p_orth, "liver_orthologue_evaluation_boxplots", 10.5, 5.4)
 }
 
 if (nrow(latent_mmd) > 0) {
@@ -404,8 +420,8 @@ if (nrow(expr_mmd) > 0) {
     )) %>%
     fmt_model(expr_levels) %>%
     transmute(fold, direction, feature_set, model_type, model_label, value = mmd, lower_better = TRUE)
-  expr_mmd_stats <- paired_stats(expr_mmd_main, c("direction", "feature_set"), setdiff(model_levels, "FlowTransOP"))
-  expr_mmd_labels <- bracket_labels(expr_mmd_main, c("direction", "feature_set"), setdiff(model_levels, "FlowTransOP"))
+  expr_mmd_stats <- paired_stats(expr_mmd_main, c("direction", "feature_set"), "permuted_both")
+  expr_mmd_labels <- single_ref_labels(expr_mmd_main, c("direction", "feature_set"), "permuted_both")
   write_csv(expr_mmd_main, file.path(out_dir, "liver_expression_mmd_plot_values.csv"))
   write_csv(expr_mmd_stats, file.path(out_dir, "liver_expression_mmd_paired_wilcoxon_stats.csv"))
 
@@ -413,7 +429,8 @@ if (nrow(expr_mmd) > 0) {
     geom_boxplot(width = 0.62, outlier.shape = NA, alpha = 0.86, color = "grey20") +
     geom_point(position = position_jitter(width = 0.08, height = 0, seed = 64),
                size = 1.6, alpha = 0.78, color = "grey15") +
-    add_brackets(expr_mmd_labels) +
+    geom_text(data = expr_mmd_labels, aes(model_label, y, label = stars),
+              inherit.aes = FALSE, vjust = -0.15, size = 5, color = "grey20") +
     facet_grid(feature_set ~ direction, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = expr_levels, labels = model_labels[expr_levels]) +
     scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
@@ -423,7 +440,7 @@ if (nrow(expr_mmd) > 0) {
       x = NULL,
       y = expression(MMD^2),
       fill = NULL,
-      caption = "Statistics compare FlowTransOP to permutation baselines only, using paired one-sided Wilcoxon tests across folds with Holm correction."
+      caption = "Liver test orthologues are shown as a visual reference only. Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
     ) +
     coord_cartesian(clip = "off") +
     theme_archs4(10.8)
@@ -434,9 +451,9 @@ if (nrow(expr_mmd) > 0) {
       "real_target_liver_vs_random_non_liver_target",
       "translated_liver_source_vs_random_non_liver_target"
     )) %>%
-    fmt_model(c("target_liver", model_levels)) %>%
+    fmt_model(background_levels) %>%
     mutate(
-      model_label = factor(model_labels[model_type], levels = model_labels[c("target_liver", model_levels)])
+      model_label = factor(model_labels[model_type], levels = model_labels[background_levels])
     )
   if (nrow(expr_mmd_specificity) > 0) {
     write_csv(expr_mmd_specificity, file.path(out_dir, "liver_expression_mmd_specificity_values.csv"))
@@ -448,19 +465,20 @@ if (nrow(expr_mmd) > 0) {
         group_by(fold, direction, model_type, model_label) %>%
         summarise(value = mean(mmd, na.rm = TRUE), .groups = "drop") %>%
         mutate(lower_better = FALSE)
-      fs_labels <- bracket_labels(
+      fs_labels <- single_ref_labels(
         fs_stats_data,
         c("direction"),
-        setdiff(model_levels, "FlowTransOP")
+        "permuted_both"
       )
       p_expr_mmd_specificity <- ggplot(fs_data, aes(model_label, mmd, fill = model_type)) +
         geom_boxplot(width = 0.62, outlier.shape = NA, alpha = 0.86, color = "grey20") +
         geom_point(position = position_jitter(width = 0.08, height = 0, seed = 164),
                    size = 1.25, alpha = 0.58, color = "grey15") +
-        add_brackets(fs_labels) +
+        geom_text(data = fs_labels, aes(model_label, y, label = stars),
+                  inherit.aes = FALSE, vjust = -0.15, size = 4.8, color = "grey20") +
         facet_wrap(~ direction, scales = "free_y") +
-        scale_fill_manual(values = model_cols, breaks = c("target_liver", model_levels),
-                          labels = model_labels[c("target_liver", model_levels)]) +
+        scale_fill_manual(values = model_cols, breaks = background_levels,
+                          labels = model_labels[background_levels]) +
         scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
         labs(
           title = paste0("External Liver Test: Expression MMD Specificity (", fs, ")"),
@@ -582,23 +600,24 @@ if (nrow(expr_centroid_main) > 0) {
     mutate(feature_set = factor("All target genes", levels = levels(expr_centroid_main$feature_set)))
   expr_centroid_main <- bind_rows(expr_centroid_main, expr_centroid_extra_baseline) %>%
     mutate(feature_set = factor(feature_set, levels = c("Orthologues", "All target genes")))
-  expr_centroid_stats <- paired_stats(expr_centroid_main, c("direction", "feature_set", "metric"), setdiff(model_levels, "FlowTransOP"))
+  expr_centroid_stats <- paired_stats(expr_centroid_main, c("direction", "feature_set", "metric"), "permuted_both")
   write_csv(expr_centroid_main, file.path(out_dir, "liver_expression_centroid_plot_values.csv"))
   write_csv(expr_centroid_stats, file.path(out_dir, "liver_expression_centroid_paired_wilcoxon_stats.csv"))
 
   for (fs in levels(expr_centroid_main$feature_set)) {
     fs_data <- expr_centroid_main %>% filter(feature_set == fs)
     if (nrow(fs_data) == 0) next
-    fs_labels <- bracket_labels(
+    fs_labels <- single_ref_labels(
       fs_data %>% filter(model_type %in% model_levels),
       c("direction", "metric"),
-      setdiff(model_levels, "FlowTransOP")
+      "permuted_both"
     )
     p_expr_centroid <- ggplot(fs_data, aes(model_label, value, fill = model_type)) +
       geom_boxplot(width = 0.62, outlier.shape = NA, alpha = 0.86, color = "grey20") +
       geom_point(position = position_jitter(width = 0.08, height = 0, seed = 66),
                  size = 1.35, alpha = 0.74, color = "grey15") +
-      add_brackets(fs_labels) +
+      geom_text(data = fs_labels, aes(model_label, y, label = stars),
+                inherit.aes = FALSE, vjust = -0.15, size = 4.4, color = "grey20") +
       facet_grid(metric ~ direction, scales = "free_y") +
       scale_fill_manual(values = model_cols, breaks = expr_levels, labels = model_labels[expr_levels]) +
       scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
@@ -608,58 +627,12 @@ if (nrow(expr_centroid_main) > 0) {
         x = NULL,
         y = "Metric value",
         fill = NULL,
-        caption = "Statistics compare FlowTransOP to permutation baselines only, using paired one-sided Wilcoxon tests across folds with Holm correction."
+        caption = "Liver test orthologues are shown as a visual reference only. Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
       ) +
       coord_cartesian(clip = "off") +
       theme_archs4(9.5)
     stem <- if (fs == "All target genes") "liver_expression_centroid_similarity_all_genes" else "liver_expression_centroid_similarity_orthologues"
     save_both(p_expr_centroid, stem, 13.5, 11)
-  }
-}
-
-expr_centroid_specificity <- centroid_long(
-  expr_centroid,
-  c("target_liver", model_levels),
-  c("real_target_liver_vs_random_non_liver_target", "translated_liver_source_vs_random_non_liver_target")
-) %>%
-  filter(metric == "Centroid distance") %>%
-  mutate(
-    model_label = factor(model_labels[model_type], levels = model_labels[c("target_liver", model_levels)])
-  )
-if (nrow(expr_centroid_specificity) > 0) {
-  write_csv(expr_centroid_specificity, file.path(out_dir, "liver_expression_centroid_specificity_values.csv"))
-  for (fs in levels(expr_centroid_specificity$feature_set)) {
-    fs_data <- expr_centroid_specificity %>% filter(feature_set == fs)
-    if (nrow(fs_data) == 0) next
-    fs_labels <- bracket_labels(
-      fs_data %>%
-        filter(model_type %in% model_levels) %>%
-        group_by(fold, direction, metric, model_type, model_label) %>%
-        summarise(value = mean(value, na.rm = TRUE), lower_better = FALSE, .groups = "drop"),
-      c("direction", "metric"),
-      setdiff(model_levels, "FlowTransOP"),
-      lower_better = FALSE
-    )
-    p_expr_specificity <- ggplot(fs_data, aes(model_label, value, fill = model_type)) +
-      geom_boxplot(width = 0.62, outlier.shape = NA, alpha = 0.86, color = "grey20") +
-      geom_point(position = position_jitter(width = 0.08, height = 0, seed = 166),
-                 size = 1.25, alpha = 0.58, color = "grey15") +
-      add_brackets(fs_labels) +
-      facet_wrap(~ direction, scales = "free_y") +
-      scale_fill_manual(values = model_cols, breaks = c("target_liver", model_levels),
-                        labels = model_labels[c("target_liver", model_levels)]) +
-      scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
-      labs(
-        title = paste0("External Liver Test: Expression Centroid Specificity (", fs, ")"),
-        subtitle = "Centroid distance to random non-liver target samples. Real target liver is a visual baseline; larger distance means stronger separation from non-liver.",
-        x = NULL,
-        y = "Centroid distance to random non-liver target",
-        fill = NULL
-      ) +
-      coord_cartesian(clip = "off") +
-      theme_archs4(10.5)
-    stem <- if (fs == "All target genes") "liver_expression_centroid_specificity_all_genes" else "liver_expression_centroid_specificity_orthologues"
-    save_both(p_expr_specificity, stem, 12.5, 6.5)
   }
 }
 
