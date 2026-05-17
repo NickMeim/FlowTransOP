@@ -20,10 +20,18 @@ score_dir <- get_arg("--score_dir", file.path("..", "archs4", "evaluation", "liv
 score_dir <- normalizePath(score_dir, mustWork = TRUE)
 out_dir <- get_arg("--out_dir", file.path(score_dir, "figures"))
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+analysis_mode <- get_arg(
+  "--analysis_mode",
+  ifelse(grepl("full_ensemble|ensemble", basename(score_dir), ignore.case = TRUE), "ensemble", "fold")
+)
+replicate_singular <- ifelse(analysis_mode == "ensemble", "ensemble member", "fold")
+replicate_plural <- ifelse(analysis_mode == "ensemble", "ensemble members", "available folds")
+replicate_mean_label <- ifelse(analysis_mode == "ensemble", "Ensemble-mean", "Fold-mean")
+replicate_file_token <- ifelse(analysis_mode == "ensemble", "ensemble_mean", "fold_mean")
+plot_file_token <- ifelse(analysis_mode == "ensemble", "ensemble_members", "fold_mean")
 
 method_cols <- c(
   PLSR = "#2C7FB8",
-  `Neural net` = "#7B3294",
   `SVM RBF` = "#1B9E77",
   `Rank/aREA` = "#D95F02"
 )
@@ -60,8 +68,11 @@ gene_space_labels <- c(
 
 scoring_space_labels <- c(
   translated_human = "Translated all human genes",
+  translated_orthologues = "Translated orthologues",
   raw_mouse_orthologues = "Raw mouse orthologues",
-  translated_human_latent = "Translated latent"
+  translated_human_latent = "Translated latent",
+  decoder_sampled_translated_human = "Sampled translated all genes",
+  decoder_sampled_translated_orthologues = "Sampled translated orthologues"
 )
 
 human_ml_space_labels <- c(
@@ -72,8 +83,8 @@ human_ml_space_labels <- c(
 
 ml_method_labels <- c(
   plsr = "PLSR",
-  neural_net = "Neural net",
-  svm_rbf = "SVM RBF"
+  svm_rbf = "SVM RBF",
+  rank_area = "Rank/aREA"
 )
 
 dataset_specs <- list(
@@ -109,7 +120,20 @@ read_fold_files <- function(pattern) {
     stop("No files matched pattern: ", pattern, " in ", score_dir)
   }
   bind_rows(lapply(files, function(path) {
-    fold <- str_match(basename(path), "fold([0-9]+)\\.csv$")[, 2]
+    fold <- str_match(basename(path), "(?:fold|ensemble)([0-9]+)\\.csv$")[, 2]
+    read_csv(path, show_col_types = FALSE) %>%
+      mutate(
+        fold = as.integer(fold),
+        source_file = basename(path)
+      )
+  }))
+}
+
+read_optional_fold_files <- function(pattern) {
+  files <- list.files(score_dir, pattern = pattern, full.names = TRUE)
+  if (length(files) == 0) return(tibble())
+  bind_rows(lapply(files, function(path) {
+    fold <- str_match(basename(path), "(?:fold|ensemble)([0-9]+)\\.csv$")[, 2]
     read_csv(path, show_col_types = FALSE) %>%
       mutate(
         fold = as.integer(fold),
@@ -179,6 +203,7 @@ human_long_from_wide <- function(data, method_name, gene_space_name, nas_col, fi
 
 human_ml_long_from_csv <- function(data) {
   data %>%
+    filter(model_type != "neural_net") %>%
     transmute(
       sample_id,
       fold,
@@ -200,6 +225,7 @@ human_ml_long_from_csv <- function(data) {
 
 human_ml_loocv_long_from_csv <- function(data) {
   data %>%
+    filter(model_type != "neural_net") %>%
     transmute(
       sample_id,
       method = recode(model_type, !!!ml_method_labels),
@@ -246,6 +272,7 @@ mouse_long_from_wide <- function(data, method_name, cohort_name, nas_col, fib_co
 
 mouse_ml_long_from_csv <- function(data, cohort_name) {
   data %>%
+    filter(model_type != "neural_net") %>%
     filter(model_type != "plsr" | input_space == "translated_human_latent") %>%
     transmute(
       sample_id,
@@ -268,24 +295,50 @@ mouse_ml_long_from_csv <- function(data, cohort_name) {
     )
 }
 
+mouse_decoder_draws_long_from_csv <- function(data, cohort_name) {
+  if (nrow(data) == 0) return(tibble())
+  data %>%
+    filter(model_type != "neural_net") %>%
+    transmute(
+      sample_id,
+      fold,
+      cohort = cohort_name,
+      dataset,
+      mouse_model,
+      mouse_treatment,
+      time_point,
+      input_space,
+      gene_space,
+      decoder_sample,
+      method = recode(model_type, !!!ml_method_labels),
+      nas_score = predicted_nas_score,
+      fibrosis_stage = predicted_fibrosis_stage
+    ) %>%
+    pivot_longer(
+      cols = c(nas_score, fibrosis_stage),
+      names_to = "endpoint",
+      values_to = "score"
+    )
+}
+
 human_fold_long <- bind_rows(
   human_long_from_wide(
-    read_fold_files("^human_govaere_plsr_scores_fold[0-9]+\\.csv$"),
+    read_fold_files("^human_govaere_plsr_scores_(?:fold|ensemble)[0-9]+\\.csv$"),
     "PLSR", "all_human_genes",
     "predicted_plsr_nas_score", "predicted_plsr_fibrosis_stage"
   ),
   human_long_from_wide(
-    read_fold_files("^human_govaere_orthologue_plsr_scores_fold[0-9]+\\.csv$"),
+    read_fold_files("^human_govaere_orthologue_plsr_scores_(?:fold|ensemble)[0-9]+\\.csv$"),
     "PLSR", "orthologues",
     "predicted_orthologue_plsr_nas_score", "predicted_orthologue_plsr_fibrosis_stage"
   ),
   human_long_from_wide(
-    read_fold_files("^human_govaere_signature_scores_fold[0-9]+\\.csv$"),
+    read_fold_files("^human_govaere_signature_scores_(?:fold|ensemble)[0-9]+\\.csv$"),
     "Rank/aREA", "all_human_genes",
     "predicted_signature_nas_score", "predicted_signature_fibrosis_stage"
   ),
   human_long_from_wide(
-    read_fold_files("^human_govaere_orthologue_signature_scores_fold[0-9]+\\.csv$"),
+    read_fold_files("^human_govaere_orthologue_signature_scores_(?:fold|ensemble)[0-9]+\\.csv$"),
     "Rank/aREA", "orthologues",
     "predicted_signature_nas_score", "predicted_signature_fibrosis_stage"
   )
@@ -306,9 +359,10 @@ human_agg <- human_fold_long %>%
   )
 
 human_cor <- spearman_stats(human_agg, c("method", "gene_space", "endpoint"))
+human_plot_data <- if (analysis_mode == "ensemble") human_fold_long else human_agg
 
 human_ml_fold_long <- human_ml_long_from_csv(
-  read_fold_files("^human_govaere_ml_model_scores_fold[0-9]+\\.csv$")
+  read_fold_files("^human_govaere_ml_model_scores_(?:fold|ensemble)[0-9]+\\.csv$")
 ) %>%
   mutate(
     method = factor(method, levels = names(method_cols)),
@@ -331,6 +385,7 @@ human_ml_agg <- human_ml_fold_long %>%
   )
 
 human_ml_cor <- spearman_stats(human_ml_agg, c("method", "feature_space", "endpoint"))
+human_ml_plot_data <- if (analysis_mode == "ensemble") human_ml_fold_long else human_ml_agg
 
 loocv_all <- read_optional_csv(file.path(score_dir, "human_govaere_plsr_loocv_all_genes.csv"))
 loocv_orth <- read_optional_csv(file.path(score_dir, "human_govaere_plsr_loocv_orthologues.csv"))
@@ -369,36 +424,79 @@ if (nrow(ml_loocv_raw) > 0) {
 }
 
 read_mouse_cohort <- function(cohort_name) {
-  bind_rows(
+  translated_orth_plsr <- read_optional_fold_files(
+    paste0("^", cohort_name, "_translated_orthologue_plsr_scores_(?:fold|ensemble)[0-9]+\\.csv$")
+  )
+  translated_orth_sig <- read_optional_fold_files(
+    paste0("^", cohort_name, "_translated_orthologue_signature_scores_(?:fold|ensemble)[0-9]+\\.csv$")
+  )
+  decoder_draws <- read_optional_fold_files(
+    paste0("^", cohort_name, "_decoder_sampled_score_draws_(?:fold|ensemble)[0-9]+\\.csv$")
+  )
+
+  pieces <- list(
     mouse_long_from_wide(
-      read_fold_files(paste0("^", cohort_name, "_translated_plsr_scores_fold[0-9]+\\.csv$")),
+      read_fold_files(paste0("^", cohort_name, "_translated_plsr_scores_(?:fold|ensemble)[0-9]+\\.csv$")),
       "PLSR", cohort_name,
       "predicted_translated_human_plsr_nas_score",
       "predicted_translated_human_plsr_fibrosis_stage"
     ),
     mouse_long_from_wide(
-      read_fold_files(paste0("^", cohort_name, "_raw_orthologue_plsr_scores_fold[0-9]+\\.csv$")),
+      read_fold_files(paste0("^", cohort_name, "_raw_orthologue_plsr_scores_(?:fold|ensemble)[0-9]+\\.csv$")),
       "PLSR", cohort_name,
       "predicted_raw_mouse_orthologue_plsr_nas_score",
       "predicted_raw_mouse_orthologue_plsr_fibrosis_stage"
     ),
     mouse_long_from_wide(
-      read_fold_files(paste0("^", cohort_name, "_translated_signature_scores_fold[0-9]+\\.csv$")),
+      read_fold_files(paste0("^", cohort_name, "_translated_signature_scores_(?:fold|ensemble)[0-9]+\\.csv$")),
       "Rank/aREA", cohort_name,
       "predicted_signature_nas_score",
       "predicted_signature_fibrosis_stage"
     ),
     mouse_long_from_wide(
-      read_fold_files(paste0("^", cohort_name, "_raw_orthologue_signature_scores_fold[0-9]+\\.csv$")),
+      read_fold_files(paste0("^", cohort_name, "_raw_orthologue_signature_scores_(?:fold|ensemble)[0-9]+\\.csv$")),
       "Rank/aREA", cohort_name,
       "predicted_signature_nas_score",
       "predicted_signature_fibrosis_stage"
     ),
     mouse_ml_long_from_csv(
-      read_fold_files(paste0("^", cohort_name, "_ml_model_scores_fold[0-9]+\\.csv$")),
+      read_fold_files(paste0("^", cohort_name, "_ml_model_scores_(?:fold|ensemble)[0-9]+\\.csv$")),
       cohort_name
     )
   )
+
+  if (nrow(translated_orth_plsr) > 0) {
+    pieces <- c(
+      pieces,
+      list(mouse_long_from_wide(
+        translated_orth_plsr,
+        "PLSR", cohort_name,
+        "predicted_translated_orthologue_plsr_nas_score",
+        "predicted_translated_orthologue_plsr_fibrosis_stage"
+      ))
+    )
+  }
+
+  if (nrow(translated_orth_sig) > 0) {
+    pieces <- c(
+      pieces,
+      list(mouse_long_from_wide(
+        translated_orth_sig,
+        "Rank/aREA", cohort_name,
+        "predicted_signature_nas_score",
+        "predicted_signature_fibrosis_stage"
+      ))
+    )
+  }
+
+  if (nrow(decoder_draws) > 0) {
+    pieces <- c(
+      pieces,
+      list(mouse_decoder_draws_long_from_csv(decoder_draws, cohort_name))
+    )
+  }
+
+  bind_rows(pieces)
 }
 
 mouse_fold_long <- bind_rows(lapply(names(dataset_specs), read_mouse_cohort)) %>%
@@ -420,8 +518,11 @@ mouse_agg <- mouse_fold_long %>%
   summarise(
     score = mean(score, na.rm = TRUE),
     n_folds = n_distinct(fold),
+    n_decoder_samples = n_distinct(decoder_sample, na.rm = TRUE),
+    n_score_rows = n(),
     .groups = "drop"
   )
+mouse_plot_scores <- if (analysis_mode == "ensemble") mouse_fold_long else mouse_agg
 
 mouse_stats_for <- function(data, spec, score_col = "score") {
   levels_x <- spec$treatment_levels
@@ -469,9 +570,9 @@ mouse_stats <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
   mouse_stats_for(mouse_agg %>% filter(cohort == cohort_name), dataset_specs[[cohort_name]])
 }))
 
-mouse_deltas_for <- function(cohort_name) {
+mouse_deltas_for <- function(cohort_name, data = mouse_agg) {
   spec <- dataset_specs[[cohort_name]]
-  mouse_agg %>%
+  data %>%
     filter(cohort == cohort_name) %>%
     group_by(cohort, dataset, method, scoring_space, endpoint, time_point) %>%
     group_modify(~ {
@@ -492,6 +593,9 @@ mouse_deltas_for <- function(cohort_name) {
 }
 
 mouse_deltas <- bind_rows(lapply(names(dataset_specs), mouse_deltas_for))
+mouse_delta_plot_scores <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
+  mouse_deltas_for(cohort_name, mouse_plot_scores)
+}))
 
 mouse_delta_stats <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
   mouse_stats_for(
@@ -501,24 +605,51 @@ mouse_delta_stats <- bind_rows(lapply(names(dataset_specs), function(cohort_name
   )
 }))
 
-write_csv(human_agg, file.path(out_dir, "human_fold_mean_predictions.csv"))
-write_csv(human_cor, file.path(out_dir, "human_fold_mean_spearman_stats.csv"))
-write_csv(human_ml_agg, file.path(out_dir, "human_ml_fold_mean_predictions.csv"))
-write_csv(human_ml_cor, file.path(out_dir, "human_ml_fold_mean_spearman_stats.csv"))
+write_csv(human_agg, file.path(out_dir, paste0("human_", replicate_file_token, "_predictions.csv")))
+write_csv(human_cor, file.path(out_dir, paste0("human_", replicate_file_token, "_spearman_stats.csv")))
+write_csv(human_ml_agg, file.path(out_dir, paste0("human_ml_", replicate_file_token, "_predictions.csv")))
+write_csv(human_ml_cor, file.path(out_dir, paste0("human_ml_", replicate_file_token, "_spearman_stats.csv")))
 write_csv(human_loocv, file.path(out_dir, "human_plsr_loocv_predictions.csv"))
 write_csv(loocv_cor, file.path(out_dir, "human_plsr_loocv_spearman_stats.csv"))
 if (nrow(human_ml_loocv) > 0) {
   write_csv(human_ml_loocv, file.path(out_dir, "human_ml_loocv_predictions.csv"))
   write_csv(human_ml_loocv_cor, file.path(out_dir, "human_ml_loocv_spearman_stats.csv"))
 }
-write_csv(mouse_agg, file.path(out_dir, "mouse_fold_mean_scores.csv"))
+write_csv(mouse_agg, file.path(out_dir, paste0("mouse_", replicate_file_token, "_scores.csv")))
 write_csv(mouse_stats, file.path(out_dir, "mouse_treatment_wilcox_stats.csv"))
-write_csv(mouse_deltas, file.path(out_dir, "mouse_fold_mean_score_deltas.csv"))
+write_csv(mouse_deltas, file.path(out_dir, paste0("mouse_", replicate_file_token, "_score_deltas.csv")))
 write_csv(mouse_delta_stats, file.path(out_dir, "mouse_treatment_delta_wilcox_stats.csv"))
+write_csv(
+  mouse_agg %>% filter(grepl("^Sampled translated", as.character(scoring_space))),
+  file.path(out_dir, paste0("mouse_decoder_sampled_", replicate_file_token, "_scores.csv"))
+)
+if (analysis_mode == "ensemble") {
+  write_csv(human_plot_data, file.path(out_dir, "human_ensemble_member_predictions.csv"))
+  write_csv(human_ml_plot_data, file.path(out_dir, "human_ml_ensemble_member_predictions.csv"))
+  write_csv(mouse_plot_scores, file.path(out_dir, "mouse_ensemble_member_scores.csv"))
+  write_csv(mouse_delta_plot_scores, file.path(out_dir, "mouse_ensemble_member_score_deltas.csv"))
+  write_csv(
+    mouse_plot_scores %>% filter(grepl("^Sampled translated", as.character(scoring_space))),
+    file.path(out_dir, "mouse_decoder_sampled_ensemble_member_scores.csv")
+  )
+}
 
-p_human <- ggplot(human_agg, aes(x = observed, y = predicted, color = method)) +
+scatter_point_alpha <- ifelse(analysis_mode == "ensemble", 0.34, 0.82)
+scatter_point_size <- ifelse(analysis_mode == "ensemble", 1.45, 1.9)
+human_scatter_y <- ifelse(
+  analysis_mode == "ensemble",
+  "Predicted score from each ensemble member",
+  paste0(replicate_mean_label, " predicted score")
+)
+performance_subtitle <- ifelse(
+  analysis_mode == "ensemble",
+  "Points show individual ensemble-member predictions; correlations use ensemble-mean predictions per sample",
+  paste0("Predictions are averaged across ", replicate_plural, " before correlation testing")
+)
+
+p_human <- ggplot(human_plot_data, aes(x = observed, y = predicted, color = method)) +
   geom_abline(slope = 1, intercept = 0, linewidth = 0.45, linetype = "dashed", color = "grey45") +
-  geom_point(size = 1.9, alpha = 0.82) +
+  geom_point(size = scatter_point_size, alpha = scatter_point_alpha) +
   geom_smooth(method = "lm", se = FALSE, linewidth = 0.6, color = "grey20") +
   geom_text(
     data = human_cor,
@@ -534,9 +665,9 @@ p_human <- ggplot(human_agg, aes(x = observed, y = predicted, color = method)) +
   scale_color_manual(values = method_cols, guide = "none") +
   labs(
     x = "Observed human score",
-    y = "Fold-mean predicted score",
+    y = human_scatter_y,
     title = "Human Govaere score inference",
-    subtitle = "Predictions are averaged across available folds before correlation testing"
+    subtitle = performance_subtitle
   ) +
   theme_bw(base_size = 11) +
   theme(
@@ -546,14 +677,14 @@ p_human <- ggplot(human_agg, aes(x = observed, y = predicted, color = method)) +
     aspect.ratio = 0.95
   )
 
-ggsave(file.path(out_dir, "human_govaere_fold_mean_prediction_scatter.png"), p_human,
+ggsave(file.path(out_dir, paste0("human_govaere_", plot_file_token, "_prediction_scatter.png")), p_human,
        width = 13.2, height = 7.2, dpi = 300)
-ggsave(file.path(out_dir, "human_govaere_fold_mean_prediction_scatter.pdf"), p_human,
+ggsave(file.path(out_dir, paste0("human_govaere_", plot_file_token, "_prediction_scatter.pdf")), p_human,
        width = 13.2, height = 7.2, device = cairo_pdf)
 
-p_human_ml <- ggplot(human_ml_agg, aes(x = observed, y = predicted, color = method)) +
+p_human_ml <- ggplot(human_ml_plot_data, aes(x = observed, y = predicted, color = method)) +
   geom_abline(slope = 1, intercept = 0, linewidth = 0.45, linetype = "dashed", color = "grey45") +
-  geom_point(size = 1.75, alpha = 0.82) +
+  geom_point(size = scatter_point_size, alpha = scatter_point_alpha) +
   geom_smooth(method = "lm", se = FALSE, linewidth = 0.55, color = "grey20") +
   geom_text(
     data = human_ml_cor,
@@ -569,9 +700,13 @@ p_human_ml <- ggplot(human_ml_agg, aes(x = observed, y = predicted, color = meth
   scale_color_manual(values = method_cols, guide = "none") +
   labs(
     x = "Observed human score",
-    y = "Fold-mean predicted score",
+    y = human_scatter_y,
     title = "Human Govaere ML score inference",
-    subtitle = "PLSR, neural net, and RBF-SVM predictions are averaged across folds"
+    subtitle = ifelse(
+      analysis_mode == "ensemble",
+      "Points show individual ensemble-member predictions; correlations use ensemble-mean predictions per sample",
+      paste0("PLSR and RBF-SVM predictions are averaged across ", replicate_plural)
+    )
   ) +
   theme_bw(base_size = 10) +
   theme(
@@ -582,9 +717,9 @@ p_human_ml <- ggplot(human_ml_agg, aes(x = observed, y = predicted, color = meth
     strip.text.x = element_text(size = 8.5)
   )
 
-ggsave(file.path(out_dir, "human_govaere_ml_model_fold_mean_scatter.png"), p_human_ml,
+ggsave(file.path(out_dir, paste0("human_govaere_ml_model_", plot_file_token, "_scatter.png")), p_human_ml,
        width = 17.6, height = 7.6, dpi = 300)
-ggsave(file.path(out_dir, "human_govaere_ml_model_fold_mean_scatter.pdf"), p_human_ml,
+ggsave(file.path(out_dir, paste0("human_govaere_ml_model_", plot_file_token, "_scatter.pdf")), p_human_ml,
        width = 17.6, height = 7.6, device = cairo_pdf)
 
 p_loocv <- ggplot(human_loocv, aes(x = observed, y = predicted)) +
@@ -642,7 +777,7 @@ if (nrow(human_ml_loocv) > 0) {
       x = "Observed human score",
       y = "LOOCV predicted score",
       title = "Human Govaere ML leave-one-out performance",
-      subtitle = "Neural net and RBF-SVM models are trained without the held-out sample"
+      subtitle = "RBF-SVM models are trained without the held-out sample"
     ) +
     theme_bw(base_size = 10) +
     theme(
@@ -660,10 +795,14 @@ if (nrow(human_ml_loocv) > 0) {
 }
 
 plot_mouse_dataset_method <- function(cohort_name, method_name,
-                                      plot_source = mouse_agg,
+                                      plot_source = mouse_plot_scores,
                                       stat_source = mouse_stats,
                                       score_col = "score",
-                                      y_label = "Fold-mean inferred score",
+                                      y_label = ifelse(
+                                        analysis_mode == "ensemble",
+                                        "Inferred score from each ensemble member",
+                                        paste0(replicate_mean_label, " inferred score")
+                                      ),
                                       title_label = "score inference",
                                       file_suffix = "boxplots",
                                       subtitle_prefix = "Statistics compare") {
@@ -682,18 +821,34 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
     endpoint ~ scoring_space
   }
   subtitle_text <- paste0(subtitle_prefix, " ", spec$control, " vs ", spec$treatment,
-                          "; scores are averaged across available folds")
+                          "; scores are averaged across ", replicate_plural)
+  if (analysis_mode == "ensemble") {
+    subtitle_text <- paste0(
+      "Points show individual ensemble-member and decoder-sampled predictions where available; statistics use per-sample mean scores; ",
+      tolower(subtitle_prefix), " ", spec$control, " vs ", spec$treatment
+    )
+  }
   if (score_col == "score_delta") {
     subtitle_text <- paste0("Deltas are relative to ", spec$delta_baseline,
                             "; statistics compare ", spec$control, " vs ", spec$treatment,
-                            "; scores are averaged across available folds")
+                            "; scores are averaged across ", replicate_plural)
+    if (analysis_mode == "ensemble") {
+      subtitle_text <- paste0(
+        "Points show individual ensemble-member and decoder-sampled deltas relative to ", spec$delta_baseline,
+        "; statistics use per-sample mean scores; compare ",
+        spec$control, " vs ", spec$treatment
+      )
+    }
   }
+
+  mouse_point_alpha <- ifelse(analysis_mode == "ensemble", 0.24, 0.78)
+  mouse_point_size <- ifelse(analysis_mode == "ensemble", 1.15, 1.95)
 
   p <- ggplot(plot_data, aes(x = mouse_treatment, y = .data[[score_col]], fill = mouse_treatment)) +
     {if (score_col == "score_delta") geom_hline(yintercept = 0, linewidth = 0.35,
                                                 linetype = "dashed", color = "grey50")} +
     geom_boxplot(width = 0.58, outlier.shape = NA, alpha = 0.75, color = "grey25") +
-    geom_jitter(width = 0.12, size = 1.95, alpha = 0.86, color = "grey15") +
+    geom_jitter(width = 0.12, size = mouse_point_size, alpha = mouse_point_alpha, color = "grey15") +
     geom_segment(data = stat_data, aes(x = x_start, xend = x_end, y = y_bracket, yend = y_bracket),
                  inherit.aes = FALSE, linewidth = 0.35, color = "grey20") +
     geom_segment(data = stat_data, aes(x = x_start, xend = x_start, y = y_tip, yend = y_bracket),
@@ -722,7 +877,7 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
   suffix <- paste0(spec$file_slug, "_", str_replace_all(tolower(method_name), "[^a-z0-9]+", "_"), "_", file_suffix)
   n_facet_cols <- n_distinct(plot_data$scoring_space) *
     ifelse(n_distinct(plot_data$time_point) > 1, n_distinct(plot_data$time_point), 1)
-  width <- max(8.8, min(18, 2.8 * n_facet_cols + 3.2))
+  width <- max(8.8, min(24, 2.8 * n_facet_cols + 3.2))
   ggsave(file.path(out_dir, paste0(suffix, ".png")), p, width = width, height = 7.2, dpi = 300)
   ggsave(file.path(out_dir, paste0(suffix, ".pdf")), p, width = width, height = 7.2, device = cairo_pdf)
 }
@@ -733,10 +888,14 @@ for (cohort_name in names(dataset_specs)) {
     plot_mouse_dataset_method(
       cohort_name,
       method_name,
-      plot_source = mouse_deltas,
+      plot_source = mouse_delta_plot_scores,
       stat_source = mouse_delta_stats,
       score_col = "score_delta",
-      y_label = "Fold-mean score delta",
+      y_label = ifelse(
+        analysis_mode == "ensemble",
+        "Score delta from each ensemble member",
+        paste0(replicate_mean_label, " score delta")
+      ),
       title_label = "disease-score deltas",
       file_suffix = "delta_boxplots"
     )

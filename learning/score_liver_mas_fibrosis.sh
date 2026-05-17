@@ -16,7 +16,7 @@
 module load miniforge/24.3.0-0
 mamba activate nikos
 
-MODEL_SOURCE=${MODEL_SOURCE:-fold}
+MODEL_SOURCE=${MODEL_SOURCE:-full_ensemble}
 TASK_ID=${SLURM_ARRAY_TASK_ID:-0}
 
 if [[ "${MODEL_SOURCE}" == "full_ensemble" ]]; then

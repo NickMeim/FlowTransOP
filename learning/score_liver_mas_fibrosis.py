@@ -16,12 +16,16 @@ It:
 3. Scores the same human and translated-mouse matrices with signed,
    rank-based NAS/MAS and fibrosis gene signatures inspired by VIPER/aREA.
 4. Fits an additional orthologue-only human PLSR/aREA scorer and applies it
-   directly to untranslated mouse orthologue expression.
-5. Fits PLSR, neural-network, and RBF-SVM scorers in expression and latent
-   spaces and applies them to the matching mouse representations.
-6. Writes all-gene and orthologue-only human PLSR LOOCV predictions once,
-   plus neural-network and RBF-SVM LOOCV predictions for expression,
-   orthologue, and latent feature spaces.
+   directly to untranslated mouse orthologue expression and to translated,
+   corrected human orthologue expression.
+5. Fits PLSR and RBF-SVM scorers in expression and latent spaces and applies
+   them to the matching mouse representations.
+6. Optionally samples from the translated decoder Gaussian or NB distribution
+   to score reconstructed expression distributions instead of only decoder
+   means.
+7. Writes all-gene and orthologue-only human PLSR LOOCV predictions once,
+   plus RBF-SVM LOOCV predictions for expression, orthologue, and latent
+   feature spaces.
 
 Outputs are CSVs under ../archs4/evaluation/liver_mas_fibrosis by default.
 """
@@ -370,7 +374,7 @@ def encode_human_latent(human_matrix, enc_h, device, batch_size):
 
 
 @torch.no_grad()
-def translate_mouse_to_human_and_latent(
+def translate_mouse_to_human_distribution_and_latent(
     mouse_matrix,
     mouse_rows,
     enc_m,
@@ -381,6 +385,7 @@ def translate_mouse_to_human_and_latent(
 ):
     out_dim = int(dec_h.out_mu.out_features)
     translated = np.empty((len(mouse_rows), out_dim), dtype=np.float32)
+    translated_var = np.empty((len(mouse_rows), out_dim), dtype=np.float32)
     latents = []
     for start in range(0, len(mouse_rows), batch_size):
         stop = min(start + batch_size, len(mouse_rows))
@@ -388,10 +393,26 @@ def translate_mouse_to_human_and_latent(
         x = torch.from_numpy(np.ascontiguousarray(block)).to(device)
         z = enc_m(x)
         z_h = et.flow_step_n(flow_m2h, z)
-        mu, _ = dec_h(z_h)
+        mu, var = dec_h(z_h)
         translated[start:stop] = mu.cpu().numpy()
+        translated_var[start:stop] = var.cpu().numpy()
         latents.append(z_h.cpu().numpy())
     translated_latent = np.concatenate(latents, axis=0).astype(np.float32)
+    return translated, translated_var, translated_latent
+
+
+def translate_mouse_to_human_and_latent(
+    mouse_matrix,
+    mouse_rows,
+    enc_m,
+    flow_m2h,
+    dec_h,
+    device,
+    batch_size,
+):
+    translated, _, translated_latent = translate_mouse_to_human_distribution_and_latent(
+        mouse_matrix, mouse_rows, enc_m, flow_m2h, dec_h, device, batch_size
+    )
     return translated, translated_latent
 
 
@@ -412,114 +433,6 @@ def fit_plsr_scorer(X_centered, y, n_components):
     model = PLSRegression(n_components=max_components, scale=False)
     model.fit(X_centered, y)
     return model, max_components
-
-
-def parse_hidden_layers(hidden_layers):
-    layers = []
-    for token in str(hidden_layers).split(","):
-        token = token.strip()
-        if token:
-            layers.append(int(token))
-    if not layers:
-        raise ValueError("--nn_hidden_layers must contain at least one integer.")
-    return layers
-
-
-def build_feed_forward_regressor(input_dim, output_dim, hidden_layers, dropout):
-    layers = []
-    last_dim = input_dim
-    for hidden_dim in hidden_layers:
-        layers.extend(
-            [
-                torch.nn.Linear(last_dim, hidden_dim),
-                torch.nn.ReLU(),
-            ]
-        )
-        if dropout > 0:
-            layers.append(torch.nn.Dropout(dropout))
-        last_dim = hidden_dim
-    layers.append(torch.nn.Linear(last_dim, output_dim))
-    return torch.nn.Sequential(*layers)
-
-
-def fit_neural_regressor(X, y, args, device):
-    X = np.asarray(X, dtype=np.float32)
-    y = np.asarray(y, dtype=np.float32)
-    x_mean = X.mean(axis=0, dtype=np.float64).astype(np.float32)
-    x_scale = X.std(axis=0, dtype=np.float64).astype(np.float32)
-    x_scale[x_scale < 1e-6] = 1.0
-    X_scaled = (X - x_mean) / x_scale
-
-    hidden_layers = parse_hidden_layers(args.nn_hidden_layers)
-    torch.manual_seed(args.nn_seed)
-    if device.type == "cuda":
-        torch.cuda.manual_seed_all(args.nn_seed)
-
-    model = build_feed_forward_regressor(
-        X_scaled.shape[1],
-        y.shape[1],
-        hidden_layers,
-        args.nn_dropout,
-    ).to(device)
-    optimizer = torch.optim.AdamW(
-        model.parameters(),
-        lr=args.nn_lr,
-        weight_decay=args.nn_weight_decay,
-    )
-    loss_fn = torch.nn.MSELoss()
-    generator = torch.Generator(device="cpu")
-    generator.manual_seed(args.nn_seed)
-
-    best_loss = np.inf
-    best_state = None
-    batch_size = min(max(1, args.nn_batch_size), X_scaled.shape[0])
-    X_tensor = torch.from_numpy(np.ascontiguousarray(X_scaled))
-    y_tensor = torch.from_numpy(np.ascontiguousarray(y))
-
-    for _ in range(args.nn_epochs):
-        model.train()
-        order = torch.randperm(X_scaled.shape[0], generator=generator)
-        epoch_loss = 0.0
-        for start in range(0, X_scaled.shape[0], batch_size):
-            idx = order[start:start + batch_size]
-            xb = X_tensor[idx].to(device)
-            yb = y_tensor[idx].to(device)
-            optimizer.zero_grad(set_to_none=True)
-            pred = model(xb)
-            loss = loss_fn(pred, yb)
-            loss.backward()
-            optimizer.step()
-            epoch_loss += float(loss.detach().cpu()) * len(idx)
-        epoch_loss /= X_scaled.shape[0]
-        if epoch_loss < best_loss:
-            best_loss = epoch_loss
-            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
-
-    if best_state is not None:
-        model.load_state_dict(best_state)
-    model.eval()
-    return {
-        "kind": "neural_net",
-        "model": model,
-        "x_mean": x_mean,
-        "x_scale": x_scale,
-        "train_loss": float(best_loss),
-        "hidden_layers": ",".join(str(x) for x in hidden_layers),
-    }
-
-
-@torch.no_grad()
-def predict_neural_regressor(bundle, X, device, batch_size):
-    X = np.asarray(X, dtype=np.float32)
-    X_scaled = (X - bundle["x_mean"]) / bundle["x_scale"]
-    model = bundle["model"].to(device)
-    model.eval()
-    preds = np.empty((X_scaled.shape[0], len(TARGET_NAMES)), dtype=np.float32)
-    for start in range(0, X_scaled.shape[0], batch_size):
-        stop = min(start + batch_size, X_scaled.shape[0])
-        xb = torch.from_numpy(np.ascontiguousarray(X_scaled[start:stop])).to(device)
-        preds[start:stop] = model(xb).cpu().numpy()
-    return preds
 
 
 def fit_svm_rbf_regressor(X, y, args):
@@ -550,8 +463,6 @@ def fit_ml_model_set(X, y, args, device, plsr_model=None, plsr_components=None):
         "model": plsr_model,
         "components": int(plsr_components),
     }
-    if not args.skip_nn:
-        models["neural_net"] = fit_neural_regressor(X, y, args, device)
     if not args.skip_svm_rbf:
         models["svm_rbf"] = fit_svm_rbf_regressor(X, y, args)
     return models
@@ -562,8 +473,6 @@ def predict_ml_model_set(models, X, args, device):
     for model_name, bundle in models.items():
         if bundle["kind"] == "plsr":
             pred = bundle["model"].predict(X)
-        elif bundle["kind"] == "neural_net":
-            pred = predict_neural_regressor(bundle, X, device, args.batch_size)
         elif bundle["kind"] == "svm_rbf":
             pred = bundle["model"].predict(np.asarray(X, dtype=np.float32))
         else:
@@ -620,10 +529,6 @@ def summarize_ml_model_set(models, X, y, args, device, input_space, gene_space):
         bundle = models[model_name]
         if bundle["kind"] == "plsr":
             row["pls_components_used"] = int(bundle["components"])
-        elif bundle["kind"] == "neural_net":
-            row["nn_hidden_layers"] = bundle["hidden_layers"]
-            row["nn_train_loss"] = float(bundle["train_loss"])
-            row["nn_epochs"] = int(args.nn_epochs)
         elif bundle["kind"] == "svm_rbf":
             estimators = bundle["model"].estimators_
             row["svm_cv"] = int(bundle["cv"])
@@ -809,31 +714,6 @@ def loocv_ml_predictions(X, y, sample_ids, args, device, input_space, gene_space
         X_train_centered = X_train - center
         X_test_centered = X[held_out:held_out + 1] - center
 
-        if not args.skip_nn:
-            nn_model = fit_neural_regressor(X_train_centered, y_train, args, device)
-            nn_pred = predict_neural_regressor(
-                nn_model, X_test_centered, device, args.batch_size
-            )[0]
-            rows.append(
-                {
-                    "sample_id": sample_ids[held_out],
-                    "model_type": "neural_net",
-                    "input_space": input_space,
-                    "gene_space": gene_space,
-                    "observed_nas_score": float(y[held_out, 0]),
-                    "observed_fibrosis_stage": float(y[held_out, 1]),
-                    "predicted_loocv_nas_score": float(nn_pred[0]),
-                    "predicted_loocv_fibrosis_stage": float(nn_pred[1]),
-                    "n_train_samples": int(train_mask.sum()),
-                    "n_features": int(X.shape[1]),
-                    "nn_hidden_layers": nn_model["hidden_layers"],
-                    "nn_train_loss": float(nn_model["train_loss"]),
-                }
-            )
-            del nn_model
-            if device.type == "cuda":
-                torch.cuda.empty_cache()
-
         if not args.skip_svm_rbf:
             svm_model = fit_svm_rbf_regressor(X_train_centered, y_train, args)
             svm_pred = svm_model["model"].predict(X_test_centered)[0]
@@ -971,6 +851,258 @@ def signature_score_frame(sample_ids, activity, predictions):
     )
 
 
+def _stable_name_offset(name):
+    return sum((i + 1) * ord(ch) for i, ch in enumerate(str(name)))
+
+
+def score_prediction_frame(sample_ids, predictions, model_type, input_space, gene_space, decoder_sample=None):
+    out = pd.DataFrame(
+        {
+            "sample_id": np.asarray(sample_ids).astype(str),
+            "model_type": model_type,
+            "input_space": input_space,
+            "gene_space": gene_space,
+            "predicted_nas_score": np.asarray(predictions)[:, 0],
+            "predicted_fibrosis_stage": np.asarray(predictions)[:, 1],
+        }
+    )
+    if decoder_sample is not None:
+        out.insert(1, "decoder_sample", int(decoder_sample))
+    return out
+
+
+def signature_prediction_frame(
+    sample_ids,
+    activity,
+    predictions,
+    input_space,
+    gene_space,
+    decoder_sample=None,
+):
+    pred = np.column_stack(
+        [
+            predictions["predicted_signature_nas_score"].to_numpy(dtype=np.float32),
+            predictions["predicted_signature_fibrosis_stage"].to_numpy(dtype=np.float32),
+        ]
+    )
+    out = score_prediction_frame(
+        sample_ids,
+        pred,
+        "rank_area",
+        input_space,
+        gene_space,
+        decoder_sample=decoder_sample,
+    )
+    out["signature_mas_activity"] = activity["MAS"].to_numpy(dtype=np.float32)
+    out["signature_fibrosis_stage_activity"] = activity["Fibrosis stage"].to_numpy(dtype=np.float32)
+    return out
+
+
+def decoder_sample_rng(args, cohort_name):
+    seed = int(args.decoder_sample_seed)
+    seed += 1000003 * active_model_index(args)
+    seed += _stable_name_offset(cohort_name)
+    return np.random.default_rng(seed)
+
+
+def summarize_decoder_sample_scores(draws):
+    if draws.empty:
+        return draws.copy()
+
+    group_cols = ["sample_id", "model_type", "input_space", "gene_space"]
+    rows = []
+    for keys, group in draws.groupby(group_cols, sort=False):
+        row = dict(zip(group_cols, keys))
+        row["n_decoder_samples"] = int(group["decoder_sample"].nunique())
+        for score_col, prefix in [
+            ("predicted_nas_score", "predicted_nas_score"),
+            ("predicted_fibrosis_stage", "predicted_fibrosis_stage"),
+        ]:
+            values = group[score_col].to_numpy(dtype=np.float64)
+            row[f"{prefix}_mean"] = float(np.mean(values))
+            row[f"{prefix}_sd"] = float(np.std(values, ddof=1)) if len(values) > 1 else 0.0
+            row[f"{prefix}_q025"] = float(np.quantile(values, 0.025))
+            row[f"{prefix}_q50"] = float(np.quantile(values, 0.5))
+            row[f"{prefix}_q975"] = float(np.quantile(values, 0.975))
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def score_translated_orthologue_from_matrix(
+    mouse_subset,
+    translated,
+    human_orth_idx,
+    human_orth_genes,
+    human_orth_center,
+    pls_orth,
+    orth_signature_calibration,
+):
+    translated_orth = translated[:, human_orth_idx]
+    translated_orth_centered = translated_orth - human_orth_center
+
+    plsr_pred = pls_orth.predict(translated_orth_centered)
+    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, "translated_orthologue_plsr")
+    plsr_out.insert(1, "input_space", "translated_orthologues")
+    plsr_out.insert(2, "gene_space", "orthologues")
+    plsr_out = attach_mouse_metadata(plsr_out, mouse_subset)
+
+    activity, _ = signed_rank_signature_activity(translated_orth_centered, human_orth_genes)
+    signature_pred = apply_signature_calibration(activity, orth_signature_calibration)
+    sig_out = signature_score_frame(mouse_subset.index.to_numpy(), activity, signature_pred)
+    sig_out.insert(1, "input_space", "translated_orthologues")
+    sig_out.insert(2, "gene_space", "orthologues")
+    sig_out = attach_mouse_metadata(sig_out, mouse_subset)
+
+    return plsr_out, sig_out
+
+
+def score_decoder_sampled_translations(
+    mouse_subset,
+    translated_mu,
+    translated_var,
+    human_center,
+    human_genes,
+    human_orth_idx,
+    human_orth_genes,
+    human_orth_center,
+    expression_ml_models,
+    orthologue_ml_models,
+    signature_calibration,
+    orth_signature_calibration,
+    args,
+    device,
+    cohort_name,
+):
+    if args.decoder_sample_n <= 0:
+        return pd.DataFrame(), pd.DataFrame()
+
+    sample_ids = mouse_subset.index.to_numpy()
+    rng = decoder_sample_rng(args, cohort_name)
+    frames = []
+
+    for draw_idx in range(args.decoder_sample_n):
+        sampled = sample_decoder_expression(translated_mu, translated_var, rng, args)
+
+        centered = sampled - human_center
+        all_gene_predictions = predict_ml_model_set(expression_ml_models, centered, args, device)
+        for model_type, pred in all_gene_predictions.items():
+            frames.append(
+                score_prediction_frame(
+                    sample_ids,
+                    pred,
+                    model_type,
+                    "decoder_sampled_translated_human",
+                    "all_human_genes",
+                    decoder_sample=draw_idx,
+                )
+            )
+        activity, _ = signed_rank_signature_activity(centered, human_genes)
+        signature_pred = apply_signature_calibration(activity, signature_calibration)
+        frames.append(
+            signature_prediction_frame(
+                sample_ids,
+                activity,
+                signature_pred,
+                "decoder_sampled_translated_human",
+                "all_human_genes",
+                decoder_sample=draw_idx,
+            )
+        )
+
+        sampled_orth = sampled[:, human_orth_idx]
+        sampled_orth_centered = sampled_orth - human_orth_center
+        orth_predictions = predict_ml_model_set(
+            orthologue_ml_models, sampled_orth_centered, args, device
+        )
+        for model_type, pred in orth_predictions.items():
+            frames.append(
+                score_prediction_frame(
+                    sample_ids,
+                    pred,
+                    model_type,
+                    "decoder_sampled_translated_orthologues",
+                    "orthologues",
+                    decoder_sample=draw_idx,
+                )
+            )
+        orth_activity, _ = signed_rank_signature_activity(sampled_orth_centered, human_orth_genes)
+        orth_signature_pred = apply_signature_calibration(orth_activity, orth_signature_calibration)
+        frames.append(
+            signature_prediction_frame(
+                sample_ids,
+                orth_activity,
+                orth_signature_pred,
+                "decoder_sampled_translated_orthologues",
+                "orthologues",
+                decoder_sample=draw_idx,
+            )
+        )
+
+    draws = pd.concat(frames, ignore_index=True)
+    draws["decoder_sample_n"] = int(args.decoder_sample_n)
+    draws["decoder_sample_distribution"] = args.decoder_sample_distribution
+    draws["decoder_sample_temperature"] = float(args.decoder_sample_temperature)
+    draws["decoder_sample_var_floor"] = float(args.decoder_sample_var_floor)
+    draws["decoder_sample_clip_min"] = args.decoder_sample_clip_min
+    summary = summarize_decoder_sample_scores(draws)
+    summary["decoder_sample_n"] = int(args.decoder_sample_n)
+    summary["decoder_sample_distribution"] = args.decoder_sample_distribution
+    summary["decoder_sample_temperature"] = float(args.decoder_sample_temperature)
+    summary["decoder_sample_var_floor"] = float(args.decoder_sample_var_floor)
+    summary["decoder_sample_clip_min"] = args.decoder_sample_clip_min
+
+    draws = attach_mouse_metadata(draws, mouse_subset)
+    summary = attach_mouse_metadata(summary, mouse_subset)
+    return draws, summary
+
+
+def sample_decoder_expression(translated_mu, translated_var, rng, args):
+    if args.decoder_sample_distribution == "gaussian":
+        sd = np.sqrt(np.maximum(translated_var, args.decoder_sample_var_floor)).astype(np.float32)
+        noise = rng.normal(loc=0.0, scale=1.0, size=translated_mu.shape).astype(np.float32)
+        temperature = max(float(args.decoder_sample_temperature), 0.0)
+        sampled = translated_mu + temperature * sd * noise
+    elif args.decoder_sample_distribution == "negative_binomial":
+        mu = np.maximum(translated_mu, args.decoder_sample_var_floor)
+        theta = np.maximum(translated_var, args.decoder_sample_var_floor)
+        temperature = max(float(args.decoder_sample_temperature), args.decoder_sample_var_floor)
+        theta = theta / (temperature ** 2)
+        p = theta / (theta + mu)
+        sampled = rng.negative_binomial(theta, p).astype(np.float32)
+    else:
+        raise ValueError(f"Unsupported decoder sample distribution: {args.decoder_sample_distribution}")
+
+    if args.decoder_sample_clip_min is not None:
+        sampled = np.maximum(sampled, args.decoder_sample_clip_min)
+    return sampled.astype(np.float32, copy=False)
+
+
+def score_translated_human_from_matrix(
+    mouse_subset,
+    translated,
+    human_center,
+    pls,
+    signature_calibration,
+    human_genes,
+):
+    centered = translated - human_center
+
+    plsr_pred = pls.predict(centered)
+    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, "translated_human_plsr")
+    plsr_out.insert(1, "input_space", "translated_human")
+    plsr_out.insert(2, "gene_space", "all_human_genes")
+    plsr_out = attach_mouse_metadata(plsr_out, mouse_subset)
+
+    activity, _ = signed_rank_signature_activity(centered, human_genes)
+    signature_pred = apply_signature_calibration(activity, signature_calibration)
+    sig_out = signature_score_frame(mouse_subset.index.to_numpy(), activity, signature_pred)
+    sig_out.insert(1, "input_space", "translated_human")
+    sig_out.insert(2, "gene_space", "all_human_genes")
+    sig_out = attach_mouse_metadata(sig_out, mouse_subset)
+
+    return plsr_out, sig_out
+
+
 def score_translated_mouse_subset(
     mouse_subset,
     mouse_X,
@@ -989,22 +1121,14 @@ def score_translated_mouse_subset(
     translated = translate_mouse_to_human(
         mouse_X, mouse_rows, enc_m, flow_m2h, dec_h, device, batch_size
     )
-    centered = translated - human_center
-
-    plsr_pred = pls.predict(centered)
-    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, "translated_human_plsr")
-    plsr_out.insert(1, "input_space", "translated_human")
-    plsr_out.insert(2, "gene_space", "all_human_genes")
-    plsr_out = attach_mouse_metadata(plsr_out, mouse_subset)
-
-    activity, _ = signed_rank_signature_activity(centered, human_genes)
-    signature_pred = apply_signature_calibration(activity, signature_calibration)
-    sig_out = signature_score_frame(mouse_subset.index.to_numpy(), activity, signature_pred)
-    sig_out.insert(1, "input_space", "translated_human")
-    sig_out.insert(2, "gene_space", "all_human_genes")
-    sig_out = attach_mouse_metadata(sig_out, mouse_subset)
-
-    return plsr_out, sig_out
+    return score_translated_human_from_matrix(
+        mouse_subset,
+        translated,
+        human_center,
+        pls,
+        signature_calibration,
+        human_genes,
+    )
 
 
 def score_raw_mouse_orthologue_subset(
@@ -1263,23 +1387,11 @@ def write_outputs(args, out_dir):
     )
 
     translated_outputs = {}
+    translated_orth_outputs = {}
     raw_orth_outputs = {}
     mouse_ml_outputs = {}
+    decoder_sample_outputs = {}
     for cohort_name, subset in mouse_subsets.items():
-        translated_outputs[cohort_name] = score_translated_mouse_subset(
-            subset,
-            mouse_X,
-            mouse_ids,
-            enc_m,
-            flow_m2h,
-            dec_h,
-            human_center,
-            pls,
-            signature_calibration,
-            human_genes,
-            device,
-            args.batch_size,
-        )
         raw_orth_outputs[cohort_name] = score_raw_mouse_orthologue_subset(
             subset,
             mouse_X,
@@ -1291,7 +1403,7 @@ def write_outputs(args, out_dir):
             orth_signature_calibration,
         )
         mouse_rows = rows_for_ids(subset.index.tolist(), mouse_ids, "mouse")
-        translated, translated_latent = translate_mouse_to_human_and_latent(
+        translated, translated_var, translated_latent = translate_mouse_to_human_distribution_and_latent(
             mouse_X,
             mouse_rows,
             enc_m,
@@ -1300,7 +1412,25 @@ def write_outputs(args, out_dir):
             device,
             args.batch_size,
         )
+        translated_outputs[cohort_name] = score_translated_human_from_matrix(
+            subset,
+            translated,
+            human_center,
+            pls,
+            signature_calibration,
+            human_genes,
+        )
+        translated_orth_outputs[cohort_name] = score_translated_orthologue_from_matrix(
+            subset,
+            translated,
+            human_orth_idx,
+            human_orth_genes,
+            human_orth_center,
+            pls_orth,
+            orth_signature_calibration,
+        )
         translated_centered = translated - human_center
+        translated_orth_centered = translated[:, human_orth_idx] - human_orth_center
         translated_latent_centered = translated_latent - human_latent_center
         X_mouse_orth = load_rows(mouse_X, mouse_rows)[:, mouse_orth_idx]
         X_mouse_orth_centered = X_mouse_orth - human_orth_center
@@ -1315,6 +1445,15 @@ def write_outputs(args, out_dir):
                     device,
                     input_space="translated_human",
                     gene_space="all_human_genes",
+                ),
+                score_mouse_ml_subset(
+                    subset,
+                    translated_orth_centered,
+                    orthologue_ml_models,
+                    args,
+                    device,
+                    input_space="translated_orthologues",
+                    gene_space="orthologues",
                 ),
                 score_mouse_ml_subset(
                     subset,
@@ -1343,6 +1482,33 @@ def write_outputs(args, out_dir):
             cohort_ml.insert(3, "ensemble_id", args.ensemble_id)
         mouse_ml_outputs[cohort_name] = cohort_ml
 
+        decoder_draws, decoder_summary = score_decoder_sampled_translations(
+            subset,
+            translated,
+            translated_var,
+            human_center,
+            human_genes,
+            human_orth_idx,
+            human_orth_genes,
+            human_orth_center,
+            expression_ml_models,
+            orthologue_ml_models,
+            signature_calibration,
+            orth_signature_calibration,
+            args,
+            device,
+            cohort_name,
+        )
+        if not decoder_draws.empty:
+            decoder_draws.insert(1, "fold", run_index)
+            decoder_draws.insert(2, "model_source", args.model_source)
+            decoder_summary.insert(1, "fold", run_index)
+            decoder_summary.insert(2, "model_source", args.model_source)
+            if args.model_source == "full_ensemble":
+                decoder_draws.insert(3, "ensemble_id", args.ensemble_id)
+                decoder_summary.insert(3, "ensemble_id", args.ensemble_id)
+        decoder_sample_outputs[cohort_name] = (decoder_draws, decoder_summary)
+
     summary = pd.DataFrame(
         [
             {
@@ -1364,6 +1530,11 @@ def write_outputs(args, out_dir):
                 "orthologue_pls_components_used": int(used_orth_components),
                 "latent_features": int(Z_human_centered.shape[1]),
                 "latent_pls_components_used": int(used_latent_components),
+                "decoder_sample_n": int(args.decoder_sample_n),
+                "decoder_sample_distribution": args.decoder_sample_distribution,
+                "decoder_sample_temperature": float(args.decoder_sample_temperature),
+                "decoder_sample_var_floor": float(args.decoder_sample_var_floor),
+                "decoder_sample_clip_min": args.decoder_sample_clip_min,
                 "human_train_rmse_nas": float(mean_squared_error(y_human[:, 0], human_pred[:, 0]) ** 0.5),
                 "human_train_rmse_fibrosis": float(mean_squared_error(y_human[:, 1], human_pred[:, 1]) ** 0.5),
                 "human_train_r2_nas": float(r2_score(y_human[:, 0], human_pred[:, 0])),
@@ -1475,6 +1646,13 @@ def write_outputs(args, out_dir):
         sig_out.to_csv(sig_path, index=False)
         output_paths.extend([plsr_path, sig_path])
 
+    for cohort_name, (plsr_out, sig_out) in translated_orth_outputs.items():
+        plsr_path = out_dir / f"{cohort_name}_translated_orthologue_plsr_scores_{suffix}.csv"
+        sig_path = out_dir / f"{cohort_name}_translated_orthologue_signature_scores_{suffix}.csv"
+        plsr_out.to_csv(plsr_path, index=False)
+        sig_out.to_csv(sig_path, index=False)
+        output_paths.extend([plsr_path, sig_path])
+
     for cohort_name, (plsr_out, sig_out) in raw_orth_outputs.items():
         plsr_path = out_dir / f"{cohort_name}_raw_orthologue_plsr_scores_{suffix}.csv"
         sig_path = out_dir / f"{cohort_name}_raw_orthologue_signature_scores_{suffix}.csv"
@@ -1486,6 +1664,17 @@ def write_outputs(args, out_dir):
         ml_path = out_dir / f"{cohort_name}_ml_model_scores_{suffix}.csv"
         ml_out.to_csv(ml_path, index=False)
         output_paths.append(ml_path)
+
+    for cohort_name, (decoder_draws, decoder_summary) in decoder_sample_outputs.items():
+        if decoder_summary.empty:
+            continue
+        summary_path = out_dir / f"{cohort_name}_decoder_sampled_score_summary_{suffix}.csv"
+        decoder_summary.to_csv(summary_path, index=False)
+        output_paths.append(summary_path)
+        if args.save_decoder_sample_draws:
+            draws_path = out_dir / f"{cohort_name}_decoder_sampled_score_draws_{suffix}.csv"
+            decoder_draws.to_csv(draws_path, index=False)
+            output_paths.append(draws_path)
 
     for path in output_paths:
         print(f"Wrote: {path}")
@@ -1531,15 +1720,62 @@ def parse_args():
     parser.add_argument("--mouse_cdaa_gse", default=MOUSE_CDAA_GSE)
     parser.add_argument("--pls_components", type=int, default=PLS_COMPONENTS)
     parser.add_argument("--batch_size", type=int, default=256)
-    parser.add_argument("--skip_nn", action="store_true", help="Skip neural-network scorers.")
+    parser.add_argument(
+        "--decoder_sample_n",
+        type=int,
+        default=25,
+        help="Number of decoder-expression draws per mouse sample. Use 0 to disable sampled scoring.",
+    )
+    parser.add_argument(
+        "--decoder_sample_distribution",
+        choices=["gaussian", "negative_binomial"],
+        default="gaussian",
+        help="Distribution used for decoder sampling. ARCHS4 fold/full models were trained with gaussian decoders.",
+    )
+    parser.add_argument(
+        "--decoder_sample_temperature",
+        type=float,
+        default=1.0,
+        help="Multiplier for sampled decoder spread. For gaussian this scales sd; for NB this scales overdispersion.",
+    )
+    parser.add_argument(
+        "--decoder_sample_var_floor",
+        type=float,
+        default=1e-6,
+        help="Minimum decoder variance/dispersion used during sampled scoring.",
+    )
+    parser.add_argument(
+        "--decoder_sample_clip_min",
+        type=float,
+        default=0.0,
+        help="Minimum expression value after sampling. Defaults to 0 because decoder means are non-negative.",
+    )
+    parser.add_argument(
+        "--no_decoder_sample_clip",
+        action="store_const",
+        const=None,
+        dest="decoder_sample_clip_min",
+        help="Do not clip sampled decoder expression values.",
+    )
+    parser.add_argument(
+        "--decoder_sample_seed",
+        type=int,
+        default=1729,
+        help="Base random seed for decoder sampled scoring.",
+    )
+    parser.add_argument(
+        "--save_decoder_sample_draws",
+        action="store_true",
+        default=True,
+        help="Save per-draw decoder sampled scores in addition to per-sample summaries.",
+    )
+    parser.add_argument(
+        "--skip_decoder_sample_draws",
+        action="store_false",
+        dest="save_decoder_sample_draws",
+        help="Only save decoder sampled score summaries, not every draw.",
+    )
     parser.add_argument("--skip_svm_rbf", action="store_true", help="Skip RBF-SVM scorers.")
-    parser.add_argument("--nn_epochs", type=int, default=200)
-    parser.add_argument("--nn_batch_size", type=int, default=32)
-    parser.add_argument("--nn_hidden_layers", default="128,64")
-    parser.add_argument("--nn_dropout", type=float, default=0.1)
-    parser.add_argument("--nn_lr", type=float, default=1e-3)
-    parser.add_argument("--nn_weight_decay", type=float, default=1e-3)
-    parser.add_argument("--nn_seed", type=int, default=42)
     parser.add_argument("--svm_cv", type=int, default=5)
     parser.add_argument("--svm_jobs", type=int, default=-1)
     parser.add_argument(
@@ -1550,7 +1786,7 @@ def parse_args():
     parser.add_argument(
         "--skip_ml_loocv",
         action="store_true",
-        help="Skip neural-network and RBF-SVM human leave-one-out predictions.",
+        help="Skip RBF-SVM human leave-one-out predictions.",
     )
     parser.add_argument(
         "--loocv_write_fold",
@@ -1565,6 +1801,12 @@ def parse_args():
     args.preproc_dir = args.preproc_dir or args.data_dir / "preprocessed"
     args.model_dir = args.model_dir or args.data_dir / "models"
     args.out_dir = args.out_dir or args.data_dir / "evaluation" / "liver_mas_fibrosis"
+    if args.decoder_sample_n < 0:
+        raise ValueError("--decoder_sample_n must be >= 0.")
+    if args.decoder_sample_temperature < 0:
+        raise ValueError("--decoder_sample_temperature must be >= 0.")
+    if args.decoder_sample_var_floor <= 0:
+        raise ValueError("--decoder_sample_var_floor must be > 0.")
     return args
 
 
