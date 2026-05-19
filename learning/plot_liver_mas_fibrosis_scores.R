@@ -156,6 +156,10 @@ pretty_p <- function(p) {
   )
 }
 
+pretty_p_less <- function(p) {
+  str_replace(pretty_p(p), "^p", "p_less")
+}
+
 spearman_stats <- function(data, group_cols) {
   data %>%
     group_by(across(all_of(group_cols))) %>%
@@ -522,7 +526,60 @@ mouse_agg <- mouse_fold_long %>%
     n_score_rows = n(),
     .groups = "drop"
   )
-mouse_plot_scores <- if (analysis_mode == "ensemble") mouse_fold_long else mouse_agg
+
+average_sampled_scores_across_replicates <- function(data) {
+  sampled <- data %>%
+    filter(grepl("^decoder_sampled_", input_space)) %>%
+    group_by(sample_id, cohort, dataset, mouse_model, mouse_treatment,
+             time_point, input_space, gene_space, method, scoring_space,
+             endpoint, decoder_sample) %>%
+    summarise(
+      score = mean(score, na.rm = TRUE),
+      n_folds_averaged = n_distinct(fold),
+      fold = NA_integer_,
+      .groups = "drop"
+    )
+
+  deterministic <- data %>%
+    filter(!grepl("^decoder_sampled_", input_space)) %>%
+    mutate(n_folds_averaged = NA_integer_)
+
+  bind_rows(deterministic, sampled)
+}
+
+average_scores_across_replicates <- function(data) {
+  data %>%
+    group_by(sample_id, cohort, dataset, mouse_model, mouse_treatment,
+             time_point, input_space, gene_space, method, scoring_space,
+             endpoint) %>%
+    summarise(
+      score = mean(score, na.rm = TRUE),
+      n_folds = n_distinct(fold),
+      n_decoder_samples = n_distinct(decoder_sample, na.rm = TRUE),
+      n_score_rows = n(),
+      .groups = "drop"
+    )
+}
+
+mouse_plot_scores <- if (analysis_mode == "ensemble") {
+  average_sampled_scores_across_replicates(mouse_fold_long)
+} else {
+  mouse_agg
+}
+
+mouse_mu_member_scores <- if (analysis_mode == "ensemble") {
+  mouse_fold_long %>%
+    filter(!grepl("^decoder_sampled_", input_space)) %>%
+    mutate(n_folds_averaged = NA_integer_)
+} else {
+  mouse_agg %>% filter(!grepl("^Sampled translated", as.character(scoring_space)))
+}
+mouse_mu_agg <- mouse_agg %>% filter(!grepl("^Sampled translated", as.character(scoring_space)))
+mouse_mu_mean_scores <- if (analysis_mode == "ensemble") {
+  average_scores_across_replicates(mouse_mu_member_scores)
+} else {
+  mouse_mu_agg
+}
 
 mouse_stats_for <- function(data, spec, score_col = "score") {
   levels_x <- spec$treatment_levels
@@ -535,9 +592,12 @@ mouse_stats_for <- function(data, spec, score_col = "score") {
       treatment <- panel %>% filter(mouse_treatment == spec$treatment)
       p_val <- if (nrow(control) > 0 && nrow(treatment) > 0) {
         tryCatch(
-          wilcox.test(as.formula(paste(score_col, "~ mouse_treatment")),
-                      data = panel %>% filter(mouse_treatment %in% c(spec$control, spec$treatment)),
-                      exact = FALSE)$p.value,
+          wilcox.test(
+            treatment[[score_col]],
+            control[[score_col]],
+            alternative = "less",
+            exact = FALSE
+          )$p.value,
           error = function(e) NA_real_
         )
       } else {
@@ -553,21 +613,26 @@ mouse_stats_for <- function(data, spec, score_col = "score") {
         mean_control = mean(control[[score_col]], na.rm = TRUE),
         mean_treated = mean(treatment[[score_col]], na.rm = TRUE),
         mean_diff_treated_minus_control = mean_treated - mean_control,
+        alternative = paste(spec$treatment, "<", spec$control),
         p_value = p_val,
         x_start = match(spec$control, levels_x),
         x_end = match(spec$treatment, levels_x),
         x_mid = mean(c(x_start, x_end)),
-        y_bracket = y_max + 0.08 * span,
-        y_tip = y_max + 0.03 * span,
-        y_label = y_max + 0.14 * span
+        y_bracket = y_max + 0.16 * span,
+        y_tip = y_max + 0.08 * span,
+        y_label = y_max + 0.27 * span
       )
     }) %>%
     ungroup() %>%
-    mutate(label = pretty_p(p_value))
+    mutate(label = pretty_p_less(p_value))
 }
 
 mouse_stats <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
   mouse_stats_for(mouse_agg %>% filter(cohort == cohort_name), dataset_specs[[cohort_name]])
+}))
+
+mouse_mu_stats <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
+  mouse_stats_for(mouse_mu_agg %>% filter(cohort == cohort_name), dataset_specs[[cohort_name]])
 }))
 
 mouse_deltas_for <- function(cohort_name, data = mouse_agg) {
@@ -605,34 +670,22 @@ mouse_delta_stats <- bind_rows(lapply(names(dataset_specs), function(cohort_name
   )
 }))
 
-write_csv(human_agg, file.path(out_dir, paste0("human_", replicate_file_token, "_predictions.csv")))
-write_csv(human_cor, file.path(out_dir, paste0("human_", replicate_file_token, "_spearman_stats.csv")))
-write_csv(human_ml_agg, file.path(out_dir, paste0("human_ml_", replicate_file_token, "_predictions.csv")))
-write_csv(human_ml_cor, file.path(out_dir, paste0("human_ml_", replicate_file_token, "_spearman_stats.csv")))
-write_csv(human_loocv, file.path(out_dir, "human_plsr_loocv_predictions.csv"))
-write_csv(loocv_cor, file.path(out_dir, "human_plsr_loocv_spearman_stats.csv"))
-if (nrow(human_ml_loocv) > 0) {
-  write_csv(human_ml_loocv, file.path(out_dir, "human_ml_loocv_predictions.csv"))
-  write_csv(human_ml_loocv_cor, file.path(out_dir, "human_ml_loocv_spearman_stats.csv"))
-}
-write_csv(mouse_agg, file.path(out_dir, paste0("mouse_", replicate_file_token, "_scores.csv")))
-write_csv(mouse_stats, file.path(out_dir, "mouse_treatment_wilcox_stats.csv"))
-write_csv(mouse_deltas, file.path(out_dir, paste0("mouse_", replicate_file_token, "_score_deltas.csv")))
-write_csv(mouse_delta_stats, file.path(out_dir, "mouse_treatment_delta_wilcox_stats.csv"))
-write_csv(
-  mouse_agg %>% filter(grepl("^Sampled translated", as.character(scoring_space))),
-  file.path(out_dir, paste0("mouse_decoder_sampled_", replicate_file_token, "_scores.csv"))
-)
-if (analysis_mode == "ensemble") {
-  write_csv(human_plot_data, file.path(out_dir, "human_ensemble_member_predictions.csv"))
-  write_csv(human_ml_plot_data, file.path(out_dir, "human_ml_ensemble_member_predictions.csv"))
-  write_csv(mouse_plot_scores, file.path(out_dir, "mouse_ensemble_member_scores.csv"))
-  write_csv(mouse_delta_plot_scores, file.path(out_dir, "mouse_ensemble_member_score_deltas.csv"))
-  write_csv(
-    mouse_plot_scores %>% filter(grepl("^Sampled translated", as.character(scoring_space))),
-    file.path(out_dir, "mouse_decoder_sampled_ensemble_member_scores.csv")
+mouse_mu_deltas <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
+  mouse_deltas_for(cohort_name, mouse_mu_agg)
+}))
+mouse_mu_member_delta_scores <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
+  mouse_deltas_for(cohort_name, mouse_mu_member_scores)
+}))
+mouse_mu_mean_delta_scores <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
+  mouse_deltas_for(cohort_name, mouse_mu_mean_scores)
+}))
+mouse_mu_delta_stats <- bind_rows(lapply(names(dataset_specs), function(cohort_name) {
+  mouse_stats_for(
+    mouse_mu_deltas %>% filter(cohort == cohort_name),
+    dataset_specs[[cohort_name]],
+    score_col = "score_delta"
   )
-}
+}))
 
 scatter_point_alpha <- ifelse(analysis_mode == "ensemble", 0.34, 0.82)
 scatter_point_size <- ifelse(analysis_mode == "ensemble", 1.45, 1.9)
@@ -679,8 +732,6 @@ p_human <- ggplot(human_plot_data, aes(x = observed, y = predicted, color = meth
 
 ggsave(file.path(out_dir, paste0("human_govaere_", plot_file_token, "_prediction_scatter.png")), p_human,
        width = 13.2, height = 7.2, dpi = 300)
-ggsave(file.path(out_dir, paste0("human_govaere_", plot_file_token, "_prediction_scatter.pdf")), p_human,
-       width = 13.2, height = 7.2, device = cairo_pdf)
 
 p_human_ml <- ggplot(human_ml_plot_data, aes(x = observed, y = predicted, color = method)) +
   geom_abline(slope = 1, intercept = 0, linewidth = 0.45, linetype = "dashed", color = "grey45") +
@@ -719,8 +770,6 @@ p_human_ml <- ggplot(human_ml_plot_data, aes(x = observed, y = predicted, color 
 
 ggsave(file.path(out_dir, paste0("human_govaere_ml_model_", plot_file_token, "_scatter.png")), p_human_ml,
        width = 17.6, height = 7.6, dpi = 300)
-ggsave(file.path(out_dir, paste0("human_govaere_ml_model_", plot_file_token, "_scatter.pdf")), p_human_ml,
-       width = 17.6, height = 7.6, device = cairo_pdf)
 
 p_loocv <- ggplot(human_loocv, aes(x = observed, y = predicted)) +
   geom_abline(slope = 1, intercept = 0, linewidth = 0.45, linetype = "dashed", color = "grey45") +
@@ -753,8 +802,6 @@ p_loocv <- ggplot(human_loocv, aes(x = observed, y = predicted)) +
 
 ggsave(file.path(out_dir, "human_govaere_plsr_loocv_scatter.png"), p_loocv,
        width = 8.4, height = 7.2, dpi = 300)
-ggsave(file.path(out_dir, "human_govaere_plsr_loocv_scatter.pdf"), p_loocv,
-       width = 8.4, height = 7.2, device = cairo_pdf)
 
 if (nrow(human_ml_loocv) > 0) {
   p_ml_loocv <- ggplot(human_ml_loocv, aes(x = observed, y = predicted, color = method)) +
@@ -790,8 +837,6 @@ if (nrow(human_ml_loocv) > 0) {
 
   ggsave(file.path(out_dir, "human_govaere_ml_loocv_scatter.png"), p_ml_loocv,
          width = 14.2, height = 7.6, dpi = 300)
-  ggsave(file.path(out_dir, "human_govaere_ml_loocv_scatter.pdf"), p_ml_loocv,
-         width = 14.2, height = 7.6, device = cairo_pdf)
 }
 
 plot_mouse_dataset_method <- function(cohort_name, method_name,
@@ -805,7 +850,9 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
                                       ),
                                       title_label = "score inference",
                                       file_suffix = "boxplots",
-                                      subtitle_prefix = "Statistics compare") {
+                                      subtitle_prefix = "One-sided Wilcoxon tests compare",
+                                      ensemble_note = NULL,
+                                      ensemble_delta_note = NULL) {
   spec <- dataset_specs[[cohort_name]]
   plot_data <- plot_source %>%
     filter(cohort == cohort_name, method == method_name) %>%
@@ -823,8 +870,11 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
   subtitle_text <- paste0(subtitle_prefix, " ", spec$control, " vs ", spec$treatment,
                           "; scores are averaged across ", replicate_plural)
   if (analysis_mode == "ensemble") {
+    if (is.null(ensemble_note)) {
+      ensemble_note <- "Deterministic panels show ensemble members; sampled panels average predicted scores across ensemble members per decoder draw; statistics use per-sample mean scores"
+    }
     subtitle_text <- paste0(
-      "Points show individual ensemble-member and decoder-sampled predictions where available; statistics use per-sample mean scores; ",
+      ensemble_note, "; ",
       tolower(subtitle_prefix), " ", spec$control, " vs ", spec$treatment
     )
   }
@@ -833,10 +883,14 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
                             "; statistics compare ", spec$control, " vs ", spec$treatment,
                             "; scores are averaged across ", replicate_plural)
     if (analysis_mode == "ensemble") {
+      if (is.null(ensemble_delta_note)) {
+        ensemble_delta_note <- paste0(
+          "Deterministic deltas show ensemble members; sampled deltas average predicted scores across ensemble members per decoder draw relative to ",
+          spec$delta_baseline, "; statistics use per-sample mean scores"
+        )
+      }
       subtitle_text <- paste0(
-        "Points show individual ensemble-member and decoder-sampled deltas relative to ", spec$delta_baseline,
-        "; statistics use per-sample mean scores; compare ",
-        spec$control, " vs ", spec$treatment
+        ensemble_delta_note, "; compare ", spec$control, " vs ", spec$treatment
       )
     }
   }
@@ -855,11 +909,21 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
                  inherit.aes = FALSE, linewidth = 0.35, color = "grey20") +
     geom_segment(data = stat_data, aes(x = x_end, xend = x_end, y = y_tip, yend = y_bracket),
                  inherit.aes = FALSE, linewidth = 0.35, color = "grey20") +
-    geom_text(data = stat_data, aes(x = x_mid, y = y_label, label = label),
-              inherit.aes = FALSE, size = 3.1, color = "grey15") +
+    geom_label(
+      data = stat_data,
+      aes(x = x_mid, y = y_label, label = label),
+      inherit.aes = FALSE,
+      size = 2.75,
+      color = "grey15",
+      fill = alpha("white", 0.88),
+      linewidth = 0,
+      label.padding = grid::unit(0.08, "lines")
+    ) +
     facet_grid(facet_formula, scales = "free_y") +
+    scale_y_continuous(expand = expansion(mult = c(0.06, 0.34))) +
     scale_fill_manual(values = treatment_cols, guide = "none", drop = FALSE) +
     scale_x_discrete(labels = treatment_labels, drop = FALSE) +
+    coord_cartesian(clip = "off") +
     labs(
       x = NULL,
       y = y_label,
@@ -871,7 +935,8 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
       plot.title = element_text(face = "bold"),
       strip.background = element_rect(fill = "grey92", color = "grey70"),
       panel.grid.minor = element_blank(),
-      axis.text.x = element_text(size = 8.5)
+      axis.text.x = element_text(size = 8.5),
+      plot.margin = margin(8, 12, 10, 8)
     )
 
   suffix <- paste0(spec$file_slug, "_", str_replace_all(tolower(method_name), "[^a-z0-9]+", "_"), "_", file_suffix)
@@ -879,7 +944,6 @@ plot_mouse_dataset_method <- function(cohort_name, method_name,
     ifelse(n_distinct(plot_data$time_point) > 1, n_distinct(plot_data$time_point), 1)
   width <- max(8.8, min(24, 2.8 * n_facet_cols + 3.2))
   ggsave(file.path(out_dir, paste0(suffix, ".png")), p, width = width, height = 7.2, dpi = 300)
-  ggsave(file.path(out_dir, paste0(suffix, ".pdf")), p, width = width, height = 7.2, device = cairo_pdf)
 }
 
 for (cohort_name in names(dataset_specs)) {
@@ -899,7 +963,74 @@ for (cohort_name in names(dataset_specs)) {
       title_label = "disease-score deltas",
       file_suffix = "delta_boxplots"
     )
+
+    plot_mouse_dataset_method(
+      cohort_name,
+      method_name,
+      plot_source = mouse_mu_member_scores,
+      stat_source = mouse_mu_stats,
+      y_label = ifelse(
+        analysis_mode == "ensemble",
+        "Deterministic score from each ensemble member",
+        paste0(replicate_mean_label, " deterministic score")
+      ),
+      title_label = "deterministic-mu score inference",
+      file_suffix = "mu_ensemble_member_boxplots",
+      ensemble_note = "Panels show deterministic decoder-mean predictions from each ensemble member; statistics use ensemble-mean scores per biological sample"
+    )
+    plot_mouse_dataset_method(
+      cohort_name,
+      method_name,
+      plot_source = mouse_mu_member_delta_scores,
+      stat_source = mouse_mu_delta_stats,
+      score_col = "score_delta",
+      y_label = ifelse(
+        analysis_mode == "ensemble",
+        "Deterministic score delta from each ensemble member",
+        paste0(replicate_mean_label, " deterministic score delta")
+      ),
+      title_label = "deterministic-mu disease-score deltas",
+      file_suffix = "mu_ensemble_member_delta_boxplots",
+      ensemble_delta_note = paste0(
+        "Panels show deterministic decoder-mean deltas from each ensemble member relative to ",
+        dataset_specs[[cohort_name]]$delta_baseline,
+        "; statistics use ensemble-mean scores per biological sample"
+      )
+    )
+
+    plot_mouse_dataset_method(
+      cohort_name,
+      method_name,
+      plot_source = mouse_mu_mean_scores,
+      stat_source = mouse_mu_stats,
+      y_label = ifelse(
+        analysis_mode == "ensemble",
+        "Ensemble-mean deterministic score",
+        paste0(replicate_mean_label, " deterministic score")
+      ),
+      title_label = "ensemble-mean deterministic-mu score inference",
+      file_suffix = "mu_ensemble_mean_boxplots",
+      ensemble_note = "Panels show deterministic decoder-mean predictions averaged across ensemble members per biological sample"
+    )
+    plot_mouse_dataset_method(
+      cohort_name,
+      method_name,
+      plot_source = mouse_mu_mean_delta_scores,
+      stat_source = mouse_mu_delta_stats,
+      score_col = "score_delta",
+      y_label = ifelse(
+        analysis_mode == "ensemble",
+        "Ensemble-mean deterministic score delta",
+        paste0(replicate_mean_label, " deterministic score delta")
+      ),
+      title_label = "ensemble-mean deterministic-mu disease-score deltas",
+      file_suffix = "mu_ensemble_mean_delta_boxplots",
+      ensemble_delta_note = paste0(
+        "Panels show deterministic decoder-mean predictions averaged across ensemble members before calculating deltas relative to ",
+        dataset_specs[[cohort_name]]$delta_baseline
+      )
+    )
   }
 }
 
-message("Wrote figures and aggregated tables to: ", out_dir)
+message("Wrote PNG figures to: ", out_dir)

@@ -5,17 +5,17 @@
 #SBATCH -c 30
 #SBATCH -n 1
 #SBATCH --nodes=1
-#SBATCH --mem=300G
+#SBATCH --mem=64G
 #SBATCH --gres=gpu:h200:2
-#SBATCH --time=06:00:00
+#SBATCH --time=05:30:00
 #SBATCH -J liver_mas_fibrosis
-#SBATCH --array=0-1
+#SBATCH --array=0-9
 #SBATCH -o logs/slurm_%x_%A_%a.out
 #SBATCH -e logs/slurm_%x_%A_%a.err
 
 module load miniforge/24.3.0-0
 mamba activate nikos
-
+#pi_lauffen
 MODEL_SOURCE=${MODEL_SOURCE:-full_ensemble}
 TASK_ID=${SLURM_ARRAY_TASK_ID:-0}
 

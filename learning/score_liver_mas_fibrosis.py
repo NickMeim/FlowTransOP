@@ -23,7 +23,10 @@ It:
 6. Optionally samples from the translated decoder Gaussian or NB distribution
    to score reconstructed expression distributions instead of only decoder
    means.
-7. Writes all-gene and orthologue-only human PLSR LOOCV predictions once,
+7. Optionally loads multiple full-ensemble models, averages translated mouse
+   expression at the gene-expression level, and scores those averaged
+   expression matrices.
+8. Writes all-gene and orthologue-only human PLSR LOOCV predictions once,
    plus RBF-SVM LOOCV predictions for expression, orthologue, and latent
    feature spaces.
 
@@ -313,6 +316,32 @@ def output_suffix(args):
     if args.model_source == "fold" or args.ensemble_suffix_as_fold:
         return f"fold{active_model_index(args)}"
     return f"ensemble{args.ensemble_id}"
+
+
+def parse_int_ranges(spec):
+    values = []
+    for part in str(spec).split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            left, right = part.split("-", 1)
+            start = int(left)
+            stop = int(right)
+            step = 1 if stop >= start else -1
+            values.extend(range(start, stop + step, step))
+        else:
+            values.append(int(part))
+    if not values:
+        raise ValueError("No ensemble ids were parsed.")
+    return list(dict.fromkeys(values))
+
+
+def args_with_ensemble_id(args, ensemble_id):
+    copied = argparse.Namespace(**vars(args))
+    copied.model_source = "full_ensemble"
+    copied.ensemble_id = int(ensemble_id)
+    return copied
 
 
 def model_checkpoint_paths(args):
@@ -936,20 +965,22 @@ def score_translated_orthologue_from_matrix(
     human_orth_center,
     pls_orth,
     orth_signature_calibration,
+    plsr_label="translated_orthologue_plsr",
+    input_space="translated_orthologues",
 ):
     translated_orth = translated[:, human_orth_idx]
     translated_orth_centered = translated_orth - human_orth_center
 
     plsr_pred = pls_orth.predict(translated_orth_centered)
-    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, "translated_orthologue_plsr")
-    plsr_out.insert(1, "input_space", "translated_orthologues")
+    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, plsr_label)
+    plsr_out.insert(1, "input_space", input_space)
     plsr_out.insert(2, "gene_space", "orthologues")
     plsr_out = attach_mouse_metadata(plsr_out, mouse_subset)
 
     activity, _ = signed_rank_signature_activity(translated_orth_centered, human_orth_genes)
     signature_pred = apply_signature_calibration(activity, orth_signature_calibration)
     sig_out = signature_score_frame(mouse_subset.index.to_numpy(), activity, signature_pred)
-    sig_out.insert(1, "input_space", "translated_orthologues")
+    sig_out.insert(1, "input_space", input_space)
     sig_out.insert(2, "gene_space", "orthologues")
     sig_out = attach_mouse_metadata(sig_out, mouse_subset)
 
@@ -1077,6 +1108,104 @@ def sample_decoder_expression(translated_mu, translated_var, rng, args):
     return sampled.astype(np.float32, copy=False)
 
 
+def score_precomputed_sampled_translation_matrices(
+    mouse_subset,
+    sampled_matrices,
+    human_center,
+    human_genes,
+    human_orth_idx,
+    human_orth_genes,
+    human_orth_center,
+    expression_ml_models,
+    orthologue_ml_models,
+    signature_calibration,
+    orth_signature_calibration,
+    args,
+    device,
+    input_space_all,
+    input_space_orth,
+):
+    if not sampled_matrices:
+        return pd.DataFrame(), pd.DataFrame()
+
+    sample_ids = mouse_subset.index.to_numpy()
+    frames = []
+    for draw_idx, sampled in enumerate(sampled_matrices):
+        sampled = sampled.astype(np.float32, copy=False)
+        centered = sampled - human_center
+
+        all_gene_predictions = predict_ml_model_set(expression_ml_models, centered, args, device)
+        for model_type, pred in all_gene_predictions.items():
+            frames.append(
+                score_prediction_frame(
+                    sample_ids,
+                    pred,
+                    model_type,
+                    input_space_all,
+                    "all_human_genes",
+                    decoder_sample=draw_idx,
+                )
+            )
+        activity, _ = signed_rank_signature_activity(centered, human_genes)
+        signature_pred = apply_signature_calibration(activity, signature_calibration)
+        frames.append(
+            signature_prediction_frame(
+                sample_ids,
+                activity,
+                signature_pred,
+                input_space_all,
+                "all_human_genes",
+                decoder_sample=draw_idx,
+            )
+        )
+
+        sampled_orth = sampled[:, human_orth_idx]
+        sampled_orth_centered = sampled_orth - human_orth_center
+        orth_predictions = predict_ml_model_set(
+            orthologue_ml_models, sampled_orth_centered, args, device
+        )
+        for model_type, pred in orth_predictions.items():
+            frames.append(
+                score_prediction_frame(
+                    sample_ids,
+                    pred,
+                    model_type,
+                    input_space_orth,
+                    "orthologues",
+                    decoder_sample=draw_idx,
+                )
+            )
+        orth_activity, _ = signed_rank_signature_activity(sampled_orth_centered, human_orth_genes)
+        orth_signature_pred = apply_signature_calibration(orth_activity, orth_signature_calibration)
+        frames.append(
+            signature_prediction_frame(
+                sample_ids,
+                orth_activity,
+                orth_signature_pred,
+                input_space_orth,
+                "orthologues",
+                decoder_sample=draw_idx,
+            )
+        )
+
+    draws = pd.concat(frames, ignore_index=True)
+    draws["decoder_sample_n"] = int(len(sampled_matrices))
+    draws["decoder_sample_distribution"] = args.decoder_sample_distribution
+    draws["decoder_sample_temperature"] = float(args.decoder_sample_temperature)
+    draws["decoder_sample_var_floor"] = float(args.decoder_sample_var_floor)
+    draws["decoder_sample_clip_min"] = args.decoder_sample_clip_min
+    summary = summarize_decoder_sample_scores(draws)
+    summary["decoder_sample_n"] = int(len(sampled_matrices))
+    summary["decoder_sample_distribution"] = args.decoder_sample_distribution
+    summary["decoder_sample_temperature"] = float(args.decoder_sample_temperature)
+    summary["decoder_sample_var_floor"] = float(args.decoder_sample_var_floor)
+    summary["decoder_sample_clip_min"] = args.decoder_sample_clip_min
+
+    draws = attach_mouse_metadata(draws, mouse_subset)
+    summary = attach_mouse_metadata(summary, mouse_subset)
+    return draws, summary
+
+
 def score_translated_human_from_matrix(
     mouse_subset,
     translated,
@@ -1084,19 +1213,21 @@ def score_translated_human_from_matrix(
     pls,
     signature_calibration,
     human_genes,
+    plsr_label="translated_human_plsr",
+    input_space="translated_human",
 ):
     centered = translated - human_center
 
     plsr_pred = pls.predict(centered)
-    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, "translated_human_plsr")
-    plsr_out.insert(1, "input_space", "translated_human")
+    plsr_out = score_frame(mouse_subset.index.to_numpy(), plsr_pred, plsr_label)
+    plsr_out.insert(1, "input_space", input_space)
     plsr_out.insert(2, "gene_space", "all_human_genes")
     plsr_out = attach_mouse_metadata(plsr_out, mouse_subset)
 
     activity, _ = signed_rank_signature_activity(centered, human_genes)
     signature_pred = apply_signature_calibration(activity, signature_calibration)
     sig_out = signature_score_frame(mouse_subset.index.to_numpy(), activity, signature_pred)
-    sig_out.insert(1, "input_space", "translated_human")
+    sig_out.insert(1, "input_space", input_space)
     sig_out.insert(2, "gene_space", "all_human_genes")
     sig_out = attach_mouse_metadata(sig_out, mouse_subset)
 
@@ -1183,6 +1314,217 @@ def score_mouse_ml_subset(
     return attach_mouse_metadata(out, mouse_subset)
 
 
+def annotate_expression_ensemble_frame(frame, ensemble_ids):
+    frame = frame.copy()
+    frame.insert(1, "model_source", "full_ensemble_expression_mean")
+    frame.insert(2, "ensemble_ids", ",".join(str(x) for x in ensemble_ids))
+    frame.insert(3, "n_ensemble_models", len(ensemble_ids))
+    return frame
+
+
+def score_expression_averaged_ensemble_outputs(
+    args,
+    out_dir,
+    mouse_subsets,
+    mouse_X,
+    mouse_ids,
+    human_dim,
+    mouse_dim,
+    device,
+    human_center,
+    human_genes,
+    human_orth_idx,
+    human_orth_genes,
+    human_orth_center,
+    pls,
+    pls_orth,
+    signature_calibration,
+    orth_signature_calibration,
+    expression_ml_models,
+    orthologue_ml_models,
+):
+    if not args.average_expression_ensemble:
+        return []
+    if args.model_source != "full_ensemble":
+        raise ValueError("--average_expression_ensemble requires --model_source full_ensemble.")
+
+    ensemble_ids = parse_int_ranges(args.average_expression_ensemble_ids)
+    suffix = args.average_expression_output_suffix
+    output_paths = []
+    accumulators = {}
+
+    for cohort_name, subset in mouse_subsets.items():
+        accumulators[cohort_name] = {
+            "subset": subset,
+            "mouse_rows": rows_for_ids(subset.index.tolist(), mouse_ids, "mouse"),
+            "sum_mu": None,
+            "sampled_sums": None,
+        }
+
+    for ensemble_id in ensemble_ids:
+        member_args = args_with_ensemble_id(args, ensemble_id)
+        _, enc_m_avg, flow_m2h_avg, dec_h_avg = load_flowtransop_m2h(
+            member_args, human_dim, mouse_dim, device
+        )
+        for cohort_name, acc in accumulators.items():
+            translated_mu, translated_var, _ = translate_mouse_to_human_distribution_and_latent(
+                mouse_X,
+                acc["mouse_rows"],
+                enc_m_avg,
+                flow_m2h_avg,
+                dec_h_avg,
+                device,
+                args.batch_size,
+            )
+
+            if acc["sum_mu"] is None:
+                acc["sum_mu"] = np.zeros_like(translated_mu, dtype=np.float64)
+            acc["sum_mu"] += translated_mu.astype(np.float64)
+
+            if args.decoder_sample_n > 0:
+                if acc["sampled_sums"] is None:
+                    acc["sampled_sums"] = [
+                        np.zeros_like(translated_mu, dtype=np.float64)
+                        for _ in range(args.decoder_sample_n)
+                    ]
+                rng = decoder_sample_rng(member_args, f"{cohort_name}_expression_mean")
+                for draw_idx in range(args.decoder_sample_n):
+                    acc["sampled_sums"][draw_idx] += sample_decoder_expression(
+                        translated_mu, translated_var, rng, args
+                    ).astype(np.float64)
+
+        del enc_m_avg, flow_m2h_avg, dec_h_avg
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+
+    for cohort_name, acc in accumulators.items():
+        subset = acc["subset"]
+        n_models = float(len(ensemble_ids))
+        averaged_mu = (acc["sum_mu"] / n_models).astype(np.float32)
+        averaged_centered = averaged_mu - human_center
+        averaged_orth_centered = averaged_mu[:, human_orth_idx] - human_orth_center
+
+        plsr_out, sig_out = score_translated_human_from_matrix(
+            subset,
+            averaged_mu,
+            human_center,
+            pls,
+            signature_calibration,
+            human_genes,
+            plsr_label="ensemble_expression_mean_translated_human_plsr",
+            input_space="ensemble_expression_mean_translated_human",
+        )
+        orth_plsr_out, orth_sig_out = score_translated_orthologue_from_matrix(
+            subset,
+            averaged_mu,
+            human_orth_idx,
+            human_orth_genes,
+            human_orth_center,
+            pls_orth,
+            orth_signature_calibration,
+            plsr_label="ensemble_expression_mean_translated_orthologue_plsr",
+            input_space="ensemble_expression_mean_translated_orthologues",
+        )
+        ml_out = pd.concat(
+            [
+                score_mouse_ml_subset(
+                    subset,
+                    averaged_centered,
+                    expression_ml_models,
+                    args,
+                    device,
+                    input_space="ensemble_expression_mean_translated_human",
+                    gene_space="all_human_genes",
+                ),
+                score_mouse_ml_subset(
+                    subset,
+                    averaged_orth_centered,
+                    orthologue_ml_models,
+                    args,
+                    device,
+                    input_space="ensemble_expression_mean_translated_orthologues",
+                    gene_space="orthologues",
+                ),
+            ],
+            ignore_index=True,
+        )
+
+        plsr_out = annotate_expression_ensemble_frame(plsr_out, ensemble_ids)
+        sig_out = annotate_expression_ensemble_frame(sig_out, ensemble_ids)
+        orth_plsr_out = annotate_expression_ensemble_frame(orth_plsr_out, ensemble_ids)
+        orth_sig_out = annotate_expression_ensemble_frame(orth_sig_out, ensemble_ids)
+        ml_out = annotate_expression_ensemble_frame(ml_out, ensemble_ids)
+
+        paths_and_frames = [
+            (
+                out_dir / f"{cohort_name}_ensemble_expression_mean_translated_plsr_scores_{suffix}.csv",
+                plsr_out,
+            ),
+            (
+                out_dir / f"{cohort_name}_ensemble_expression_mean_translated_signature_scores_{suffix}.csv",
+                sig_out,
+            ),
+            (
+                out_dir / f"{cohort_name}_ensemble_expression_mean_translated_orthologue_plsr_scores_{suffix}.csv",
+                orth_plsr_out,
+            ),
+            (
+                out_dir / f"{cohort_name}_ensemble_expression_mean_translated_orthologue_signature_scores_{suffix}.csv",
+                orth_sig_out,
+            ),
+            (
+                out_dir / f"{cohort_name}_ensemble_expression_mean_ml_model_scores_{suffix}.csv",
+                ml_out,
+            ),
+        ]
+
+        if acc["sampled_sums"] is not None:
+            averaged_sampled = [
+                (sampled_sum / n_models).astype(np.float32)
+                for sampled_sum in acc["sampled_sums"]
+            ]
+            sampled_draws, sampled_summary = score_precomputed_sampled_translation_matrices(
+                subset,
+                averaged_sampled,
+                human_center,
+                human_genes,
+                human_orth_idx,
+                human_orth_genes,
+                human_orth_center,
+                expression_ml_models,
+                orthologue_ml_models,
+                signature_calibration,
+                orth_signature_calibration,
+                args,
+                device,
+                input_space_all="ensemble_expression_mean_decoder_sampled_translated_human",
+                input_space_orth="ensemble_expression_mean_decoder_sampled_translated_orthologues",
+            )
+            sampled_draws = annotate_expression_ensemble_frame(sampled_draws, ensemble_ids)
+            sampled_summary = annotate_expression_ensemble_frame(sampled_summary, ensemble_ids)
+            paths_and_frames.extend(
+                [
+                    (
+                        out_dir / f"{cohort_name}_ensemble_expression_mean_decoder_sampled_score_summary_{suffix}.csv",
+                        sampled_summary,
+                    )
+                ]
+            )
+            if args.save_decoder_sample_draws:
+                paths_and_frames.append(
+                    (
+                        out_dir / f"{cohort_name}_ensemble_expression_mean_decoder_sampled_score_draws_{suffix}.csv",
+                        sampled_draws,
+                    )
+                )
+
+        for path, frame in paths_and_frames:
+            frame.to_csv(path, index=False)
+            output_paths.append(path)
+
+    return output_paths
+
+
 def write_outputs(args, out_dir):
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
@@ -1235,17 +1577,6 @@ def write_outputs(args, out_dir):
     )
     human_orth_pred = pls_orth.predict(X_human_orth_centered)
 
-    enc_h, enc_m, flow_m2h, dec_h = load_flowtransop_m2h(
-        args, human_X.shape[1], mouse_X.shape[1], device
-    )
-    Z_human = encode_human_latent(X_human, enc_h, device, args.batch_size)
-    human_latent_center = Z_human.mean(axis=0, dtype=np.float64).astype(np.float32)
-    Z_human_centered = Z_human - human_latent_center
-
-    latent_pls, used_latent_components = fit_plsr_scorer(
-        Z_human_centered, y_human, n_components=args.pls_components
-    )
-
     expression_ml_models = fit_ml_model_set(
         X_human_centered,
         y_human,
@@ -1262,6 +1593,56 @@ def write_outputs(args, out_dir):
         plsr_model=pls_orth,
         plsr_components=used_orth_components,
     )
+
+    human_activity, signature_targets = signed_rank_signature_activity(X_human_centered, human_genes)
+    signature_calibration = fit_signature_calibration(human_activity, y_human)
+    human_signature_pred = apply_signature_calibration(human_activity, signature_calibration)
+
+    human_orth_activity, orth_signature_targets = signed_rank_signature_activity(
+        X_human_orth_centered, human_orth_genes
+    )
+    orth_signature_calibration = fit_signature_calibration(human_orth_activity, y_human)
+    human_orth_signature_pred = apply_signature_calibration(
+        human_orth_activity, orth_signature_calibration
+    )
+
+    if args.only_average_expression_ensemble:
+        output_paths = score_expression_averaged_ensemble_outputs(
+            args,
+            out_dir,
+            mouse_subsets,
+            mouse_X,
+            mouse_ids,
+            human_X.shape[1],
+            mouse_X.shape[1],
+            device,
+            human_center,
+            human_genes,
+            human_orth_idx,
+            human_orth_genes,
+            human_orth_center,
+            pls,
+            pls_orth,
+            signature_calibration,
+            orth_signature_calibration,
+            expression_ml_models,
+            orthologue_ml_models,
+        )
+        for path in output_paths:
+            print(f"Wrote: {path}")
+        return
+
+    enc_h, enc_m, flow_m2h, dec_h = load_flowtransop_m2h(
+        args, human_X.shape[1], mouse_X.shape[1], device
+    )
+    Z_human = encode_human_latent(X_human, enc_h, device, args.batch_size)
+    human_latent_center = Z_human.mean(axis=0, dtype=np.float64).astype(np.float32)
+    Z_human_centered = Z_human - human_latent_center
+
+    latent_pls, used_latent_components = fit_plsr_scorer(
+        Z_human_centered, y_human, n_components=args.pls_components
+    )
+
     latent_ml_models = fit_ml_model_set(
         Z_human_centered,
         y_human,
@@ -1280,18 +1661,6 @@ def write_outputs(args, out_dir):
         human_subset.index.to_numpy(),
         Z_human=Z_human,
         device=device,
-    )
-
-    human_activity, signature_targets = signed_rank_signature_activity(X_human_centered, human_genes)
-    signature_calibration = fit_signature_calibration(human_activity, y_human)
-    human_signature_pred = apply_signature_calibration(human_activity, signature_calibration)
-
-    human_orth_activity, orth_signature_targets = signed_rank_signature_activity(
-        X_human_orth_centered, human_orth_genes
-    )
-    orth_signature_calibration = fit_signature_calibration(human_orth_activity, y_human)
-    human_orth_signature_pred = apply_signature_calibration(
-        human_orth_activity, orth_signature_calibration
     )
 
     human_out = score_frame(human_subset.index.to_numpy(), human_pred, "plsr")
@@ -1676,6 +2045,30 @@ def write_outputs(args, out_dir):
             decoder_draws.to_csv(draws_path, index=False)
             output_paths.append(draws_path)
 
+    output_paths.extend(
+        score_expression_averaged_ensemble_outputs(
+            args,
+            out_dir,
+            mouse_subsets,
+            mouse_X,
+            mouse_ids,
+            human_X.shape[1],
+            mouse_X.shape[1],
+            device,
+            human_center,
+            human_genes,
+            human_orth_idx,
+            human_orth_genes,
+            human_orth_center,
+            pls,
+            pls_orth,
+            signature_calibration,
+            orth_signature_calibration,
+            expression_ml_models,
+            orthologue_ml_models,
+        )
+    )
+
     for path in output_paths:
         print(f"Wrote: {path}")
 
@@ -1709,6 +2102,34 @@ def parse_args():
         "--ensemble_suffix_as_fold",
         action="store_true",
         help="In full_ensemble mode, write files as fold<ensemble_id> for compatibility with the plotting script.",
+    )
+    parser.add_argument(
+        "--average_expression_ensemble",
+        action="store_true",
+        help=(
+            "Additionally load multiple full-ensemble models, average translated "
+            "mouse expression at the gene-expression level, and score the averaged "
+            "expression matrices."
+        ),
+    )
+    parser.add_argument(
+        "--only_average_expression_ensemble",
+        action="store_true",
+        help=(
+            "Only run the expression-level ensemble averaging outputs. This skips "
+            "the ordinary single-fold/single-ensemble output files for the active "
+            "fold/ensemble id."
+        ),
+    )
+    parser.add_argument(
+        "--average_expression_ensemble_ids",
+        default="0-9",
+        help="Comma/range list of full-ensemble ids for expression-level averaging, e.g. 0-9 or 0,2,4.",
+    )
+    parser.add_argument(
+        "--average_expression_output_suffix",
+        default="ensemble_expression_mean",
+        help="Output suffix for expression-level ensemble-averaged score CSVs.",
     )
     parser.add_argument("--data_dir", type=Path, default=DATA_DIR)
     parser.add_argument("--splits_dir", type=Path, default=None)
@@ -1801,12 +2222,18 @@ def parse_args():
     args.preproc_dir = args.preproc_dir or args.data_dir / "preprocessed"
     args.model_dir = args.model_dir or args.data_dir / "models"
     args.out_dir = args.out_dir or args.data_dir / "evaluation" / "liver_mas_fibrosis"
+    if args.only_average_expression_ensemble:
+        args.average_expression_ensemble = True
     if args.decoder_sample_n < 0:
         raise ValueError("--decoder_sample_n must be >= 0.")
     if args.decoder_sample_temperature < 0:
         raise ValueError("--decoder_sample_temperature must be >= 0.")
     if args.decoder_sample_var_floor <= 0:
         raise ValueError("--decoder_sample_var_floor must be > 0.")
+    if args.average_expression_ensemble:
+        if args.model_source != "full_ensemble":
+            raise ValueError("--average_expression_ensemble requires --model_source full_ensemble.")
+        parse_int_ranges(args.average_expression_ensemble_ids)
     return args
 
 
