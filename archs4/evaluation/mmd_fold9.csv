@@ -1,0 +1,7 @@
+fold,direction,model_type,mmd
+9,h2m,no_translation,0.07619738578796387
+9,h2m,FlowTransOP,0.48773813247680664
+9,h2m,permuted_both,1.5697270631790161
+9,m2h,no_translation,0.07858407497406006
+9,m2h,FlowTransOP,0.3418574929237366
+9,m2h,permuted_both,1.57395339012146

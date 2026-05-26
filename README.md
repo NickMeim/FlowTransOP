@@ -15,20 +15,9 @@ The original research scripts are in `learning/`. A lightweight installable
 package scaffold is in `src/flowtransop/` for loading trained checkpoints,
 running standard workflows, and translating preprocessed matrices.
 
-## Repository Layout
-
-```text
-FlowTransOP/
-  README.md                         Repository-level reproduction guide
-  pyproject.toml                    Installable package metadata
-  src/flowtransop/                  Lightweight package and CLI
-  learning/                         Python training, evaluation, scoring scripts
-  preprocessing/                    L1000 preprocessing scripts
-  postprocessing/                   R/Python scripts for statistics and plots
-  results/                          L1000 benchmark outputs
-  archs4/                           ARCHS4 raw/preprocessed data, models, evaluations
-  figures/                          Supplementary/supporting figure outputs
-```
+**README order:** this guide first shows installation, the installable
+`flowtransop` package interface, and a minimal package example. It then gives
+the full manuscript reproduction steps.
 
 ## Install
 
@@ -57,6 +46,142 @@ install.packages(c(
   "tidyverse", "ggplot2", "ggpubr", "patchwork", "cowplot",
   "rstatix", "lme4", "emmeans", "ggridges", "ggsignif"
 ))
+```
+
+## Package CLI
+
+After `pip install -e .`, common workflows can be called with `flowtransop`.
+The package exposes model and TRANSACT/pre-alignment device choices separately:
+
+```bash
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop train-archs4-ensemble --repo-root . --ensemble-id 0 --fold 0 \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+```
+
+L1000 method wrappers are also available:
+
+```bash
+flowtransop run-l1000 --repo-root . --method consensus-decoders
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
+flowtransop run-l1000 --repo-root . --method simple-autotransop
+```
+
+Use the pretrained full ARCHS4 ensemble weights from a local, gitignored
+`archs4/` folder:
+
+```bash
+flowtransop predict-archs4-ensemble \
+  --archs4-dir archs4 \
+  --ensemble-ids 0-9 \
+  --direction m2h \
+  --input-npy archs4/preprocessed/mouse_test_X.npy \
+  --output-npy archs4/evaluation/example_ensemble_m2h_prediction.npy
+```
+
+This expects local checkpoints such as:
+
+```text
+archs4/models/full_ensemble_0_normal.pt
+...
+archs4/models/full_ensemble_9_normal.pt
+```
+
+The package also exposes a fine-tuning entry point for users who have the
+preprocessed ARCHS4 matrices and want to continue from one pretrained ensemble
+member:
+
+```bash
+flowtransop finetune-archs4-ensemble \
+  --repo-root . \
+  --archs4-dir archs4 \
+  --ensemble-id 0 \
+  --epochs 5 \
+  --output-model-dir archs4/models_finetuned
+```
+
+Fine-tuned checkpoints are written to a separate directory by default
+(`archs4/models_finetuned`) so the original pretrained weights are not
+overwritten.
+
+To run model code on GPU but expose CPU TRANSACT/pre-alignment settings:
+
+```bash
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
+  --model-device cuda --transact-backend cpu --transact-device cpu
+```
+
+Python users can choose the TRANSACT backend independently as well:
+
+```python
+from flowtransop import RuntimeBackends, load_transact_backend
+
+backends = RuntimeBackends(model_device="cuda", transact_backend="cpu", transact_device="cpu")
+transact = load_transact_backend(repo_root=".", backends=backends)
+Z_source, Z_target, tau, model = transact.align(X_source, X_target)
+```
+
+Python users can also load the pretrained ARCHS4 ensemble directly:
+
+```python
+from flowtransop import load_archs4_ensemble
+
+ensemble = load_archs4_ensemble(archs4_dir="archs4", ensemble_ids="0-9")
+translated = ensemble.translate(mouse_expression, direction="m2h")
+```
+
+Translate a preprocessed matrix with a saved checkpoint:
+
+```bash
+flowtransop predict \
+  --normal-checkpoint archs4/models/full_ensemble_0_normal.pt \
+  --direction h2m \
+  --input-npy path/to/preprocessed_human_samples.npy \
+  --output-npy translated_mouse_expression.npy
+```
+
+Inputs must already be normalized and feature-ordered like the matrices used
+for training.
+
+## Minimal End-to-End Package Example
+
+From the repository root:
+
+```bash
+pip install -e ".[reproduce]"
+
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+
+flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+
+flowtransop predict \
+  --normal-checkpoint archs4/models/fold_0_normal.pt \
+  --m2h-checkpoint archs4/models/fold_0_normal_m2h.pt \
+  --direction m2h \
+  --input-npy archs4/preprocessed/mouse_test_X.npy \
+  --output-npy archs4/evaluation/example_m2h_prediction.npy
+```
+
+## Repository Layout
+
+```text
+FlowTransOP/
+  README.md                         Repository-level reproduction guide
+  pyproject.toml                    Installable package metadata
+  src/flowtransop/                  Lightweight package and CLI
+  learning/                         Python training, evaluation, scoring scripts
+  preprocessing/                    L1000 preprocessing scripts
+  postprocessing/                   R/Python scripts for statistics and plots
+  results/                          L1000 benchmark outputs
+  archs4/                           ARCHS4 raw/preprocessed data, models, evaluations
+  figures/                          Supplementary/supporting figure outputs
 ```
 
 ## Reproducing the Study
@@ -247,127 +372,6 @@ ARCHS4 figures are written under:
 archs4/evaluation/figures_flowtransop/
 archs4/evaluation/figures_liver/
 archs4/evaluation/liver_mas_fibrosis_final_expression_mean/figures/
-```
-
-## Package CLI
-
-After `pip install -e .`, common workflows can be called with `flowtransop`.
-The package exposes model and TRANSACT/pre-alignment device choices separately:
-
-```bash
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
-  --model-device cuda --transact-backend gpu --transact-device cuda
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
-  --model-device cuda --transact-backend gpu --transact-device cuda
-flowtransop train-archs4-ensemble --repo-root . --ensemble-id 0 --fold 0 \
-  --model-device cuda --transact-backend gpu --transact-device cuda
-flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
-```
-
-L1000 method wrappers are also available:
-
-```bash
-flowtransop run-l1000 --repo-root . --method consensus-decoders
-flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
-flowtransop run-l1000 --repo-root . --method simple-autotransop
-```
-
-Use the pretrained full ARCHS4 ensemble weights from a local, gitignored
-`archs4/` folder:
-
-```bash
-flowtransop predict-archs4-ensemble \
-  --archs4-dir archs4 \
-  --ensemble-ids 0-9 \
-  --direction m2h \
-  --input-npy archs4/preprocessed/mouse_test_X.npy \
-  --output-npy archs4/evaluation/example_ensemble_m2h_prediction.npy
-```
-
-This expects local checkpoints such as:
-
-```text
-archs4/models/full_ensemble_0_normal.pt
-...
-archs4/models/full_ensemble_9_normal.pt
-```
-
-The package also exposes a fine-tuning entry point for users who have the
-preprocessed ARCHS4 matrices and want to continue from one pretrained ensemble
-member:
-
-```bash
-flowtransop finetune-archs4-ensemble \
-  --repo-root . \
-  --archs4-dir archs4 \
-  --ensemble-id 0 \
-  --epochs 5 \
-  --output-model-dir archs4/models_finetuned
-```
-
-Fine-tuned checkpoints are written to a separate directory by default
-(`archs4/models_finetuned`) so the original pretrained weights are not
-overwritten.
-
-To run model code on GPU but expose CPU TRANSACT/pre-alignment settings:
-
-```bash
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
-  --model-device cuda --transact-backend cpu --transact-device cpu
-```
-
-Python users can choose the TRANSACT backend independently as well:
-
-```python
-from flowtransop import RuntimeBackends, load_transact_backend
-
-backends = RuntimeBackends(model_device="cuda", transact_backend="cpu", transact_device="cpu")
-transact = load_transact_backend(repo_root=".", backends=backends)
-Z_source, Z_target, tau, model = transact.align(X_source, X_target)
-```
-
-Python users can also load the pretrained ARCHS4 ensemble directly:
-
-```python
-from flowtransop import load_archs4_ensemble
-
-ensemble = load_archs4_ensemble(archs4_dir="archs4", ensemble_ids="0-9")
-translated = ensemble.translate(mouse_expression, direction="m2h")
-```
-
-Translate a preprocessed matrix with a saved checkpoint:
-
-```bash
-flowtransop predict \
-  --normal-checkpoint archs4/models/full_ensemble_0_normal.pt \
-  --direction h2m \
-  --input-npy path/to/preprocessed_human_samples.npy \
-  --output-npy translated_mouse_expression.npy
-```
-
-Inputs must already be normalized and feature-ordered like the matrices used
-for training.
-
-## Minimal End-to-End Package Example
-
-From the repository root:
-
-```bash
-pip install -e ".[reproduce]"
-
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
-  --model-device cuda --transact-backend gpu --transact-device cuda
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
-  --model-device cuda --transact-backend gpu --transact-device cuda
-
-flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
-
-flowtransop predict \
-  --normal-checkpoint archs4/models/fold_0_normal.pt \
-  --m2h-checkpoint archs4/models/fold_0_normal_m2h.pt \
-  --direction m2h \
-  --input-npy archs4/preprocessed/mouse_test_X.npy \
-  --output-npy archs4/evaluation/example_m2h_prediction.npy
 ```
 
 ## Notes for Reuse

@@ -1,0 +1,121 @@
+fold,direction,feature_set,model_type,model_label,value,lower_better
+0,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.2091282606124878,TRUE
+0,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.2091282606124878,TRUE
+0,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.2091282606124878,TRUE
+0,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.2091282606124878,TRUE
+0,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5559982657432556,TRUE
+0,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6451432108879089,TRUE
+0,Human to mouse,All target genes,permuted_both,Permuted both,1.517184853553772,TRUE
+0,Human to mouse,Orthologues,permuted_both,Permuted both,1.488218903541565,TRUE
+0,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.3073234558105469,TRUE
+0,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.345464825630188,TRUE
+0,Mouse to human,All target genes,permuted_both,Permuted both,1.259531021118164,TRUE
+0,Mouse to human,Orthologues,permuted_both,Permuted both,1.238210916519165,TRUE
+1,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.20785772800445557,TRUE
+1,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.20785772800445557,TRUE
+1,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.20785772800445557,TRUE
+1,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.20785772800445557,TRUE
+1,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5316399931907654,TRUE
+1,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6106489300727844,TRUE
+1,Human to mouse,All target genes,permuted_both,Permuted both,1.385923981666565,TRUE
+1,Human to mouse,Orthologues,permuted_both,Permuted both,1.383768916130066,TRUE
+1,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.29015862941741943,TRUE
+1,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.3112001419067383,TRUE
+1,Mouse to human,All target genes,permuted_both,Permuted both,1.2488782405853271,TRUE
+1,Mouse to human,Orthologues,permuted_both,Permuted both,1.2301061153411863,TRUE
+2,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.2076646089553833,TRUE
+2,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.2076646089553833,TRUE
+2,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.2076646089553833,TRUE
+2,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.2076646089553833,TRUE
+2,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5570003390312195,TRUE
+2,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6533505916595459,TRUE
+2,Human to mouse,All target genes,permuted_both,Permuted both,1.430904984474182,TRUE
+2,Human to mouse,Orthologues,permuted_both,Permuted both,1.4261724948883057,TRUE
+2,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.2772470712661743,TRUE
+2,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.29406821727752686,TRUE
+2,Mouse to human,All target genes,permuted_both,Permuted both,1.2501535415649414,TRUE
+2,Mouse to human,Orthologues,permuted_both,Permuted both,1.2286171913146973,TRUE
+3,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.20782113075256348,TRUE
+3,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.20782113075256348,TRUE
+3,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.20782113075256348,TRUE
+3,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.20782113075256348,TRUE
+3,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5442337989807129,TRUE
+3,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6341603994369507,TRUE
+3,Human to mouse,All target genes,permuted_both,Permuted both,1.4040839672088623,TRUE
+3,Human to mouse,Orthologues,permuted_both,Permuted both,1.3954523801803589,TRUE
+3,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.3001044988632202,TRUE
+3,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.33008861541748047,TRUE
+3,Mouse to human,All target genes,permuted_both,Permuted both,1.2435734272003174,TRUE
+3,Mouse to human,Orthologues,permuted_both,Permuted both,1.2268028259277344,TRUE
+4,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.2090921401977539,TRUE
+4,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.2090921401977539,TRUE
+4,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.2090921401977539,TRUE
+4,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.2090921401977539,TRUE
+4,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5595521330833435,TRUE
+4,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6545584797859192,TRUE
+4,Human to mouse,All target genes,permuted_both,Permuted both,1.3944847583770752,TRUE
+4,Human to mouse,Orthologues,permuted_both,Permuted both,1.4143718481063845,TRUE
+4,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.3025282621383667,TRUE
+4,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.31824636459350586,TRUE
+4,Mouse to human,All target genes,permuted_both,Permuted both,1.2510128021240234,TRUE
+4,Mouse to human,Orthologues,permuted_both,Permuted both,1.2286970615386963,TRUE
+5,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.20956814289093015,TRUE
+5,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.20956814289093015,TRUE
+5,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.20956814289093015,TRUE
+5,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.20956814289093015,TRUE
+5,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5822254419326782,TRUE
+5,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6889283657073975,TRUE
+5,Human to mouse,All target genes,permuted_both,Permuted both,1.4032303094863892,TRUE
+5,Human to mouse,Orthologues,permuted_both,Permuted both,1.3984614610671997,TRUE
+5,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.2877202033996582,TRUE
+5,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.30835986137390137,TRUE
+5,Mouse to human,All target genes,permuted_both,Permuted both,1.243335843086243,TRUE
+5,Mouse to human,Orthologues,permuted_both,Permuted both,1.2262613773345947,TRUE
+6,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.2070894241333008,TRUE
+6,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.2070894241333008,TRUE
+6,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.2070894241333008,TRUE
+6,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.2070894241333008,TRUE
+6,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5610621571540833,TRUE
+6,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6600499153137207,TRUE
+6,Human to mouse,All target genes,permuted_both,Permuted both,1.349284529685974,TRUE
+6,Human to mouse,Orthologues,permuted_both,Permuted both,1.3529900312423706,TRUE
+6,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.291642427444458,TRUE
+6,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.30865776538848877,TRUE
+6,Mouse to human,All target genes,permuted_both,Permuted both,1.2425477504730225,TRUE
+6,Mouse to human,Orthologues,permuted_both,Permuted both,1.2262520790100098,TRUE
+7,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.21125125885009768,TRUE
+7,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.21125125885009768,TRUE
+7,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.21125125885009768,TRUE
+7,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.21125125885009768,TRUE
+7,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5832582712173462,TRUE
+7,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.682841420173645,TRUE
+7,Human to mouse,All target genes,permuted_both,Permuted both,1.4377148151397705,TRUE
+7,Human to mouse,Orthologues,permuted_both,Permuted both,1.4118006229400637,TRUE
+7,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.2960500717163086,TRUE
+7,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.32072901725769043,TRUE
+7,Mouse to human,All target genes,permuted_both,Permuted both,1.2189574241638184,TRUE
+7,Mouse to human,Orthologues,permuted_both,Permuted both,1.205488920211792,TRUE
+8,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.20904946327209473,TRUE
+8,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.20904946327209473,TRUE
+8,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.20904946327209473,TRUE
+8,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.20904946327209473,TRUE
+8,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.6289196610450745,TRUE
+8,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.7655730843544006,TRUE
+8,Human to mouse,All target genes,permuted_both,Permuted both,1.4044594764709473,TRUE
+8,Human to mouse,Orthologues,permuted_both,Permuted both,1.3965191841125488,TRUE
+8,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.298439621925354,TRUE
+8,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.31458020210266113,TRUE
+8,Mouse to human,All target genes,permuted_both,Permuted both,1.256872296333313,TRUE
+8,Mouse to human,Orthologues,permuted_both,Permuted both,1.2338906526565552,TRUE
+9,Human to mouse,Orthologues,liver_test_orthologues,Liver test orthologues,0.2097780704498291,TRUE
+9,Human to mouse,All target genes,liver_test_orthologues,Liver test orthologues,0.2097780704498291,TRUE
+9,Mouse to human,Orthologues,liver_test_orthologues,Liver test orthologues,0.2097780704498291,TRUE
+9,Mouse to human,All target genes,liver_test_orthologues,Liver test orthologues,0.2097780704498291,TRUE
+9,Human to mouse,All target genes,FlowTransOP,FlowTransOP,0.5757094025611877,TRUE
+9,Human to mouse,Orthologues,FlowTransOP,FlowTransOP,0.6733525395393372,TRUE
+9,Human to mouse,All target genes,permuted_both,Permuted both,1.4153237342834473,TRUE
+9,Human to mouse,Orthologues,permuted_both,Permuted both,1.3982949256896973,TRUE
+9,Mouse to human,All target genes,FlowTransOP,FlowTransOP,0.29295849800109863,TRUE
+9,Mouse to human,Orthologues,FlowTransOP,FlowTransOP,0.3169243335723877,TRUE
+9,Mouse to human,All target genes,permuted_both,Permuted both,1.24717116355896,TRUE
+9,Mouse to human,Orthologues,permuted_both,Permuted both,1.2277581691741943,TRUE

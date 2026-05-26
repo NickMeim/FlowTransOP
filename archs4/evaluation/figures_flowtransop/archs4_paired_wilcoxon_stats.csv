@@ -1,0 +1,23 @@
+family,metric,metric_order,species,comparison,baseline,n_folds,mean_flow,mean_baseline,mean_diff,median_diff,p_value,p_adj_holm,baseline_label,directionality
+Cycle consistency,Per-sample,1,Human,FlowTransOP vs permuted_both,permuted_both,10,0.8000709376076918,-8.620980785160896e-5,0.8001571474155434,0.7993968329595903,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Cycle consistency,Per-sample,1,Mouse,FlowTransOP vs permuted_both,permuted_both,10,0.7329789855391242,-0.0021195464439189198,0.7350985319830431,0.7367119527196634,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Cycle consistency,Gene-marginal mean,2,Human,FlowTransOP vs permuted_both,permuted_both,10,0.9799464056751743,-1.0607225713039603e-4,0.9800524779323047,0.9790253807306335,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Cycle consistency,Gene-marginal mean,2,Mouse,FlowTransOP vs permuted_both,permuted_both,10,0.9371560023015666,-0.002709909989584818,0.9398659122911515,0.9421351170749205,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Cycle consistency,Gene-marginal variance,3,Human,FlowTransOP vs permuted_both,permuted_both,10,0.7157918110641052,-0.004396197532759816,0.720188008596865,0.7212355198912681,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Cycle consistency,Gene-marginal variance,3,Mouse,FlowTransOP vs permuted_both,permuted_both,10,0.5736164606847832,-0.0016239321271902,0.5752403928119734,0.551660280338796,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,FlowTransOP vs permuted_both,permuted_both,10,0.557485219923339,-0.0027767966939694208,0.5602620166173085,0.5591428776906046,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,FlowTransOP vs permuted_both,permuted_both,10,0.6239537208322254,-0.0016854672161476993,0.625639188048373,0.6254604097259409,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,FlowTransOP vs permuted_both,permuted_both,10,0.7537698328495026,-0.003611379791982471,0.7573812126414851,0.7550975491758436,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,FlowTransOP vs permuted_both,permuted_both,10,0.8707290053367615,-0.0023110525682568553,0.8730400579050184,0.8726232459302992,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,FlowTransOP vs permuted_both,permuted_both,10,0.23751191943883895,0.010094319190829992,0.22741760024800897,0.22878562472760677,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,FlowTransOP vs permuted_both,permuted_both,10,0.36580120921134945,-0.0075661461101844876,0.373367355321534,0.37376079009845853,0.0029607685120743537,0.0029607685120743537,Permuted both,higher is better

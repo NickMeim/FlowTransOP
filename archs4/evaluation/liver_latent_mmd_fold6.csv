@@ -1,0 +1,5 @@
+fold,direction,tissue,model_type,comparison,n_source,n_target,n_features,mmd
+6,h2m,liver,FlowTransOP,translated_source_vs_real_target,10000,10000,512,1.0101250410079956
+6,h2m,liver,permuted_both,translated_source_vs_real_target,10000,10000,512,1.5430476665496826
+6,m2h,liver,FlowTransOP,translated_source_vs_real_target,10000,10000,512,0.44577842950820923
+6,m2h,liver,permuted_both,translated_source_vs_real_target,10000,10000,512,1.5141477584838867

@@ -1,0 +1,5 @@
+fold,species,tissue,model_type,comparison,n_samples,n_features,pearson_mu,pearson_var,r2_mu,r2_var
+9,human,liver,FlowTransOP,reconstructed_liver_vs_liver_input,32954,37933,0.97535596093115,0.6791766717946666,0.9498242452307012,0.3470207095546842
+9,human,liver,permuted_both,reconstructed_liver_vs_liver_input,32954,37933,0.001249710621450958,-0.0013339184427506728,-0.6983784469000256,-21.027712557724808
+9,mouse,liver,FlowTransOP,reconstructed_liver_vs_liver_input,66605,29477,0.9383288130197429,0.6339200398348238,0.8797145250575436,0.3348980661362778
+9,mouse,liver,permuted_both,reconstructed_liver_vs_liver_input,66605,29477,0.003074507674743489,-0.0045240263331538366,-0.5291887647991331,-20.13013479346264

@@ -1,0 +1,5 @@
+ensemble_ids,model_family,scoring_space,feature_space,n_samples,n_features,n_ensemble_models,pls_components_used,train_rmse_nas,train_rmse_fibrosis,train_r2_nas,train_r2_fibrosis
+"0,1,2,3,4,5,6,7,8,9",raw_human_plsr,training_all_genes,all_human_genes,194,37933,10,8,0.2446261708335776,0.18078487202709184,0.9841188846424878,0.9782181650307555
+"0,1,2,3,4,5,6,7,8,9",raw_human_plsr,training_orthologues,orthologues,194,15666,10,8,0.413300308087393,0.4055999886559469,0.9546678179864404,0.8903607239229636
+"0,1,2,3,4,5,6,7,8,9",reconstructed_human_plsr,training_all_genes,all_human_genes,194,37933,10,8,1.6017042688753678,1.0531225474599064,0.3191682007245954,0.2608576042213433
+"0,1,2,3,4,5,6,7,8,9",reconstructed_human_plsr,training_orthologues,orthologues,194,15666,10,8,1.6235227993839942,1.0643822182160754,0.30049318573525874,0.2449677329486416

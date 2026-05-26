@@ -1,0 +1,401 @@
+fold,direction,feature_set,comparison,model_type,model_label,random_repeat,background_n,metric,value,lower_better
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,3.302328109741211,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,4.160467624664307,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,2.5281336307525635,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,6.127716064453125,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,3.4063832759857178,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,4.211463928222656,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,2.8886704444885254,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,5.562497615814209,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,3.417222261428833,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,4.177913665771484,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,3.0238349437713623,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,5.507343292236328,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,3.343733549118042,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,4.316897869110107,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,2.5847203731536865,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,6.304293155670166,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,3.4290006160736084,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,4.2521891593933105,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,2.5665135383605957,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,6.063779354095459,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,3.331725597381592,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,4.29514741897583,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,2.648829221725464,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,5.77064323425293,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,3.352330446243286,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,4.091828346252441,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,2.9156999588012695,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,5.520864963531494,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,3.4227216243743896,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,4.0984039306640625,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,3.099170923233032,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,5.35425329208374,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,3.315378427505493,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,4.295675754547119,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,3.5048460960388184,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,4.726527690887451,TRUE
+0,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,3.37186050415039,TRUE
+0,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,4.154146194458008,TRUE
+0,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,3.2485885620117187,TRUE
+0,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,5.187427043914795,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,2.5107550621032715,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,6.936081886291504,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.1180099248886108,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,1.295387625694275,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,2.4446663856506348,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,6.748619556427002,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.0180785655975342,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,1.2212800979614258,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,2.358548879623413,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,6.784782409667969,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.0522218942642212,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,1.3285127878189087,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,2.396726131439209,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,6.708110332489014,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,1.113227605819702,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,1.3966015577316284,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,2.5558481216430664,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,6.966078281402588,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.0476795434951782,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,1.3899922370910645,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,2.6539180278778076,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,7.29287576675415,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.1376956701278689,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,1.2516485452651978,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,2.3835349082946777,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,6.83746862411499,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.0508085489273071,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,1.1636197566986084,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,2.2883541584014893,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,6.567916393280029,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.058971881866455,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,1.3287442922592163,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,2.6874444484710693,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,7.175887107849121,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,1.0044435262680054,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,1.3968843221664429,TRUE
+1,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,2.2963857650756836,TRUE
+1,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,6.802607536315918,TRUE
+1,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,0.9742634892463684,TRUE
+1,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,1.314275860786438,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,2.7087409496307373,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,5.143502712249756,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.0697143077850342,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,2.316972017288208,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,3.023688554763794,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,5.722375392913818,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.1493821144104004,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,2.508626699447632,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,2.6334731578826904,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,5.263550281524658,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.0442672967910769,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,2.3593783378601074,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,2.7447526454925537,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,5.19351053237915,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,1.0712952613830566,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,2.1757514476776123,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,2.910273790359497,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,5.549817085266113,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.066572904586792,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,2.211545705795288,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,3.14316463470459,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,5.717932224273682,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.1347694396972656,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,2.417884349822998,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,2.8748154640197754,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,5.4275078773498535,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.1845959424972534,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,2.651186943054199,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,3.0232441425323486,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,5.638397693634033,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.107645869255066,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,2.2330520153045654,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,2.711262464523315,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,5.38484001159668,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,1.0394147634506226,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,2.3908920288085937,TRUE
+2,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,2.934408664703369,TRUE
+2,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,5.506198883056641,TRUE
+2,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.1269973516464231,TRUE
+2,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,2.4921741485595703,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,2.652604818344116,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,5.966968536376953,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,0.9652683138847352,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,2.887481212615967,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,2.612574577331543,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,6.489113807678223,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.163237690925598,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,3.4645180702209473,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,2.529625654220581,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,6.2489495277404785,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.046536922454834,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,3.1517317295074463,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,2.6515512466430664,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,6.484377384185791,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,0.9754403829574584,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,2.9849894046783447,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,2.3853871822357178,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,6.09018087387085,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.1195623874664309,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,3.319645404815674,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,2.628819465637207,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,6.08279275894165,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.2086803913116455,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,3.3946268558502197,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,2.663156747817993,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,6.369259357452393,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.0741465091705322,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,3.203530788421631,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,2.5737485885620117,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,6.542474269866943,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.0435385704040527,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,2.8708815574645996,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,2.459226369857788,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,6.441242218017578,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,0.9736226797103882,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,3.0592663288116455,TRUE
+3,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,2.6030423641204834,TRUE
+3,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,6.284042835235596,TRUE
+3,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.0313009023666382,TRUE
+3,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,2.818654775619507,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,4.119378566741943,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,8.820433616638184,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.1152178049087524,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,2.777174711227417,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,4.468465328216553,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,9.19131851196289,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.0310969352722168,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,2.443281412124634,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,4.357698917388916,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,9.101579666137695,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,0.9088549017906188,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,2.4569857120513916,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,4.4957499504089355,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,9.083688735961914,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,0.9749636054039,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,2.414508104324341,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,4.499126434326172,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,9.048994064331056,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.0007643699645996,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,2.4333837032318115,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,4.5112457275390625,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,9.314786911010742,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.0570176839828491,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,2.732045888900757,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,3.944517374038696,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,8.607370376586914,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,0.979411005973816,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,2.2347521781921387,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,4.273270606994629,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,8.932001113891602,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.147749900817871,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,2.742121696472168,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,4.624072551727295,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,9.306028366088867,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,0.9740810990333556,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,2.5345258712768555,TRUE
+4,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,4.06382417678833,TRUE
+4,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,8.715415954589844,TRUE
+4,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.001165509223938,TRUE
+4,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,2.413604497909546,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,3.326215982437134,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,4.274408340454102,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.5307698249816897,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,1.7503966093063354,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,3.4917080402374268,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,4.410874366760254,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.5376121997833252,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,1.7109054327011108,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,3.404900550842285,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,4.089890003204346,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.5230730772018433,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,1.6272159814834597,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,3.310319185256958,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,4.136871814727783,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,1.4862723350524902,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,1.8395637273788452,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,3.2758097648620605,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,4.1059675216674805,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.4896775484085083,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,1.7580896615982056,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,3.507469415664673,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,4.375487804412842,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.5144028663635254,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,1.7494906187057495,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,3.4215762615203857,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,4.30210018157959,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.4558444023132324,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,1.8485660552978516,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,3.4530558586120605,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,4.139781475067139,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.49958336353302,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,1.8280407190322876,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,3.4874677658081055,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,4.336731910705566,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,1.5267279148101809,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,1.7472258806228638,TRUE
+5,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,3.3354692459106445,TRUE
+5,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,4.4283881187438965,TRUE
+5,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.487718939781189,TRUE
+5,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,1.6802014112472534,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,2.489039182662964,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,7.965081691741943,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.1193170547485352,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,2.3542914390563965,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,2.5240583419799805,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,7.927432537078857,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.0944414138793943,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,2.048762798309326,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,2.2864677906036377,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,7.721189022064209,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.1555205583572388,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,2.300579309463501,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,2.7414677143096924,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,7.99989652633667,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,1.111732006072998,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,2.161440372467041,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,2.6374289989471436,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,8.083048820495605,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.1065977811813354,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,2.041058301925659,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,2.447882890701294,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,7.692544460296631,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.2355122566223145,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,2.4379584789276123,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,2.366910934448242,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,7.6977105140686035,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.1544899940490725,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,2.1429531574249268,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,2.4121994972229004,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,7.576125621795654,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.1430176496505735,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,1.9761600494384768,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,2.5229623317718506,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,7.9884867668151855,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,1.10644793510437,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,2.1551952362060547,TRUE
+6,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,2.562305450439453,TRUE
+6,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,7.96426248550415,TRUE
+6,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.0588735342025757,TRUE
+6,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,2.1247782707214355,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,4.67246150970459,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,11.154047966003418,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.265515685081482,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,2.1502676010131836,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,4.6936163902282715,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,11.114399909973145,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.3059009313583374,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,2.004605293273926,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,4.376828670501709,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,10.525418281555176,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.3300241231918335,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,1.9669972658157349,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,4.594096660614014,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,11.006165504455566,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,1.3636623620986938,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,2.0170633792877197,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,4.504419326782227,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,10.939854621887209,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.3780944347381592,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,1.983920216560364,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,5.239613056182861,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,11.660903930664063,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.358586311340332,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,1.9970961809158323,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,4.620946884155273,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,11.073957443237305,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.4380836486816406,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,1.9772554636001587,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,4.5429606437683105,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,11.126816749572754,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.3399964570999146,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,1.9546315670013428,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,5.357032299041748,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,11.71097183227539,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,1.1677180528640747,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,2.1169819831848145,TRUE
+7,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,4.786612510681152,TRUE
+7,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,11.26251220703125,TRUE
+7,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.4838204383850098,TRUE
+7,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,1.911540389060974,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,3.911941528320313,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,7.352463722229004,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.6134601831436155,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,1.9417027235031128,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,4.008123874664307,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,7.636593818664551,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.648955464363098,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,2.104144811630249,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,3.890355110168457,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,7.482589244842529,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.5425145626068115,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,1.8469401597976685,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,3.996251583099365,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,7.543432712554932,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,1.438626050949097,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,1.957565665245056,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,3.808468580245972,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,7.275349140167236,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.5164649486541748,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,1.913636326789856,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,3.968706369400024,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,7.421020030975342,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.5186713933944702,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,2.0029501914978027,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,3.723280668258667,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,7.065621376037598,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.6544331312179563,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,2.0550754070281982,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,3.509617805480957,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,6.757795810699463,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.54981791973114,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,1.990848183631897,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,3.6999573707580566,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,7.097354888916016,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,1.502761721611023,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,1.989405632019043,TRUE
+8,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,4.133527755737305,TRUE
+8,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,7.546010971069336,TRUE
+8,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.4701112508773804,TRUE
+8,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,1.94133722782135,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,3.789762020111084,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,6.620537757873535,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,0,1000,Centroid distance,1.3741744756698608,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,0,1000,Centroid distance,1.9738022089004517,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,3.7885446548461914,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,6.635534763336182,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,1,1000,Centroid distance,1.4345226287841797,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,1,1000,Centroid distance,2.0102713108062744,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,3.8299055099487305,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,6.644602298736572,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,2,1000,Centroid distance,1.4368551969528198,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,2,1000,Centroid distance,2.0744380950927734,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,3.676801919937134,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,6.663837432861328,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,3,1000,Centroid distance,1.4895122051239014,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,3,1000,Centroid distance,1.8155909776687624,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,3.852099657058716,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,6.613487720489502,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,4,1000,Centroid distance,1.4875584840774536,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,4,1000,Centroid distance,1.893648386001587,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,3.7249913215637207,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,6.700879096984863,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,5,1000,Centroid distance,1.4290509223937988,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,5,1000,Centroid distance,1.8594658374786377,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,3.660874605178833,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,6.411535739898682,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,6,1000,Centroid distance,1.2765486240386963,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,6,1000,Centroid distance,1.9698442220687864,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,3.96433162689209,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,6.7761921882629395,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,7,1000,Centroid distance,1.295378804206848,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,7,1000,Centroid distance,1.823754906654358,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,3.777098417282105,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,6.62145471572876,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,8,1000,Centroid distance,1.2979226112365725,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,8,1000,Centroid distance,2.04109263420105,TRUE
+9,Human to mouse,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,3.650977849960327,TRUE
+9,Human to mouse,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,6.523970603942871,TRUE
+9,Mouse to human,latent,real_target_liver_vs_random_non_liver_target,target_liver,Real target liver,9,1000,Centroid distance,1.437105655670166,TRUE
+9,Mouse to human,latent,translated_liver_source_vs_random_non_liver_target,FlowTransOP,FlowTransOP,9,1000,Centroid distance,1.9032844305038452,TRUE

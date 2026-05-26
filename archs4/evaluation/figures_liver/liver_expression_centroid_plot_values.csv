@@ -1,0 +1,721 @@
+fold,direction,feature_set,comparison,model_type,model_label,metric,value,lower_better
+0,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.33509826660156,TRUE
+0,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9725804328918456,FALSE
+0,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8573221564292908,FALSE
+0,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8529297759537788,FALSE
+0,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.93280194542408,FALSE
+0,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.930748854982853,FALSE
+0,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.33509826660156,TRUE
+0,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9725804328918456,FALSE
+0,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8573221564292908,FALSE
+0,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8529297759537788,FALSE
+0,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9435781029105188,FALSE
+0,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9421557233572008,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,198.3160400390625,TRUE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9408742785453796,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.836816132068634,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.8498097026394252,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9873660440683364,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9868256736695766,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,176.68710327148437,TRUE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.94628643989563,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.7214325666427612,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.7158992123019825,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9913963080406188,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9907917915463448,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,587.8885498046875,TRUE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.5943796634674072,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00352947297506034,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00435493403052712,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5710781370699406,FALSE
+0,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5702510941624641,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,428.5085754394531,TRUE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6606950759887695,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00356556265614926,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00785107835299797,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6637005123615265,FALSE
+0,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.662361978673935,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,118.64678192138672,TRUE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9830986857414246,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.956264078617096,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9518808008672358,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9749585669338704,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9741215042829512,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,98.953338623046875,TRUE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9851088523864746,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9208897352218628,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9200871209656192,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9852688267469406,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.983798757815361,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,549.901611328125,TRUE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6322227120399475,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00110424659214913,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,4.7511823183634e-4,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5929196897625924,FALSE
+0,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.59216262139678,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,385.4520568847656,TRUE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7157604098320007,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00566917192190885,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00311071284621643,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7279164720773696,FALSE
+0,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7237751073718071,FALSE
+1,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.91799926757812,TRUE
+1,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723984003067015,FALSE
+1,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8566479086875916,FALSE
+1,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8521893956682656,FALSE
+1,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9332161038279534,FALSE
+1,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9309301138818264,FALSE
+1,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.91799926757812,TRUE
+1,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723984003067015,FALSE
+1,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8566479086875916,FALSE
+1,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8521893956682655,FALSE
+1,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9446329363107682,FALSE
+1,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9423848672747612,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,187.4387969970703,TRUE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9468957781791688,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.852225124835968,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.8627014341744059,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.98360465939641,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9828011171758176,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,165.53964233398438,TRUE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9523527026176452,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.753744900226593,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.7521536809323046,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9881788879454136,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9873848513305188,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,491.2946166992187,TRUE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6337482929229736,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00262518809176981,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00456923538259823,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6080106498003006,FALSE
+1,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6072520992577076,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,377.3118286132813,TRUE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7040975093841553,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.0025854124687612,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00774039376629988,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7119643276870251,FALSE
+1,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7069908903896809,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,104.15939331054687,TRUE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.987146258354187,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9664130806922911,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9628518865940044,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9784621102571488,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.977401681548357,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,84.56070709228516,TRUE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9893292784690856,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9385581612586976,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.936810869793578,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9857750389456748,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9851889040529728,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,547.06390380859375,TRUE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6331122517585754,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00244504865258932,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00202169377559264,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.594759410327673,FALSE
+1,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5938138167619705,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,385.0861206054687,TRUE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7167134881019592,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00421088514849543,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00247262067330884,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7254882879495621,FALSE
+1,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7225509068369865,FALSE
+2,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.29278564453125,TRUE
+2,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721381664276124,FALSE
+2,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8550411462783813,FALSE
+2,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8505204582745712,FALSE
+2,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9323468886882068,FALSE
+2,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9302822455734014,FALSE
+2,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.29278564453125,TRUE
+2,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721381664276124,FALSE
+2,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8550411462783813,FALSE
+2,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8505204582745712,FALSE
+2,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.944389079284668,FALSE
+2,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9422354114413262,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,199.36138916015625,TRUE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9428402781486512,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.8437929153442383,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.8591936500780973,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9869928897619248,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9865000090241433,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,178.8517303466797,TRUE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9479921460151672,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.7341649532318115,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.7293284011227914,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9909917051553726,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9906059702634812,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,517.8868408203125,TRUE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6111118793487549,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00363418599590659,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00511443812239559,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5871453456699848,FALSE
+2,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5862063538908958,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,395.80999755859375,TRUE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6776793599128723,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00554544199258089,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00913803163014972,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6812053255856038,FALSE
+2,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6792629376888275,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,100.87537384033205,TRUE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9879825115203856,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9680647253990172,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9626652696005724,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.978429904270172,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.976992274659872,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,82.44416809082031,TRUE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9898866415023804,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9422847032546996,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9406319407097498,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9860864285588264,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9851638488948344,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,546.51226806640625,TRUE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6348901391029358,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00300110271200537,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00281944634994713,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5952263039290905,FALSE
+2,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5947601208627225,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,383.4609375,TRUE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7187537550926208,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00331208482384681,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-6.5691997409085e-4,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7302594594657421,FALSE
+2,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7248878107070923,FALSE
+3,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.41432189941406,TRUE
+3,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721400737762452,FALSE
+3,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8556153178215027,FALSE
+3,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8510984020150738,FALSE
+3,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9331229251265526,FALSE
+3,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9308858624219896,FALSE
+3,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.41432189941406,TRUE
+3,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721400737762452,FALSE
+3,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8556153178215027,FALSE
+3,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8510984020150738,FALSE
+3,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.943579762762785,FALSE
+3,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9422263960540296,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,196.10350036621097,TRUE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9414840936660768,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.8388858437538147,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.8543499752677678,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9841314089357852,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9834660862267016,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,174.85003662109375,TRUE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9463731050491332,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.7267453670501709,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.7228013383312969,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9889896197080612,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.988268277966976,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,500.5511169433594,TRUE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6301178932189941,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00295785092748701,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00483943541202351,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6060908675730229,FALSE
+3,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6043212374985218,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,381.3973693847656,TRUE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6997318267822266,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.003880909178406,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00993999573530667,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7038223868131638,FALSE
+3,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7015690757453442,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,113.60983276367187,TRUE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9842770099639891,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9591557383537292,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9539069932008236,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9774361788928508,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9763271906733512,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,91.76334381103516,TRUE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9867954850196838,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9312143325805664,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.929279588309806,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9850339988172054,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9843138401746748,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,543.532470703125,TRUE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6351463794708252,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00261470535770058,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00151592830069054,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5963739525139332,FALSE
+3,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5953805027544499,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,383.31927490234375,TRUE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7190700769424438,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00355463870801031,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00208421827845991,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7319399278998375,FALSE
+3,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7263472249031067,FALSE
+4,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.80276489257812,TRUE
+4,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723379015922546,FALSE
+4,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560435771942139,FALSE
+4,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8514829852701387,FALSE
+4,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9324404510378838,FALSE
+4,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9303008116304874,FALSE
+4,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.80276489257812,TRUE
+4,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723379015922546,FALSE
+4,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560435771942139,FALSE
+4,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8514829852701387,FALSE
+4,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.944481562000513,FALSE
+4,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9422708657503128,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,200.59640502929687,TRUE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9393473863601683,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.8339526057243347,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.850777960428851,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.985196894353628,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9845214953064918,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,179.49366760253906,TRUE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9442396759986876,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.716458261013031,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.7110031088252631,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9899229946017264,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.989379092657566,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,494.7199096679687,TRUE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6121073961257935,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.0011922693811357,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00303907675197859,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5880124369144439,FALSE
+4,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5871161311209202,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,389.2518310546875,TRUE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6790040135383606,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00212408578954637,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00945522533637634,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6817435195744037,FALSE
+4,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6805161071956157,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,114.22018432617187,TRUE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9843618869781494,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.959738314151764,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9544039007786428,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9729571318030358,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9720319026291372,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,91.6376724243164,TRUE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9871425628662108,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9306470155715942,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9282126939163196,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9820339518368244,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9807272544503212,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,546.18927001953125,TRUE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6351112127304077,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00199505197815597,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00114812545636317,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5955244866549969,FALSE
+4,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5947947012007236,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,383.1354675292969,TRUE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7191253304481506,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00405505020171403,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00217805407644187,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7288396790266037,FALSE
+4,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7265645540475846,FALSE
+5,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.10830688476562,TRUE
+5,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972322404384613,FALSE
+5,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560836315155029,FALSE
+5,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8515740548658328,FALSE
+5,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.933852473694086,FALSE
+5,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9316856517076492,FALSE
+5,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.10830688476562,TRUE
+5,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972322404384613,FALSE
+5,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560836315155029,FALSE
+5,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8515740548658328,FALSE
+5,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9438328039705752,FALSE
+5,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9423403834283351,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,209.90267944335935,TRUE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.934735894203186,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.820947527885437,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.841102115609201,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.987699596875906,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.987077176952362,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,189.15577697753903,TRUE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.939284324645996,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.6922895908355713,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.6852425591001882,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9920162697017192,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9914174776375294,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,498.2957458496094,TRUE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6311222314834595,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00366425095126032,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00559504716238414,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6065171918272972,FALSE
+5,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6051762955188751,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,380.416259765625,TRUE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7010489106178284,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00477136392146348,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.01067971579264123,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7164061022877694,FALSE
+5,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7058245185375214,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,104.30947875976562,TRUE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9866475462913512,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9644482135772704,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9619653838787012,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.975872828155756,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9747557622730731,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,85.83171844482422,TRUE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.988435447216034,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9341334104537964,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9304770219237304,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9842085446894168,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9829924073398112,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,543.61651611328125,TRUE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6349920630455017,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00319032510742545,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00216095837845612,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5960027061283588,FALSE
+5,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5955813016712665,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,383.53912353515625,TRUE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7191358804702759,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00280494149774312,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-0.00116054715056404,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7316848096013069,FALSE
+5,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7271272090792656,FALSE
+6,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.6304931640625,TRUE
+6,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9724626541137696,FALSE
+6,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.856979489326477,FALSE
+6,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8525676330930354,FALSE
+6,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9327916153669358,FALSE
+6,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.930687867116928,FALSE
+6,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.6304931640625,TRUE
+6,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9724626541137696,FALSE
+6,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.856979489326477,FALSE
+6,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8525676330930354,FALSE
+6,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9437897145867348,FALSE
+6,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9423592544913292,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,201.27381896972656,TRUE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.939092457294464,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.834803581237793,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.852929468974966,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9880784635901452,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.987533186775446,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,179.3152313232422,TRUE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9448819756507874,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.7190619707107544,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.7143921261661857,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9922116852939128,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9917157207906246,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,475.1667175292969,TRUE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6452733874320984,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.0027442374266684,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00400210397056971,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6175612389862537,FALSE
+6,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6169158237755299,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,367.972412109375,TRUE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7174667119979858,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00449463818222284,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00673247058936518,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.721391826480627,FALSE
+6,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7194459413409233,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,104.22543334960937,TRUE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.986234486103058,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9632238745689392,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9599596131936456,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9734494933903216,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9717553108632564,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,85.76033020019531,TRUE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9880281686782836,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9314477443695068,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9284383748625468,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9820702840805052,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.980917640441656,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,540.51068115234375,TRUE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.634289026260376,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.0010407647350803,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-6.5425440857451e-4,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5975792002260685,FALSE
+6,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5959815575897693,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,381.6506652832031,TRUE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7212378978729248,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00231962976977229,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00468913331921284,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7348461793899537,FALSE
+6,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7283892937779427,FALSE
+7,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.125,TRUE
+7,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9722461700439452,FALSE
+7,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8557491302490234,FALSE
+7,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8512102220188584,FALSE
+7,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9330415279179812,FALSE
+7,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.931074699190259,FALSE
+7,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.125,TRUE
+7,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9722461700439452,FALSE
+7,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8557491302490234,FALSE
+7,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8512102220188584,FALSE
+7,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9438109124064444,FALSE
+7,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9424339287936688,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,209.98422241210935,TRUE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9347352385520936,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.823576807975769,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.844535132060673,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9819621191203596,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9809058270275592,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,187.6597137451172,TRUE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9397797584533693,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.7056190967559814,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.6993271657502513,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9868974905848504,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9862569673478604,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,517.63421630859375,TRUE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.633696436882019,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00670951977372169,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00832801569631303,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6065724869072437,FALSE
+7,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6060645200252534,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,384.3616638183594,TRUE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7044698596000671,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.0066472771577537,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00864910134710286,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7101710488915444,FALSE
+7,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7068237577259541,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,110.21424102783205,TRUE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9851629734039308,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9612531065940856,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9565899751111452,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.977367869490385,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9759460488677024,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,90.4136962890625,TRUE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9873613119125366,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9311971664428712,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9290114628018172,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9849986317753792,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9841742531001568,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,531.08941650390625,TRUE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6424754858016968,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-3.5693543031811e-4,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-2.2004168299627e-4,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6033590570390225,FALSE
+7,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6029136373281478,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,376.0857238769531,TRUE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7305821180343628,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00205384101718664,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00366129267190262,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7416227334856987,FALSE
+7,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7390579112768173,FALSE
+8,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.7931671142578,TRUE
+8,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972398281097412,FALSE
+8,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8565698862075806,FALSE
+8,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8520866153044484,FALSE
+8,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9330912732899188,FALSE
+8,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9308356240808964,FALSE
+8,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.7931671142578,TRUE
+8,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972398281097412,FALSE
+8,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8565698862075806,FALSE
+8,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8520866153044484,FALSE
+8,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9440054874181748,FALSE
+8,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9424566871702672,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,229.535400390625,TRUE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9215235114097596,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.7865378856658936,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.8175571033434491,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9900417831718922,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9892999003589154,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,208.4361267089844,TRUE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.925530731678009,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.6334760189056396,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.631177860365791,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9944303740859032,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9940206586897372,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,498.4177856445313,TRUE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6312732696533203,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00690463092178106,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00831691329407371,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6039650127828121,FALSE
+8,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6036894586503506,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,380.167724609375,TRUE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7013078331947327,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00651444960385561,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.0088961314198847,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7120618657648563,FALSE
+8,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7047013163328171,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,114.7423858642578,TRUE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.984049677848816,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9579098224639891,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9534081281327398,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.978087489783764,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.976103341972828,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,92.08214569091795,TRUE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9870198965072632,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9248003959655762,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9204867556386728,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9850784456729887,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9840065748751164,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,550.02215576171875,TRUE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6295266151428223,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00156543171033263,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-1.8380327462793e-4,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5923153180241585,FALSE
+8,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5908125295341015,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,385.7033081054687,TRUE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7151526212692261,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,4.6740099787712e-4,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00267419031466445,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7264824567437171,FALSE
+8,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7230768762409687,FALSE
+9,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.63523864746094,TRUE
+9,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9720594882965088,FALSE
+9,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8552653789520264,FALSE
+9,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8506434192508603,FALSE
+9,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9332698574513196,FALSE
+9,Human to mouse,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9311359300702812,FALSE
+9,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.63523864746094,TRUE
+9,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9720594882965088,FALSE
+9,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8552653789520264,FALSE
+9,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8506434192508603,FALSE
+9,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9440687315106392,FALSE
+9,Mouse to human,Orthologues,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9426603768765928,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,206.06927490234375,TRUE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9370085597038268,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.8297017812728882,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.8474572117084863,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.987824513232708,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9871565998733044,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,184.62274169921875,TRUE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9424970149993896,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.7090135216712952,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.704089113056522,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9918208347141744,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9913299662530424,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,506.5713806152344,TRUE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6327356100082397,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00673964712768793,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00803685465098352,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.6054885989487171,FALSE
+9,Human to mouse,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.6051709771454334,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,381.64996337890625,TRUE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7030336856842041,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,0.00699804909527301,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00967131780204078,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7139852540552616,FALSE
+9,Human to mouse,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7066101369023323,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,107.36458587646484,TRUE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9866327047348022,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.965506911277771,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9617775266117972,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.9778840841531754,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.9765560434520244,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid distance,88.31520080566406,TRUE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid cosine,0.9886742830276488,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Pearson,0.9358355402946472,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Centroid Spearman,0.9326121826017684,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-1 target cosine,0.985559022963047,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,FlowTransOP,FlowTransOP,Mean top-k target cosine,0.98460346429348,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,544.4599609375,TRUE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.6326002478599548,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,-0.00193551962729543,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,-9.6536345881713e-4,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.5954369581222534,FALSE
+9,Mouse to human,All target genes,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.5939515268206597,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid distance,383.1083679199219,TRUE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid cosine,0.7194320559501648,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Pearson,5.8120326139032e-4,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Centroid Spearman,0.00231623026457232,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-1 target cosine,0.7314479756891727,FALSE
+9,Mouse to human,Orthologues,translated_liver_source_vs_liver_target,permuted_both,Permuted both,Mean top-k target cosine,0.7262362898170948,FALSE
+0,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.33509826660156,TRUE
+0,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9725804328918456,FALSE
+0,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8573221564292908,FALSE
+0,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8529297759537788,FALSE
+0,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.93280194542408,FALSE
+0,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.930748854982853,FALSE
+0,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.33509826660156,TRUE
+0,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9725804328918456,FALSE
+0,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8573221564292908,FALSE
+0,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8529297759537788,FALSE
+0,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9435781029105188,FALSE
+0,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9421557233572008,FALSE
+1,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.91799926757812,TRUE
+1,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723984003067015,FALSE
+1,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8566479086875916,FALSE
+1,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8521893956682656,FALSE
+1,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9332161038279534,FALSE
+1,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9309301138818264,FALSE
+1,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.91799926757812,TRUE
+1,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723984003067015,FALSE
+1,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8566479086875916,FALSE
+1,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8521893956682655,FALSE
+1,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9446329363107682,FALSE
+1,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9423848672747612,FALSE
+2,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.29278564453125,TRUE
+2,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721381664276124,FALSE
+2,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8550411462783813,FALSE
+2,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8505204582745712,FALSE
+2,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9323468886882068,FALSE
+2,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9302822455734014,FALSE
+2,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.29278564453125,TRUE
+2,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721381664276124,FALSE
+2,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8550411462783813,FALSE
+2,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8505204582745712,FALSE
+2,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.944389079284668,FALSE
+2,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9422354114413262,FALSE
+3,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.41432189941406,TRUE
+3,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721400737762452,FALSE
+3,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8556153178215027,FALSE
+3,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8510984020150738,FALSE
+3,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9331229251265526,FALSE
+3,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9308858624219896,FALSE
+3,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.41432189941406,TRUE
+3,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9721400737762452,FALSE
+3,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8556153178215027,FALSE
+3,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8510984020150738,FALSE
+3,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.943579762762785,FALSE
+3,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9422263960540296,FALSE
+4,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.80276489257812,TRUE
+4,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723379015922546,FALSE
+4,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560435771942139,FALSE
+4,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8514829852701387,FALSE
+4,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9324404510378838,FALSE
+4,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9303008116304874,FALSE
+4,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.80276489257812,TRUE
+4,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9723379015922546,FALSE
+4,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560435771942139,FALSE
+4,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8514829852701387,FALSE
+4,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.944481562000513,FALSE
+4,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9422708657503128,FALSE
+5,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.10830688476562,TRUE
+5,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972322404384613,FALSE
+5,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560836315155029,FALSE
+5,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8515740548658328,FALSE
+5,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.933852473694086,FALSE
+5,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9316856517076492,FALSE
+5,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.10830688476562,TRUE
+5,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972322404384613,FALSE
+5,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8560836315155029,FALSE
+5,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8515740548658328,FALSE
+5,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9438328039705752,FALSE
+5,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9423403834283351,FALSE
+6,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.6304931640625,TRUE
+6,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9724626541137696,FALSE
+6,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.856979489326477,FALSE
+6,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8525676330930354,FALSE
+6,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9327916153669358,FALSE
+6,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.930687867116928,FALSE
+6,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.6304931640625,TRUE
+6,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9724626541137696,FALSE
+6,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.856979489326477,FALSE
+6,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8525676330930354,FALSE
+6,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9437897145867348,FALSE
+6,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9423592544913292,FALSE
+7,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.125,TRUE
+7,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9722461700439452,FALSE
+7,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8557491302490234,FALSE
+7,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8512102220188584,FALSE
+7,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9330415279179812,FALSE
+7,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.931074699190259,FALSE
+7,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.125,TRUE
+7,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9722461700439452,FALSE
+7,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8557491302490234,FALSE
+7,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8512102220188584,FALSE
+7,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9438109124064444,FALSE
+7,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9424339287936688,FALSE
+8,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.7931671142578,TRUE
+8,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972398281097412,FALSE
+8,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8565698862075806,FALSE
+8,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8520866153044484,FALSE
+8,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9330912732899188,FALSE
+8,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9308356240808964,FALSE
+8,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,128.7931671142578,TRUE
+8,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.972398281097412,FALSE
+8,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8565698862075806,FALSE
+8,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8520866153044484,FALSE
+8,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9440054874181748,FALSE
+8,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9424566871702672,FALSE
+9,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.63523864746094,TRUE
+9,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9720594882965088,FALSE
+9,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8552653789520264,FALSE
+9,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8506434192508603,FALSE
+9,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9332698574513196,FALSE
+9,Human to mouse,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9311359300702812,FALSE
+9,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid distance,129.63523864746094,TRUE
+9,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid cosine,0.9720594882965088,FALSE
+9,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Pearson,0.8552653789520264,FALSE
+9,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Centroid Spearman,0.8506434192508603,FALSE
+9,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-1 target cosine,0.9440687315106392,FALSE
+9,Mouse to human,All target genes,source_liver_test_vs_target_liver_test,liver_test_orthologues,Liver test orthologues,Mean top-k target cosine,0.9426603768765928,FALSE

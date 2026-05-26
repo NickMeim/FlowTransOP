@@ -1,0 +1,881 @@
+family,metric,metric_order,species,fold,model_type,model_label,score,score_name
+Cycle consistency,Per-sample,1,Human,0,FlowTransOP,FlowTransOP,0.7933322589575772,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,0,permuted_both,Permuted both,0.00168306416327264,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,0,permuted_human,Permuted human,8.4811080926581e-4,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,0,permuted_mouse,Permuted mouse,0.7962299044616838,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,1,FlowTransOP,FlowTransOP,0.8036919905605411,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,1,permuted_both,Permuted both,0.00117337358135334,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,1,permuted_human,Permuted human,0.00184090752422403,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,1,permuted_mouse,Permuted mouse,0.8072096825285102,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,2,FlowTransOP,FlowTransOP,0.7993104825934552,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,2,permuted_both,Permuted both,0.0016019854832777,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,2,permuted_human,Permuted human,0.00139873353072561,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,2,permuted_mouse,Permuted mouse,0.808128763086958,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,3,FlowTransOP,FlowTransOP,0.7976081638007044,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,3,permuted_both,Permuted both,0.00112351295730198,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,3,permuted_human,Permuted human,0.00245446096600019,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,3,permuted_mouse,Permuted mouse,0.8079459899332917,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,4,FlowTransOP,FlowTransOP,0.8033331558632751,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,4,permuted_both,Permuted both,0.00132268936789724,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,4,permuted_human,Permuted human,0.00153757765787154,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,4,permuted_mouse,Permuted mouse,0.7987045915330571,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,5,FlowTransOP,FlowTransOP,0.7996540348463113,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,5,permuted_both,Permuted both,0.00191918315696813,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,5,permuted_human,Permuted human,0.00214153862083579,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,5,permuted_mouse,Permuted mouse,0.8078111067083751,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,6,FlowTransOP,FlowTransOP,0.8070848651327,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,6,permuted_both,Permuted both,-0.00230354897365313,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,6,permuted_human,Permuted human,0.00230701610494334,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,6,permuted_mouse,Permuted mouse,0.8044794934707715,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,7,FlowTransOP,FlowTransOP,0.7972241419974926,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,7,permuted_both,Permuted both,-0.00227314349206863,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,7,permuted_human,Permuted human,-4.2384425928e-4,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,7,permuted_mouse,Permuted mouse,0.8010914447386291,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,8,FlowTransOP,FlowTransOP,0.7968276289779038,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,8,permuted_both,Permuted both,-0.00246875145171554,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,8,permuted_human,Permuted human,-0.00121612551676454,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,8,permuted_mouse,Permuted mouse,0.8033262018786342,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,9,FlowTransOP,FlowTransOP,0.8026426533469576,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,9,permuted_both,Permuted both,-0.00264046287114982,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,9,permuted_human,Permuted human,-0.00205584587856072,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Human,9,permuted_mouse,Permuted mouse,0.809319702722251,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,0,FlowTransOP,FlowTransOP,0.7413523004897972,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,0,permuted_both,Permuted both,-0.0065534613627946,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,0,permuted_human,Permuted human,0.7498745942847933,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,0,permuted_mouse,Permuted mouse,-0.00169137543519831,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,1,FlowTransOP,FlowTransOP,0.743691813154897,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,1,permuted_both,Permuted both,-0.0066567995985447196,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,1,permuted_human,Permuted human,0.7682296978887007,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,1,permuted_mouse,Permuted mouse,-0.00210015244084904,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,2,FlowTransOP,FlowTransOP,0.7310493766287032,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,2,permuted_both,Permuted both,-0.00680126882021185,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,2,permuted_human,Permuted human,0.7627233220989729,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,2,permuted_mouse,Permuted mouse,-0.00173873416655379,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,3,FlowTransOP,FlowTransOP,0.7575534162540775,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,3,permuted_both,Permuted both,-0.00630889056144374,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,3,permuted_human,Permuted human,0.763295771461528,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,3,permuted_mouse,Permuted mouse,-0.00183823086543174,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,4,FlowTransOP,FlowTransOP,0.740950637270794,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,4,permuted_both,Permuted both,-0.00239033014535008,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,4,permuted_human,Permuted human,0.7605853100223996,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,4,permuted_mouse,Permuted mouse,-4.4870217696996e-4,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,5,FlowTransOP,FlowTransOP,0.7285859392507754,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,5,permuted_both,Permuted both,-0.00698732073963632,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,5,permuted_human,Permuted human,0.7553359657903407,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,5,permuted_mouse,Permuted mouse,-0.00184044318372474,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,6,FlowTransOP,FlowTransOP,0.7229428986228794,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,6,permuted_both,Permuted both,0.00177679033361282,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,6,permuted_human,Permuted human,0.7525934244551468,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,6,permuted_mouse,Permuted mouse,0.00233416268007081,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,7,FlowTransOP,FlowTransOP,0.7278897262243489,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,7,permuted_both,Permuted both,0.00370385233585556,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,7,permuted_human,Permuted human,0.7555697921296951,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,7,permuted_mouse,Permuted mouse,0.00145122263612319,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,8,FlowTransOP,FlowTransOP,0.7095756461009858,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,8,permuted_both,Permuted both,0.0046506156162887,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,8,permuted_human,Permuted human,0.7602382619943739,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,8,permuted_mouse,Permuted mouse,6.9248487073769e-4,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,9,FlowTransOP,FlowTransOP,0.7261981013939834,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,9,permuted_both,Permuted both,0.00437134850303503,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,9,permuted_human,Permuted human,0.7591603520055884,Mean per-sample Pearson r
+Cycle consistency,Per-sample,1,Mouse,9,permuted_mouse,Permuted mouse,0.00149067485871209,Mean per-sample Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,0,FlowTransOP,FlowTransOP,0.9716315819648034,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,0,FlowTransOP,FlowTransOP,0.6437835820923218,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,0,permuted_both,Permuted both,0.00206826096169013,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,0,permuted_both,Permuted both,-0.01191829650824563,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,0,permuted_human,Permuted human,0.00103606631066421,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,0,permuted_human,Permuted human,-0.00452171366970928,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,0,permuted_mouse,Permuted mouse,0.9753851410596308,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,0,permuted_mouse,Permuted mouse,0.676683039447862,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,1,FlowTransOP,FlowTransOP,0.9846093803650376,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,1,FlowTransOP,FlowTransOP,0.7454572682759003,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,1,permuted_both,Permuted both,0.00143787865095998,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,1,permuted_both,Permuted both,-0.00420140738074768,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,1,permuted_human,Permuted human,0.00225555468228002,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,1,permuted_human,Permuted human,-0.00285112160808221,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,1,permuted_mouse,Permuted mouse,0.989534803478766,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,1,permuted_mouse,Permuted mouse,0.7700008380983273,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,2,FlowTransOP,FlowTransOP,0.9793584552410166,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,2,FlowTransOP,FlowTransOP,0.7115268321857363,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,2,permuted_both,Permuted both,0.00196310983556026,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,2,permuted_both,Permuted both,-0.00813370365087157,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,2,permuted_human,Permuted human,0.00171380331292555,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,2,permuted_human,Permuted human,-0.00515884745946487,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,2,permuted_mouse,Permuted mouse,0.9909270064981244,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,2,permuted_mouse,Permuted mouse,0.7752061014423378,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,3,FlowTransOP,FlowTransOP,0.9770868625772956,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,3,FlowTransOP,FlowTransOP,0.7049075701804082,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,3,permuted_both,Permuted both,0.00137647388512102,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,3,permuted_both,Permuted both,-0.00500058638898051,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,3,permuted_human,Permuted human,0.00300739422948239,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,3,permuted_human,Permuted human,-0.00632485862325837,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,3,permuted_mouse,Permuted mouse,0.9909987731155392,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,3,permuted_mouse,Permuted mouse,0.7642943054230866,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,4,FlowTransOP,FlowTransOP,0.9831057631209862,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,4,FlowTransOP,FlowTransOP,0.7239775956943868,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,4,permuted_both,Permuted both,0.00162009988959633,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,4,permuted_both,Permuted both,-0.00794778526710831,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,4,permuted_human,Permuted human,0.00188305638723759,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,4,permuted_human,Permuted human,-0.00263266422417828,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,4,permuted_mouse,Permuted mouse,0.9773719198012952,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,4,permuted_mouse,Permuted mouse,0.727493058350196,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,5,FlowTransOP,FlowTransOP,0.9790638663918216,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,5,FlowTransOP,FlowTransOP,0.7207511283047879,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,5,permuted_both,Permuted both,0.00235089899992017,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,5,permuted_both,Permuted both,-0.00205937564114042,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,5,permuted_human,Permuted human,0.00262385140796497,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,5,permuted_human,Permuted human,-6.9704411953064e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,5,permuted_mouse,Permuted mouse,0.9893907038526174,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,5,permuted_mouse,Permuted mouse,0.7694180273684623,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,6,FlowTransOP,FlowTransOP,0.9890058797704426,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,6,FlowTransOP,FlowTransOP,0.7468564018006264,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,6,permuted_both,Permuted both,-0.00282617471193683,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,6,permuted_both,Permuted both,-0.00194489554773729,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,6,permuted_human,Permuted human,0.00282944443274203,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,6,permuted_human,Permuted human,-0.00416434379644666,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,6,permuted_mouse,Permuted mouse,0.9866501163768282,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,6,permuted_mouse,Permuted mouse,0.7531180562511182,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,7,FlowTransOP,FlowTransOP,0.9764057556465766,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,7,FlowTransOP,FlowTransOP,0.7106187202856564,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,7,permuted_both,Permuted both,-0.0027877562895065,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,7,permuted_both,Permuted both,-7.7782839029257e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,7,permuted_human,Permuted human,-5.2086377622569e-4,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,7,permuted_human,Permuted human,9.7489011524873e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,7,permuted_mouse,Permuted mouse,0.9813481779012304,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,7,permuted_mouse,Permuted mouse,0.7250044907867552,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,8,FlowTransOP,FlowTransOP,0.9758306965960564,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,8,FlowTransOP,FlowTransOP,0.70926914537057,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,8,permuted_both,Permuted both,-0.00302655292912748,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,8,permuted_both,Permuted both,-0.00142111949234024,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,8,permuted_human,Permuted human,-0.0014909172140177,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,8,permuted_human,Permuted human,-0.00507849937912132,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,8,permuted_mouse,Permuted mouse,0.984308932794391,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,8,permuted_mouse,Permuted mouse,0.7387613654864602,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,9,FlowTransOP,FlowTransOP,0.9833658150777064,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,9,FlowTransOP,FlowTransOP,0.740769866450658,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,9,permuted_both,Permuted both,-0.00323696086358104,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,9,permuted_both,Permuted both,-5.5697706013395e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,9,permuted_human,Permuted human,-0.00252059576428318,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,9,permuted_human,Permuted human,-0.0037952851244629,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Human,9,permuted_mouse,Permuted mouse,0.9920361436644142,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Human,9,permuted_mouse,Permuted mouse,0.7798335984517086,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,0,FlowTransOP,FlowTransOP,0.947998888985388,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,0,FlowTransOP,FlowTransOP,0.5756114739155291,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,0,permuted_both,Permuted both,-0.00838138650954679,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,0,permuted_both,Permuted both,-0.00531245608768442,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,0,permuted_human,Permuted human,0.9589307546913228,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,0,permuted_human,Permuted human,0.6275492500505825,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,0,permuted_mouse,Permuted mouse,-0.00216145853847284,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,0,permuted_mouse,Permuted mouse,-0.00541750038009871,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,1,FlowTransOP,FlowTransOP,0.9497730376904108,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,1,FlowTransOP,FlowTransOP,0.6063011098858302,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,1,permuted_both,Permuted both,-0.00850457764366175,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,1,permuted_both,Permuted both,-0.00137357135757556,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,1,permuted_human,Permuted human,0.9812143322469318,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,1,permuted_human,Permuted human,0.6981426942218504,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,1,permuted_mouse,Permuted mouse,-0.00268268721514034,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,1,permuted_mouse,Permuted mouse,-4.5449975310389e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,2,FlowTransOP,FlowTransOP,0.9353251335576984,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,2,FlowTransOP,FlowTransOP,0.5407906977748939,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,2,permuted_both,Permuted both,-0.00870485543023762,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,2,permuted_both,Permuted both,0.00163592183812697,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,2,permuted_human,Permuted human,0.9758248696737586,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,2,permuted_human,Permuted human,0.6986294964024664,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,2,permuted_mouse,Permuted mouse,-0.00222532800983909,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,2,permuted_mouse,Permuted mouse,-0.0026233526975238,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,3,FlowTransOP,FlowTransOP,0.9675217569140084,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,3,FlowTransOP,FlowTransOP,0.6709748895609808,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,3,permuted_both,Permuted both,-0.00807464921360608,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,3,permuted_both,Permuted both,-0.00335168107666472,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,3,permuted_human,Permuted human,0.977008218374838,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,3,permuted_human,Permuted human,0.632277151963755,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,3,permuted_mouse,Permuted mouse,-0.00235314468774435,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,3,permuted_mouse,Permuted mouse,-0.00301142926177795,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,4,FlowTransOP,FlowTransOP,0.9477113233183888,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,4,FlowTransOP,FlowTransOP,0.6276328266453365,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,4,permuted_both,Permuted both,-0.00305552888251411,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,4,permuted_both,Permuted both,-0.00373463046683648,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,4,permuted_human,Permuted human,0.9728849456203114,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,4,permuted_human,Permuted human,0.6720038567016264,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,4,permuted_mouse,Permuted mouse,-5.7039105026891e-4,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,4,permuted_mouse,Permuted mouse,8.0273937207123e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,5,FlowTransOP,FlowTransOP,0.9313029624357584,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,5,FlowTransOP,FlowTransOP,0.5547803171204092,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,5,permuted_both,Permuted both,-0.00893728272614658,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,5,permuted_both,Permuted both,9.9706546518962e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,5,permuted_human,Permuted human,0.9659266113575056,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,5,permuted_human,Permuted human,0.6512218509561195,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,5,permuted_mouse,Permuted mouse,-0.00235370349533619,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,5,permuted_mouse,Permuted mouse,-0.00113443958840482,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,6,FlowTransOP,FlowTransOP,0.9267388580717416,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,6,FlowTransOP,FlowTransOP,0.5305789898408153,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,6,permuted_both,Permuted both,0.00226899598969715,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,6,permuted_both,Permuted both,-0.00325294296119566,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,6,permuted_human,Permuted human,0.9640324211025674,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,6,permuted_human,Permuted human,0.6597539469580178,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,6,permuted_mouse,Permuted mouse,0.00298766789585175,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,6,permuted_mouse,Permuted mouse,-0.0088749527588678,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,7,FlowTransOP,FlowTransOP,0.9298449288399472,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,7,FlowTransOP,FlowTransOP,0.5321521679301133,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,7,permuted_both,Permuted both,0.0047444488063107,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,7,permuted_both,Permuted both,-4.6679708805548e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,7,permuted_human,Permuted human,0.9671029351219402,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,7,permuted_human,Permuted human,0.6961659538956427,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,7,permuted_mouse,Permuted mouse,0.00186293399240288,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,7,permuted_mouse,Permuted mouse,-0.00690704971482404,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,8,FlowTransOP,FlowTransOP,0.9069372642513204,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,8,FlowTransOP,FlowTransOP,0.5468984253826409,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,8,permuted_both,Permuted both,0.00595336773642493,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,8,permuted_both,Permuted both,-0.00228662930611645,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,8,permuted_human,Permuted human,0.9725873021891082,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,8,permuted_human,Permuted human,0.7008653046649764,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,8,permuted_mouse,Permuted mouse,8.8643595818577e-4,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,8,permuted_mouse,Permuted mouse,-0.00642210035528566,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,9,FlowTransOP,FlowTransOP,0.9284058689510044,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,9,FlowTransOP,FlowTransOP,0.5504437087912827,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,9,permuted_both,Permuted both,0.00559236797743197,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,9,permuted_both,Permuted both,9.0639976891018e-4,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,9,permuted_human,Permuted human,0.9706617035182472,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,9,permuted_human,Permuted human,0.6975412214834862,Gene-marginal variance prediction Pearson r
+Cycle consistency,Gene-marginal mean,2,Mouse,9,permuted_mouse,Permuted mouse,0.00190626637454993,Gene-marginal mean Pearson r
+Cycle consistency,Gene-marginal variance,3,Mouse,9,permuted_mouse,Permuted mouse,-0.00487355826259113,Gene-marginal variance prediction Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,0,FlowTransOP,FlowTransOP,0.6069144089793552,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,0,permuted_both,Permuted both,-0.004454411721507818,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,0,permuted_human,Permuted human,-0.004630375465869927,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,0,permuted_mouse,Permuted mouse,0.6097911281556461,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,1,FlowTransOP,FlowTransOP,0.6296383222638702,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,1,permuted_both,Permuted both,-0.004535668052874574,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,1,permuted_human,Permuted human,-0.0041208971207800146,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,1,permuted_mouse,Permuted mouse,0.6337780831944356,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,2,FlowTransOP,FlowTransOP,0.6317566330348618,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,2,permuted_both,Permuted both,-0.0036048767420403375,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,2,permuted_human,Permuted human,-0.003851993185281546,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,2,permuted_mouse,Permuted mouse,0.634328050601264,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,3,FlowTransOP,FlowTransOP,0.623296540604538,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,3,permuted_both,Permuted both,-0.003488006985247532,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,3,permuted_human,Permuted human,-0.00364633357398825,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,3,permuted_mouse,Permuted mouse,0.6278066859113824,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,4,FlowTransOP,FlowTransOP,0.6317614785759167,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,4,permuted_both,Permuted both,-0.004211334360437195,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,4,permuted_human,Permuted human,-0.005126401392469051,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,4,permuted_mouse,Permuted mouse,0.6231359467782778,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,5,FlowTransOP,FlowTransOP,0.6243111233088183,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,5,permuted_both,Permuted both,-0.0031739810213457426,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,5,permuted_human,Permuted human,-0.0030253170555586783,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,5,permuted_mouse,Permuted mouse,0.6262896754760904,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,6,FlowTransOP,FlowTransOP,0.6264690029972017,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,6,permuted_both,Permuted both,0.0023327311351055307,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,6,permuted_human,Permuted human,0.0027276211879671873,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,6,permuted_mouse,Permuted mouse,0.6398411078274926,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,7,FlowTransOP,FlowTransOP,0.6194100655697432,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,7,permuted_both,Permuted both,0.0019257529542330424,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,7,permuted_human,Permuted human,0.00162116754025708,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,7,permuted_mouse,Permuted mouse,0.6194998451265641,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,8,FlowTransOP,FlowTransOP,0.6237138319914349,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,8,permuted_both,Permuted both,0.00168404369986276,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,8,permuted_human,Permuted human,0.0014934410134363398,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,8,permuted_mouse,Permuted mouse,0.6308989068127535,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,9,FlowTransOP,FlowTransOP,0.6222658009965139,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,9,permuted_both,Permuted both,6.710789327748735e-4,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,9,permuted_human,Permuted human,7.434726095575649e-4,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human",4,Human,9,permuted_mouse,Permuted mouse,0.6293655979901209,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,0,FlowTransOP,FlowTransOP,0.55369173518388,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,0,permuted_both,Permuted both,-0.005861067448164902,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,0,permuted_human,Permuted human,0.6527871259744447,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,0,permuted_mouse,Permuted mouse,-0.005953544066647199,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,1,FlowTransOP,FlowTransOP,0.5899003017345923,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,1,permuted_both,Permuted both,-0.006498074460423429,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,1,permuted_human,Permuted human,0.6549949643213602,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,1,permuted_mouse,Permuted mouse,-0.006738291882013691,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,2,FlowTransOP,FlowTransOP,0.5640010934189442,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,2,permuted_both,Permuted both,-0.007315723527880785,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,2,permuted_human,Permuted human,0.6499788689050593,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,2,permuted_mouse,Permuted mouse,-0.007453537743116744,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,3,FlowTransOP,FlowTransOP,0.5688923809841634,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,3,permuted_both,Permuted both,-0.006997143308547043,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,3,permuted_human,Permuted human,0.6634329874332752,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,3,permuted_mouse,Permuted mouse,-0.006980903049934333,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,4,FlowTransOP,FlowTransOP,0.5741714027205989,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,4,permuted_both,Permuted both,-0.0054902863135087975,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,4,permuted_human,Permuted human,0.671224615684493,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,4,permuted_mouse,Permuted mouse,-0.005541213555766826,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,5,FlowTransOP,FlowTransOP,0.5511644295341093,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,5,permuted_both,Permuted both,-0.007568523215054827,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,5,permuted_human,Permuted human,0.6647523462226546,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,5,permuted_mouse,Permuted mouse,-0.007634877271670655,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,6,FlowTransOP,FlowTransOP,0.5532746362382812,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,6,permuted_both,Permuted both,0.0014824134147293914,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,6,permuted_human,Permuted human,0.6351319051193658,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,6,permuted_mouse,Permuted mouse,0.0015033033393500718,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,7,FlowTransOP,FlowTransOP,0.5581653994207743,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,7,permuted_both,Permuted both,0.003393437147915807,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,7,permuted_human,Permuted human,0.6402906723039214,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,7,permuted_mouse,Permuted mouse,0.003708204006083286,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,8,FlowTransOP,FlowTransOP,0.5111309381661331,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,8,permuted_both,Permuted both,0.0034622666052818705,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,8,permuted_human,Permuted human,0.6555911133929964,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,8,permuted_mouse,Permuted mouse,0.0036711530229115914,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,9,FlowTransOP,FlowTransOP,0.5504598818319133,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,9,permuted_both,Permuted both,0.0036247341659585053,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,9,permuted_human,Permuted human,0.6474004007279028,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse",4,Mouse,9,permuted_mouse,Permuted mouse,0.003878381539432403,Mean per-sample orthologue Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,0,FlowTransOP,FlowTransOP,0.7456011176109314,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,0,FlowTransOP,FlowTransOP,0.23805531859397888,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,0,permuted_both,Permuted both,-0.00772830611094832,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,0,permuted_both,Permuted both,0.01836756616830825,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,0,permuted_human,Permuted human,0.8715484142303467,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,0,permuted_human,Permuted human,0.4458792507648468,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,0,permuted_mouse,Permuted mouse,-0.00783383846282959,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,0,permuted_mouse,Permuted mouse,0.01440407428890466,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,1,FlowTransOP,FlowTransOP,0.801504373550415,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,1,FlowTransOP,FlowTransOP,0.25408703088760376,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,1,permuted_both,Permuted both,-0.00867214612662792,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,1,permuted_both,Permuted both,0.02258838713169098,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,1,permuted_human,Permuted human,0.873582124710083,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,1,permuted_human,Permuted human,0.3252825140953064,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,1,permuted_mouse,Permuted mouse,-0.00900029204785823,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,1,permuted_mouse,Permuted mouse,0.02170169726014137,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,2,FlowTransOP,FlowTransOP,0.7656562924385071,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,2,FlowTransOP,FlowTransOP,0.2395247220993042,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,2,permuted_both,Permuted both,-0.00974255800247192,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,2,permuted_both,Permuted both,0.0178002193570137,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,2,permuted_human,Permuted human,0.867417573928833,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,2,permuted_human,Permuted human,0.27301135659217834,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,2,permuted_mouse,Permuted mouse,-0.00979928486049175,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,2,permuted_mouse,Permuted mouse,0.0174612645059824,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,3,FlowTransOP,FlowTransOP,0.7679856419563293,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,3,FlowTransOP,FlowTransOP,0.2567979395389557,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,3,permuted_both,Permuted both,-0.00931396335363388,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,3,permuted_both,Permuted both,0.02517187595367431,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,3,permuted_human,Permuted human,0.8855581283569336,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,3,permuted_human,Permuted human,0.4096407890319824,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,3,permuted_mouse,Permuted mouse,-0.00922377221286296,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,3,permuted_mouse,Permuted mouse,0.00947362650185823,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,4,FlowTransOP,FlowTransOP,0.7750933766365051,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,4,FlowTransOP,FlowTransOP,0.23499351739883423,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,4,permuted_both,Permuted both,-0.00724047282710671,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,4,permuted_both,Permuted both,0.02179628238081932,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,4,permuted_human,Permuted human,0.8957522511482239,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,4,permuted_human,Permuted human,0.4276461899280548,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,4,permuted_mouse,Permuted mouse,-0.00725471321493387,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,4,permuted_mouse,Permuted mouse,0.00358292181044816,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,5,FlowTransOP,FlowTransOP,0.7446131706237793,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,5,FlowTransOP,FlowTransOP,0.24748432636260984,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,5,permuted_both,Permuted both,-0.01008912920951843,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,5,permuted_both,Permuted both,0.02141172066330909,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,5,permuted_human,Permuted human,0.887000560760498,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,5,permuted_human,Permuted human,0.46714508533477783,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,5,permuted_mouse,Permuted mouse,-0.0101197836920619,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,5,permuted_mouse,Permuted mouse,0.02244479209184646,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,6,FlowTransOP,FlowTransOP,0.7493044137954712,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,6,FlowTransOP,FlowTransOP,0.22340700030326843,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,6,permuted_both,Permuted both,0.00214315229095518,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,6,permuted_both,Permuted both,-0.01261219009757042,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,6,permuted_human,Permuted human,0.8480719327926636,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,6,permuted_human,Permuted human,0.258630633354187,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,6,permuted_mouse,Permuted mouse,0.00216509075835347,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,6,permuted_mouse,Permuted mouse,-0.00189568847417831,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,7,FlowTransOP,FlowTransOP,0.7601964473724365,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,7,FlowTransOP,FlowTransOP,0.21744580566883087,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,7,permuted_both,Permuted both,0.00470364885404706,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,7,permuted_both,Permuted both,-0.00352224055677652,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,7,permuted_human,Permuted human,0.8535540103912354,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,7,permuted_human,Permuted human,0.07819987088441849,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,7,permuted_mouse,Permuted mouse,0.00504027865827083,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,7,permuted_mouse,Permuted mouse,-0.00221701245754957,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,8,FlowTransOP,FlowTransOP,0.6882344484329224,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,8,FlowTransOP,FlowTransOP,0.231265053153038,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,8,permuted_both,Permuted both,0.00481383968144655,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,8,permuted_both,Permuted both,-0.00783012993633747,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,8,permuted_human,Permuted human,0.8745900392532349,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,8,permuted_human,Permuted human,0.2734486758708954,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,8,permuted_mouse,Permuted mouse,0.00506349559873342,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,8,permuted_mouse,Permuted mouse,-0.01075068209320306,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,9,FlowTransOP,FlowTransOP,0.7395090460777283,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,9,FlowTransOP,FlowTransOP,0.23205848038196564,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,9,permuted_both,Permuted both,0.00501213688403368,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,9,permuted_both,Permuted both,-0.00222829915583133,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,9,permuted_human,Permuted human,0.8637408018112183,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,9,permuted_human,Permuted human,0.32137635350227356,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal mean",5,Mouse,9,permuted_mouse,Permuted mouse,0.00544245727360248,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Human to mouse
+gene-marginal variance",6,Mouse,9,permuted_mouse,Permuted mouse,-0.00399345159530639,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,0,FlowTransOP,FlowTransOP,0.8466675877571106,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,0,FlowTransOP,FlowTransOP,0.4180860817432403,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,0,permuted_both,Permuted both,-0.00613529188558459,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,0,permuted_both,Permuted both,-0.00690913014113903,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,0,permuted_mouse,Permuted mouse,0.8520745038986206,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,0,permuted_mouse,Permuted mouse,0.3397866487503052,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,0,permuted_human,Permuted human,-0.00634590117260813,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,0,permuted_human,Permuted human,-0.0124666728079319,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,1,FlowTransOP,FlowTransOP,0.8788597583770752,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,1,FlowTransOP,FlowTransOP,0.33524274826049805,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,1,permuted_both,Permuted both,-0.00624461006373167,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,1,permuted_both,Permuted both,-0.01051783375442028,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,1,permuted_mouse,Permuted mouse,0.8845169544219971,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,1,permuted_mouse,Permuted mouse,0.43647077679634094,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,1,permuted_human,Permuted human,-0.0054516857489943504,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,1,permuted_human,Permuted human,-0.00809082016348838,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,2,FlowTransOP,FlowTransOP,0.8804736137390137,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,2,FlowTransOP,FlowTransOP,0.3982967138290405,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,2,permuted_both,Permuted both,-0.00495653599500656,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,2,permuted_both,Permuted both,-0.00792489014565944,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,2,permuted_mouse,Permuted mouse,0.8879407644271851,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,2,permuted_mouse,Permuted mouse,0.32860565185546875,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,2,permuted_human,Permuted human,-0.00542404735460877,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,2,permuted_human,Permuted human,-0.00507203117012977,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,3,FlowTransOP,FlowTransOP,0.8718711733818054,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,3,FlowTransOP,FlowTransOP,0.3838917911052704,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,3,permuted_both,Permuted both,-0.00479244720190763,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,3,permuted_both,Permuted both,-0.00520080607384443,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,3,permuted_mouse,Permuted mouse,0.8783968687057495,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,3,permuted_mouse,Permuted mouse,0.3425767123699188,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,3,permuted_human,Permuted human,-0.00510514806956052,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,3,permuted_human,Permuted human,-0.00861360318958759,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,4,FlowTransOP,FlowTransOP,0.8803618550300598,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,4,FlowTransOP,FlowTransOP,0.3172362744808197,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,4,permuted_both,Permuted both,-0.00581689924001693,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,4,permuted_both,Permuted both,-0.01569823175668716,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,4,permuted_mouse,Permuted mouse,0.8723598718643188,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,4,permuted_mouse,Permuted mouse,0.2080402374267578,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,4,permuted_human,Permuted human,-0.00692759081721305,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,4,permuted_human,Permuted human,-0.01154551096260547,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,5,FlowTransOP,FlowTransOP,0.8701621890068054,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,5,FlowTransOP,FlowTransOP,0.35821598768234253,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,5,permuted_both,Permuted both,-0.00433841394260525,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,5,permuted_both,Permuted both,-0.00404213042929768,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,5,permuted_mouse,Permuted mouse,0.8752613663673401,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,5,permuted_mouse,Permuted mouse,0.377613365650177,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,5,permuted_human,Permuted human,-0.00405839597806334,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,5,permuted_human,Permuted human,0.00250590429641306,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,6,FlowTransOP,FlowTransOP,0.873973548412323,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,6,FlowTransOP,FlowTransOP,0.3615489304065704,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,6,permuted_both,Permuted both,0.00322765950113534,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,6,permuted_both,Permuted both,-0.00663641560822725,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,6,permuted_mouse,Permuted mouse,0.894776463508606,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,6,permuted_mouse,Permuted mouse,0.3966902196407318,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,6,permuted_human,Permuted human,0.00379444286227226,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,6,permuted_human,Permuted human,-0.0044048479758203,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,7,FlowTransOP,FlowTransOP,0.8641982674598694,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,7,FlowTransOP,FlowTransOP,0.3811282813549042,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,7,permuted_both,Permuted both,0.00269934628158807,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,7,permuted_both,Permuted both,-0.01201792433857917,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,7,permuted_mouse,Permuted mouse,0.8672249913215637,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,7,permuted_mouse,Permuted mouse,0.3285900354385376,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,7,permuted_human,Permuted human,0.00201559718698263,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,7,permuted_human,Permuted human,-0.0078034047037363,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,8,FlowTransOP,FlowTransOP,0.8710130453109741,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,8,FlowTransOP,FlowTransOP,0.333362877368927,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,8,permuted_both,Permuted both,0.00232303794473409,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,8,permuted_both,Permuted both,0.00161972944624722,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,8,permuted_mouse,Permuted mouse,0.8824788331985474,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,8,permuted_mouse,Permuted mouse,0.3688465356826782,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,8,permuted_human,Permuted human,0.00238314550369977,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,8,permuted_human,Permuted human,0.01112859882414341,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,9,FlowTransOP,FlowTransOP,0.8697090148925781,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,9,FlowTransOP,FlowTransOP,0.3710024058818817,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,9,permuted_both,Permuted both,9.2362891882658e-4,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,9,permuted_both,Permuted both,-0.00833382830023765,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,9,permuted_mouse,Permuted mouse,0.8798605799674988,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,9,permuted_mouse,Permuted mouse,0.38937893509864807,Orthologue gene-marginal variance Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal mean",5,Human,9,permuted_human,Permuted human,0.00106349447742104,Orthologue gene-marginal mean Pearson r
+Orthologue-mediated,"Orthologue
+Mouse to human
+gene-marginal variance",6,Human,9,permuted_human,Permuted human,0.00221945391967892,Orthologue gene-marginal variance Pearson r

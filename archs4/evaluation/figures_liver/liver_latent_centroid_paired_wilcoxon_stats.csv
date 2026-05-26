@@ -1,0 +1,3 @@
+direction,metric,baseline,n_folds,mean_flow,mean_baseline,mean_diff,lower_better,p_value,p_adj_holm,stars
+Mouse to human,Centroid distance,permuted_both,10,2.991288626194,17.77722053527832,-14.78593190908432,TRUE,0.0029607685120743537,0.0029607685120743537,**
+Human to mouse,Centroid distance,permuted_both,10,7.0444237232208256,39.61645374298096,-32.572030019760135,TRUE,0.0029607685120743537,0.0029607685120743537,**

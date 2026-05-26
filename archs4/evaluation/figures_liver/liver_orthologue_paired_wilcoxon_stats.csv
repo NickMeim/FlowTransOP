@@ -1,0 +1,3 @@
+direction,metric,baseline,n_folds,mean_flow,mean_baseline,mean_diff,lower_better,p_value,p_adj_holm,stars
+Mouse to human,Per-sample orthologues,permuted_both,10,0.6772468510904266,0.0025072778245380377,0.6747395732658885,FALSE,0.0029607685120743537,0.0029607685120743537,**
+Human to mouse,Per-sample orthologues,permuted_both,10,0.5328150776673072,-0.002431899285420975,0.5352469769527282,FALSE,0.0029607685120743537,0.0029607685120743537,**

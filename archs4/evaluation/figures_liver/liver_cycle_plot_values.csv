@@ -1,0 +1,121 @@
+fold,species,model_type,model_label,metric,value,lower_better
+0,Human,FlowTransOP,FlowTransOP,Per-sample,0.7981076071790253,FALSE
+0,Human,permuted_both,Permuted both,Per-sample,0.00240732296176071,FALSE
+1,Human,FlowTransOP,FlowTransOP,Per-sample,0.8050892911396964,FALSE
+1,Human,permuted_both,Permuted both,Per-sample,0.00190512083282237,FALSE
+2,Human,FlowTransOP,FlowTransOP,Per-sample,0.8006061869402971,FALSE
+2,Human,permuted_both,Permuted both,Per-sample,0.00236794623651844,FALSE
+3,Human,FlowTransOP,FlowTransOP,Per-sample,0.7964166745575358,FALSE
+3,Human,permuted_both,Permuted both,Per-sample,0.00170950861973113,FALSE
+4,Human,FlowTransOP,FlowTransOP,Per-sample,0.80440014684882,FALSE
+4,Human,permuted_both,Permuted both,Per-sample,0.00196643894787739,FALSE
+5,Human,FlowTransOP,FlowTransOP,Per-sample,0.799000727102907,FALSE
+5,Human,permuted_both,Permuted both,Per-sample,0.00266753597549798,FALSE
+6,Human,FlowTransOP,FlowTransOP,Per-sample,0.8067819139636827,FALSE
+6,Human,permuted_both,Permuted both,Per-sample,-0.00150200368285462,FALSE
+7,Human,FlowTransOP,FlowTransOP,Per-sample,0.7990503178519641,FALSE
+7,Human,permuted_both,Permuted both,Per-sample,-0.0016255944640619,FALSE
+8,Human,FlowTransOP,FlowTransOP,Per-sample,0.7976148239895746,FALSE
+8,Human,permuted_both,Permuted both,Per-sample,-0.00163206520359409,FALSE
+9,Human,FlowTransOP,FlowTransOP,Per-sample,0.8023813667642088,FALSE
+9,Human,permuted_both,Permuted both,Per-sample,-0.00189458134087973,FALSE
+0,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7450764848687375,FALSE
+0,Mouse,permuted_both,Permuted both,Per-sample,-0.00302603205856958,FALSE
+1,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7470712524093883,FALSE
+1,Mouse,permuted_both,Permuted both,Per-sample,-0.00252354565731904,FALSE
+2,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7330495700300838,FALSE
+2,Mouse,permuted_both,Permuted both,Per-sample,-0.00305540063302191,FALSE
+3,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7730719427511584,FALSE
+3,Mouse,permuted_both,Permuted both,Per-sample,-0.00223992578702375,FALSE
+4,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7349894206558019,FALSE
+4,Mouse,permuted_both,Permuted both,Per-sample,0.00213352652469082,FALSE
+5,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7135716263012009,FALSE
+5,Mouse,permuted_both,Permuted both,Per-sample,-0.00334233790721366,FALSE
+6,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7214165293478679,FALSE
+6,Mouse,permuted_both,Permuted both,Per-sample,0.00272052379881443,FALSE
+7,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7227730052366618,FALSE
+7,Mouse,permuted_both,Permuted both,Per-sample,0.005323685561165,FALSE
+8,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.6931138331902063,FALSE
+8,Mouse,permuted_both,Permuted both,Per-sample,0.00612535176193569,FALSE
+9,Mouse,FlowTransOP,FlowTransOP,Per-sample,0.7282356210915565,FALSE
+9,Mouse,permuted_both,Permuted both,Per-sample,0.00607363673033005,FALSE
+0,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.956587323553646,FALSE
+0,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.5654851720475002,FALSE
+0,Human,permuted_both,Permuted both,Gene-marginal mean,0.00289074906271916,FALSE
+0,Human,permuted_both,Permuted both,Gene-marginal variance,-0.00407806796212961,FALSE
+1,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.9647996692984256,FALSE
+1,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.6258204135298719,FALSE
+1,Human,permuted_both,Permuted both,Gene-marginal mean,0.00228340247893156,FALSE
+1,Human,permuted_both,Permuted both,Gene-marginal variance,-1.9170659875183e-4,FALSE
+2,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.959796282288054,FALSE
+2,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.603015560888944,FALSE
+2,Human,permuted_both,Permuted both,Gene-marginal mean,0.00283734593367043,FALSE
+2,Human,permuted_both,Permuted both,Gene-marginal variance,-0.00224611596720079,FALSE
+3,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.9543984031757484,FALSE
+3,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.5686354689976281,FALSE
+3,Human,permuted_both,Permuted both,Gene-marginal mean,0.00204876528116161,FALSE
+3,Human,permuted_both,Permuted both,Gene-marginal variance,-0.0010997997503766799,FALSE
+4,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.9640922730455108,FALSE
+4,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.631660981954723,FALSE
+4,Human,permuted_both,Permuted both,Gene-marginal mean,0.00235730051461375,FALSE
+4,Human,permuted_both,Permuted both,Gene-marginal variance,-1.6118441158898e-4,FALSE
+5,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.9577067940938032,FALSE
+5,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.6019890352686758,FALSE
+5,Human,permuted_both,Permuted both,Gene-marginal mean,0.00319767352336328,FALSE
+5,Human,permuted_both,Permuted both,Gene-marginal variance,0.00313221257787655,FALSE
+6,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.9667299812350636,FALSE
+6,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.6520712481237732,FALSE
+6,Human,permuted_both,Permuted both,Gene-marginal mean,-0.00180219841450118,FALSE
+6,Human,permuted_both,Permuted both,Gene-marginal variance,-0.00357210794781631,FALSE
+7,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.9577763508940424,FALSE
+7,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.6000496968101934,FALSE
+7,Human,permuted_both,Permuted both,Gene-marginal mean,-0.00195004315984309,FALSE
+7,Human,permuted_both,Permuted both,Gene-marginal variance,-0.00127236452774016,FALSE
+8,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.9557298175006248,FALSE
+8,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.595511278360962,FALSE
+8,Human,permuted_both,Permuted both,Gene-marginal mean,-0.00195661282460378,FALSE
+8,Human,permuted_both,Permuted both,Gene-marginal variance,-5.4701204402122e-4,FALSE
+9,Human,FlowTransOP,FlowTransOP,Gene-marginal mean,0.961798669203206,FALSE
+9,Human,FlowTransOP,FlowTransOP,Gene-marginal variance,0.6151626439320778,FALSE
+9,Human,permuted_both,Permuted both,Gene-marginal mean,-0.00227077741288537,FALSE
+9,Human,permuted_both,Permuted both,Gene-marginal variance,9.7162020368382e-4,FALSE
+0,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8474262019655495,FALSE
+0,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.4395301698609614,FALSE
+0,Mouse,permuted_both,Permuted both,Gene-marginal mean,-0.00344255580840664,FALSE
+0,Mouse,permuted_both,Permuted both,Gene-marginal variance,0.00164123744347919,FALSE
+1,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8499334449542468,FALSE
+1,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.4093587558224643,FALSE
+1,Mouse,permuted_both,Permuted both,Gene-marginal mean,-0.00287075285352071,FALSE
+1,Mouse,permuted_both,Permuted both,Gene-marginal variance,0.00752282737517027,FALSE
+2,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8336599406205967,FALSE
+2,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.42464687173134263,FALSE
+2,Mouse,permuted_both,Permuted both,Gene-marginal mean,-0.00347569620176763,FALSE
+2,Mouse,permuted_both,Permuted both,Gene-marginal variance,0.00597542755287064,FALSE
+3,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8786689127559143,FALSE
+3,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.4885309763529668,FALSE
+3,Mouse,permuted_both,Permuted both,Gene-marginal mean,-0.00254817315503437,FALSE
+3,Mouse,permuted_both,Permuted both,Gene-marginal variance,0.00760509421785154,FALSE
+4,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8361503172520163,FALSE
+4,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.4324806673095478,FALSE
+4,Mouse,permuted_both,Permuted both,Gene-marginal mean,0.00242823436639262,FALSE
+4,Mouse,permuted_both,Permuted both,Gene-marginal variance,0.00221124851950936,FALSE
+5,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8117160058764623,FALSE
+5,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.4081207129212302,FALSE
+5,Mouse,permuted_both,Permuted both,Gene-marginal mean,-0.00380227078073199,FALSE
+5,Mouse,permuted_both,Permuted both,Gene-marginal variance,0.00860780669818701,FALSE
+6,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8211705344519683,FALSE
+6,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.3724757563451071,FALSE
+6,Mouse,permuted_both,Permuted both,Gene-marginal mean,0.00309170023579348,FALSE
+6,Mouse,permuted_both,Permuted both,Gene-marginal variance,5.5527123614276e-4,FALSE
+7,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.82206110273982,FALSE
+7,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.4262148689723641,FALSE
+7,Mouse,permuted_both,Permuted both,Gene-marginal mean,0.00605594541559632,FALSE
+7,Mouse,permuted_both,Permuted both,Gene-marginal variance,-0.00238792597424504,FALSE
+8,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.7882604497844599,FALSE
+8,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.3732596529094198,FALSE
+8,Mouse,permuted_both,Permuted both,Gene-marginal mean,0.00696812033034993,FALSE
+8,Mouse,permuted_both,Permuted both,Gene-marginal variance,-0.00195737226704629,FALSE
+9,Mouse,FlowTransOP,FlowTransOP,Gene-marginal mean,0.8283393174165851,FALSE
+9,Mouse,FlowTransOP,FlowTransOP,Gene-marginal variance,0.42940652133207113,FALSE
+9,Mouse,permuted_both,Permuted both,Gene-marginal mean,0.00690918782620057,FALSE
+9,Mouse,permuted_both,Permuted both,Gene-marginal variance,-2.3188901887449e-4,FALSE

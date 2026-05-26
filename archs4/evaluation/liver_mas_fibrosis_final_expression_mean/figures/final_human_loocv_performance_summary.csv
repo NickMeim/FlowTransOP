@@ -1,0 +1,17 @@
+model_family,feature_space,endpoint,n_samples,rho,p_value,label,description
+raw_human_plsr,All genes,NAS/MAS score,194,0.6135786809876925,1.879052424134405e-21,"Spearman rho = 0.61
+p < 1e-4",LOOCV performance for PLSR trained on observed Govaere human expression; each held-out sample is predicted by a model trained without that sample.
+raw_human_plsr,All genes,Fibrosis stage,194,0.7114379847295959,3.097852380992336e-31,"Spearman rho = 0.71
+p < 1e-4",LOOCV performance for PLSR trained on observed Govaere human expression; each held-out sample is predicted by a model trained without that sample.
+raw_human_plsr,Orthologues,NAS/MAS score,194,0.6390069707231123,1.1767265351591088e-23,"Spearman rho = 0.64
+p < 1e-4",LOOCV performance for PLSR trained on observed Govaere human expression; each held-out sample is predicted by a model trained without that sample.
+raw_human_plsr,Orthologues,Fibrosis stage,194,0.743070296916802,2.484857946216616e-35,"Spearman rho = 0.74
+p < 1e-4",LOOCV performance for PLSR trained on observed Govaere human expression; each held-out sample is predicted by a model trained without that sample.
+reconstructed_human_plsr,All genes,NAS/MAS score,194,0.3856769580603583,2.7999864419169136e-8,"Spearman rho = 0.39
+p < 1e-4",LOOCV performance for PLSR trained on ensemble-mean reconstructed Govaere human expression; each held-out sample is predicted by a model trained without that sample.
+reconstructed_human_plsr,All genes,Fibrosis stage,194,0.3267462653724263,3.3208740815412733e-6,"Spearman rho = 0.33
+p < 1e-4",LOOCV performance for PLSR trained on ensemble-mean reconstructed Govaere human expression; each held-out sample is predicted by a model trained without that sample.
+reconstructed_human_plsr,Orthologues,NAS/MAS score,194,0.3875952106488101,2.3573206812310646e-8,"Spearman rho = 0.39
+p < 1e-4",LOOCV performance for PLSR trained on ensemble-mean reconstructed Govaere human expression; each held-out sample is predicted by a model trained without that sample.
+reconstructed_human_plsr,Orthologues,Fibrosis stage,194,0.3105735569244467,1.0466044624331333e-5,"Spearman rho = 0.31
+p < 1e-4",LOOCV performance for PLSR trained on ensemble-mean reconstructed Govaere human expression; each held-out sample is predicted by a model trained without that sample.

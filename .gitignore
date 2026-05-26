@@ -1,4 +1,3 @@
-archs4
 *.pdf
 *.pptx
 *.ai
@@ -17,3 +16,15 @@ preprocessing/preprocessed_data/drug_quadruplets_dataset.rds
 learning/evaluate_tissue.py
 learning.evaluate_tissue.sh
 .Rproj.user
+
+# Keep local ARCHS4 data and checkpoints out of GitHub while retaining folder docs.
+archs4/**
+!archs4/
+!archs4/README.md
+!archs4/**/
+!archs4/**/README.md
+
+# ARCHS4 evaluation artifacts are intended to be publishable when they are
+# below the repository size limit. Git cannot enforce the 90 MB threshold, so
+# keep any future larger evaluation artifact out of Git or put it in Git LFS.
+!archs4/evaluation/**

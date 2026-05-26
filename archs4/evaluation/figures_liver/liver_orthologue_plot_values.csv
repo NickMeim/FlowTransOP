@@ -1,0 +1,41 @@
+fold,direction,model_type,model_label,value,metric,lower_better
+0,Mouse to human,FlowTransOP,FlowTransOP,0.6630763705801668,Per-sample orthologues,FALSE
+0,Mouse to human,permuted_both,Permuted both,2.9551939360892654e-4,Per-sample orthologues,FALSE
+0,Human to mouse,FlowTransOP,FlowTransOP,0.5383890370051483,Per-sample orthologues,FALSE
+0,Human to mouse,permuted_both,Permuted both,-0.004307952380671654,Per-sample orthologues,FALSE
+1,Mouse to human,FlowTransOP,FlowTransOP,0.6805210803632832,Per-sample orthologues,FALSE
+1,Mouse to human,permuted_both,Permuted both,0.0015942632161611,Per-sample orthologues,FALSE
+1,Human to mouse,FlowTransOP,FlowTransOP,0.5620411540546822,Per-sample orthologues,FALSE
+1,Human to mouse,permuted_both,Permuted both,-0.004313149164567371,Per-sample orthologues,FALSE
+2,Mouse to human,FlowTransOP,FlowTransOP,0.6834077390209349,Per-sample orthologues,FALSE
+2,Mouse to human,permuted_both,Permuted both,0.00307204033689492,Per-sample orthologues,FALSE
+2,Human to mouse,FlowTransOP,FlowTransOP,0.5426568662205091,Per-sample orthologues,FALSE
+2,Human to mouse,permuted_both,Permuted both,-0.005842946238260249,Per-sample orthologues,FALSE
+3,Mouse to human,FlowTransOP,FlowTransOP,0.6689472167798057,Per-sample orthologues,FALSE
+3,Mouse to human,permuted_both,Permuted both,0.0026920147479501865,Per-sample orthologues,FALSE
+3,Human to mouse,FlowTransOP,FlowTransOP,0.5514024832472048,Per-sample orthologues,FALSE
+3,Human to mouse,permuted_both,Permuted both,-0.005104542752524028,Per-sample orthologues,FALSE
+4,Mouse to human,FlowTransOP,FlowTransOP,0.6894139654116135,Per-sample orthologues,FALSE
+4,Mouse to human,permuted_both,Permuted both,0.0011916473887099305,Per-sample orthologues,FALSE
+4,Human to mouse,FlowTransOP,FlowTransOP,0.5436678919444119,Per-sample orthologues,FALSE
+4,Human to mouse,permuted_both,Permuted both,-0.004251736345722972,Per-sample orthologues,FALSE
+5,Mouse to human,FlowTransOP,FlowTransOP,0.6763828525644515,Per-sample orthologues,FALSE
+5,Mouse to human,permuted_both,Permuted both,0.002647061196299473,Per-sample orthologues,FALSE
+5,Human to mouse,FlowTransOP,FlowTransOP,0.5256752688280444,Per-sample orthologues,FALSE
+5,Human to mouse,permuted_both,Permuted both,-0.005574582399775252,Per-sample orthologues,FALSE
+6,Mouse to human,FlowTransOP,FlowTransOP,0.6840816488630036,Per-sample orthologues,FALSE
+6,Mouse to human,permuted_both,Permuted both,0.004817114562974072,Per-sample orthologues,FALSE
+6,Human to mouse,FlowTransOP,FlowTransOP,0.5298865513565678,Per-sample orthologues,FALSE
+6,Human to mouse,permuted_both,Permuted both,-1.0464896768823623e-4,Per-sample orthologues,FALSE
+7,Mouse to human,FlowTransOP,FlowTransOP,0.6751139510487545,Per-sample orthologues,FALSE
+7,Mouse to human,permuted_both,Permuted both,0.004416910215209753,Per-sample orthologues,FALSE
+7,Human to mouse,FlowTransOP,FlowTransOP,0.5273348044870629,Per-sample orthologues,FALSE
+7,Human to mouse,permuted_both,Permuted both,0.0018223945020504045,Per-sample orthologues,FALSE
+8,Mouse to human,FlowTransOP,FlowTransOP,0.6771797812362104,Per-sample orthologues,FALSE
+8,Mouse to human,permuted_both,Permuted both,0.00291294644884089,Per-sample orthologues,FALSE
+8,Human to mouse,FlowTransOP,FlowTransOP,0.48105943402827783,Per-sample orthologues,FALSE
+8,Human to mouse,permuted_both,Permuted both,0.001469522673132527,Per-sample orthologues,FALSE
+9,Mouse to human,FlowTransOP,FlowTransOP,0.6743439050360415,Per-sample orthologues,FALSE
+9,Mouse to human,permuted_both,Permuted both,0.0014332607387311275,Per-sample orthologues,FALSE
+9,Human to mouse,FlowTransOP,FlowTransOP,0.526037285501163,Per-sample orthologues,FALSE
+9,Human to mouse,permuted_both,Permuted both,0.0018886482198170811,Per-sample orthologues,FALSE

@@ -1,0 +1,41 @@
+fold,direction,feature_set,comparison,model_type,model_label,random_repeat,background_n,metric,value,lower_better
+0,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,5.878111839294434,TRUE
+0,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,21.361656188964844,TRUE
+0,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,7.614101409912109,TRUE
+0,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,17.533279418945312,TRUE
+1,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,7.494090557098389,TRUE
+1,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,24.359783172607425,TRUE
+1,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,1.6798897981643677,TRUE
+1,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,14.215712547302246,TRUE
+2,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,5.120270729064941,TRUE
+2,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,26.83642578125,TRUE
+2,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,2.4330289363861084,TRUE
+2,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,15.519906044006348,TRUE
+3,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,6.5623931884765625,TRUE
+3,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,19.039077758789063,TRUE
+3,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,3.1702730655670166,TRUE
+3,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,15.01309299468994,TRUE
+4,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,7.428743362426758,TRUE
+4,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,78.33833312988281,TRUE
+4,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,2.566993474960327,TRUE
+4,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,21.918577194213867,TRUE
+5,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,5.767649173736572,TRUE
+5,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,53.47211837768555,TRUE
+5,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,2.3162217140197754,TRUE
+5,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,21.205224990844727,TRUE
+6,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,7.739903926849365,TRUE
+6,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,76.70463562011719,TRUE
+6,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,2.5853166580200195,TRUE
+6,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,13.069133758544922,TRUE
+7,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,10.84237575531006,TRUE
+7,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,61.32960891723633,TRUE
+7,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,2.6140174865722656,TRUE
+7,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,20.249401092529297,TRUE
+8,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,7.376957893371582,TRUE
+8,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,17.378808975219727,TRUE
+8,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,2.54000473022461,TRUE
+8,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,24.49761009216309,TRUE
+9,Human to mouse,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,6.23374080657959,TRUE
+9,Human to mouse,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,17.34408950805664,TRUE
+9,Mouse to human,latent,translated_source_vs_real_target,FlowTransOP,FlowTransOP,NA,NA,Centroid distance,2.3930389881134033,TRUE
+9,Mouse to human,latent,translated_source_vs_real_target,permuted_both,Permuted both,NA,NA,Centroid distance,14.550267219543455,TRUE

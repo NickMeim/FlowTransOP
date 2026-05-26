@@ -1,0 +1,81 @@
+fold,species,model_type,model_label,value,metric,lower_better
+0,Human,FlowTransOP,FlowTransOP,0.9750952589045808,Mean reconstruction Pearson,FALSE
+0,Human,FlowTransOP,FlowTransOP,0.6691181376650321,Variance reconstruction Pearson,FALSE
+0,Human,permuted_both,Permuted both,-0.00171876581010344,Mean reconstruction Pearson,FALSE
+0,Human,permuted_both,Permuted both,0.00356212332972553,Variance reconstruction Pearson,FALSE
+0,Mouse,FlowTransOP,FlowTransOP,0.937477787107474,Mean reconstruction Pearson,FALSE
+0,Mouse,FlowTransOP,FlowTransOP,0.587702169941262,Variance reconstruction Pearson,FALSE
+0,Mouse,permuted_both,Permuted both,-0.00228879193838712,Mean reconstruction Pearson,FALSE
+0,Mouse,permuted_both,Permuted both,0.00831191283796344,Variance reconstruction Pearson,FALSE
+1,Human,FlowTransOP,FlowTransOP,0.9753162865553052,Mean reconstruction Pearson,FALSE
+1,Human,FlowTransOP,FlowTransOP,0.6372150434291081,Variance reconstruction Pearson,FALSE
+1,Human,permuted_both,Permuted both,-0.00395141659498413,Mean reconstruction Pearson,FALSE
+1,Human,permuted_both,Permuted both,0.00610031562918554,Variance reconstruction Pearson,FALSE
+1,Mouse,FlowTransOP,FlowTransOP,0.9361522704443048,Mean reconstruction Pearson,FALSE
+1,Mouse,FlowTransOP,FlowTransOP,0.6277427545628571,Variance reconstruction Pearson,FALSE
+1,Mouse,permuted_both,Permuted both,0.00130586813554573,Mean reconstruction Pearson,FALSE
+1,Mouse,permuted_both,Permuted both,0.00665633585466855,Variance reconstruction Pearson,FALSE
+2,Human,FlowTransOP,FlowTransOP,0.9736719462004942,Mean reconstruction Pearson,FALSE
+2,Human,FlowTransOP,FlowTransOP,0.621275465985529,Variance reconstruction Pearson,FALSE
+2,Human,permuted_both,Permuted both,-0.00366841546428192,Mean reconstruction Pearson,FALSE
+2,Human,permuted_both,Permuted both,0.00604171729286864,Variance reconstruction Pearson,FALSE
+2,Mouse,FlowTransOP,FlowTransOP,0.9382513476076706,Mean reconstruction Pearson,FALSE
+2,Mouse,FlowTransOP,FlowTransOP,0.5982964760502156,Variance reconstruction Pearson,FALSE
+2,Mouse,permuted_both,Permuted both,0.00262618961182361,Mean reconstruction Pearson,FALSE
+2,Mouse,permuted_both,Permuted both,0.0033814873102474,Variance reconstruction Pearson,FALSE
+3,Human,FlowTransOP,FlowTransOP,0.9715802517621682,Mean reconstruction Pearson,FALSE
+3,Human,FlowTransOP,FlowTransOP,0.5783523032751634,Variance reconstruction Pearson,FALSE
+3,Human,permuted_both,Permuted both,-0.0053456839631519,Mean reconstruction Pearson,FALSE
+3,Human,permuted_both,Permuted both,0.00957375569453718,Variance reconstruction Pearson,FALSE
+3,Mouse,FlowTransOP,FlowTransOP,0.9350688856383528,Mean reconstruction Pearson,FALSE
+3,Mouse,FlowTransOP,FlowTransOP,0.6525521909986133,Variance reconstruction Pearson,FALSE
+3,Mouse,permuted_both,Permuted both,-9.1079510840513e-4,Mean reconstruction Pearson,FALSE
+3,Mouse,permuted_both,Permuted both,0.00744946024543128,Variance reconstruction Pearson,FALSE
+4,Human,FlowTransOP,FlowTransOP,0.9745076066817115,Mean reconstruction Pearson,FALSE
+4,Human,FlowTransOP,FlowTransOP,0.6036103297576041,Variance reconstruction Pearson,FALSE
+4,Human,permuted_both,Permuted both,-0.00344934076145023,Mean reconstruction Pearson,FALSE
+4,Human,permuted_both,Permuted both,0.00564400608371924,Variance reconstruction Pearson,FALSE
+4,Mouse,FlowTransOP,FlowTransOP,0.9328346781398712,Mean reconstruction Pearson,FALSE
+4,Mouse,FlowTransOP,FlowTransOP,0.6240010255808509,Variance reconstruction Pearson,FALSE
+4,Mouse,permuted_both,Permuted both,-0.00461220286465213,Mean reconstruction Pearson,FALSE
+4,Mouse,permuted_both,Permuted both,-0.00493046772733451,Variance reconstruction Pearson,FALSE
+5,Human,FlowTransOP,FlowTransOP,0.9755937313060814,Mean reconstruction Pearson,FALSE
+5,Human,FlowTransOP,FlowTransOP,0.6875730623538657,Variance reconstruction Pearson,FALSE
+5,Human,permuted_both,Permuted both,2.3631541427141e-4,Mean reconstruction Pearson,FALSE
+5,Human,permuted_both,Permuted both,0.00264836536968535,Variance reconstruction Pearson,FALSE
+5,Mouse,FlowTransOP,FlowTransOP,0.941467161286416,Mean reconstruction Pearson,FALSE
+5,Mouse,FlowTransOP,FlowTransOP,0.6310929106469598,Variance reconstruction Pearson,FALSE
+5,Mouse,permuted_both,Permuted both,-0.00114703960702992,Mean reconstruction Pearson,FALSE
+5,Mouse,permuted_both,Permuted both,0.01846347005354146,Variance reconstruction Pearson,FALSE
+6,Human,FlowTransOP,FlowTransOP,0.973535098962407,Mean reconstruction Pearson,FALSE
+6,Human,FlowTransOP,FlowTransOP,0.6032148560951378,Variance reconstruction Pearson,FALSE
+6,Human,permuted_both,Permuted both,-0.00223525241683968,Mean reconstruction Pearson,FALSE
+6,Human,permuted_both,Permuted both,-1.5672627090552e-4,Variance reconstruction Pearson,FALSE
+6,Mouse,FlowTransOP,FlowTransOP,0.9365661144379512,Mean reconstruction Pearson,FALSE
+6,Mouse,FlowTransOP,FlowTransOP,0.6192863951501575,Variance reconstruction Pearson,FALSE
+6,Mouse,permuted_both,Permuted both,0.00417036910588453,Mean reconstruction Pearson,FALSE
+6,Mouse,permuted_both,Permuted both,0.005570048365369,Variance reconstruction Pearson,FALSE
+7,Human,FlowTransOP,FlowTransOP,0.9749333128339532,Mean reconstruction Pearson,FALSE
+7,Human,FlowTransOP,FlowTransOP,0.6999122314785252,Variance reconstruction Pearson,FALSE
+7,Human,permuted_both,Permuted both,-0.00265274199680908,Mean reconstruction Pearson,FALSE
+7,Human,permuted_both,Permuted both,-0.0015437758427199,Variance reconstruction Pearson,FALSE
+7,Mouse,FlowTransOP,FlowTransOP,0.9170725468969936,Mean reconstruction Pearson,FALSE
+7,Mouse,FlowTransOP,FlowTransOP,0.38681791869665694,Variance reconstruction Pearson,FALSE
+7,Mouse,permuted_both,Permuted both,0.00710165327958027,Mean reconstruction Pearson,FALSE
+7,Mouse,permuted_both,Permuted both,0.00193606578705177,Variance reconstruction Pearson,FALSE
+8,Human,FlowTransOP,FlowTransOP,0.975897512096755,Mean reconstruction Pearson,FALSE
+8,Human,FlowTransOP,FlowTransOP,0.6439366908599744,Variance reconstruction Pearson,FALSE
+8,Human,permuted_both,Permuted both,-0.00151290642127925,Mean reconstruction Pearson,FALSE
+8,Human,permuted_both,Permuted both,-0.00371836099863924,Variance reconstruction Pearson,FALSE
+8,Mouse,FlowTransOP,FlowTransOP,0.9331251094510808,Mean reconstruction Pearson,FALSE
+8,Mouse,FlowTransOP,FlowTransOP,0.6165037860984999,Variance reconstruction Pearson,FALSE
+8,Mouse,permuted_both,Permuted both,0.00321690739691347,Mean reconstruction Pearson,FALSE
+8,Mouse,permuted_both,Permuted both,1.8802752966026e-4,Variance reconstruction Pearson,FALSE
+9,Human,FlowTransOP,FlowTransOP,0.97535596093115,Mean reconstruction Pearson,FALSE
+9,Human,FlowTransOP,FlowTransOP,0.6791766717946666,Variance reconstruction Pearson,FALSE
+9,Human,permuted_both,Permuted both,0.00124971062145095,Mean reconstruction Pearson,FALSE
+9,Human,permuted_both,Permuted both,-0.00133391844275067,Variance reconstruction Pearson,FALSE
+9,Mouse,FlowTransOP,FlowTransOP,0.9383288130197428,Mean reconstruction Pearson,FALSE
+9,Mouse,FlowTransOP,FlowTransOP,0.6339200398348238,Variance reconstruction Pearson,FALSE
+9,Mouse,permuted_both,Permuted both,0.00307450767474348,Mean reconstruction Pearson,FALSE
+9,Mouse,permuted_both,Permuted both,-0.00452402633315383,Variance reconstruction Pearson,FALSE
