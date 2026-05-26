@@ -159,6 +159,45 @@ Outputs:
 from `score_liver_mas_fibrosis.py`; keep that helper in this folder when running
 the scoring workflow.
 
+## Package Wrappers for Other Translation Regimes
+
+The manuscript discusses different approaches depending on what information is
+available. The package CLI exposes these L1000 options through one wrapper:
+
+```bash
+flowtransop run-l1000 --repo-root . --method consensus-decoders
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
+flowtransop run-l1000 --repo-root . --method simple-autotransop
+```
+
+Available `--method` values:
+
+```text
+flowtransop
+consensus-decoders
+consensus-decoders-different-inputs
+consensus-decoders-bracketed
+hybrid-flowtransop
+hybrid-flowtransop-extreme
+hybrid-flowtransop-extreme-mean
+hybrid-flowtransop-extreme-sum
+autotransop
+simple-autotransop
+```
+
+Use consensus-space decoders for decoder-only baselines, hybrid FlowTransOP
+when pair and similarity information should be combined, and AutoTransOP when
+running the AutoTransOP/CPA-style paired baseline. Extra arguments are passed
+through to the selected Python script.
+
+**Important AutoTransOP note:** AutoTransOP hyperparameters are very important
+and the method can be highly sensitive. Whether to use mutual information,
+cosine distance, Euclidean distance, and/or prior/adversarial discriminators as
+proposed in the original publication is a modeling choice that users must
+customly re-adjust for their own data, paired-sample regime, and feature space.
+The package prints this note every time `--method autotransop` or
+`--method simple-autotransop` is run.
+
 ## Simple Script List
 
 In the style of the companion OmicTranslationBenchmark repository, this section
@@ -289,6 +328,14 @@ flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
 flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
   --model-device cuda --transact-backend gpu --transact-device cuda
 flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+```
+
+L1000 alternatives can be launched with:
+
+```bash
+flowtransop run-l1000 --repo-root . --method consensus-decoders
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
+flowtransop run-l1000 --repo-root . --method simple-autotransop
 ```
 
 `--model-device` controls the model device. `--transact-backend` and

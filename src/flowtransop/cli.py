@@ -8,6 +8,28 @@ from pathlib import Path
 
 from .backends import RuntimeBackends
 
+AUTOTRANSOP_NOTE = """
+IMPORTANT AutoTransOP note:
+AutoTransOP/CPA-style baselines are highly sensitive to hyperparameters. The
+choice of mutual-information losses, cosine and/or Euclidean latent penalties,
+and prior/adversarial discriminators from the original publication is a modeling
+decision that must be re-tuned for the user's data, paired-sample regime, and
+feature space. Do not treat the checked-in defaults as universally optimal.
+"""
+
+L1000_METHOD_SCRIPTS = {
+    "flowtransop": "AutoTransOP_Pretrain_FlowMatch.py",
+    "consensus-decoders": "DecodeFromConsencusSpace.py",
+    "consensus-decoders-different-inputs": "DecodeFromConsencusSpace_diffenetInputs.py",
+    "consensus-decoders-bracketed": "DecodeFromConsencusSpace_diffenetInputs_bracketed.py",
+    "hybrid-flowtransop": "FlowMatch_lowPairsPercentage_PairsAndSimilarity.py",
+    "hybrid-flowtransop-extreme": "FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity.py",
+    "hybrid-flowtransop-extreme-mean": "FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_meanAgg.py",
+    "hybrid-flowtransop-extreme-sum": "FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_sumAgg.py",
+    "autotransop": "AutoTransOP_lowPairsPercentageExtreme.py",
+    "simple-autotransop": "AutoTransOP_lowPairsPercentageExtreme.py",
+}
+
 
 def _repo_root(path: str | None) -> Path:
     return Path(path).resolve() if path else Path.cwd().resolve()
@@ -54,6 +76,10 @@ def _backend_env(args: argparse.Namespace) -> dict[str, str]:
         transact_backend=args.transact_backend,
         transact_device=args.transact_device,
     ).as_env()
+
+
+def _print_autotransop_note() -> None:
+    print(AUTOTRANSOP_NOTE.strip(), file=sys.stderr, flush=True)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -108,6 +134,20 @@ def main(argv: list[str] | None = None) -> int:
     score.add_argument("--repo-root", default=None, help="Repository root. Defaults to the current directory.")
     _add_backend_args(score)
 
+    l1000 = sub.add_parser(
+        "run-l1000",
+        help="Run one L1000 benchmark workflow from the learning scripts.",
+        epilog="Unrecognized arguments are passed through to the selected learning script.",
+    )
+    l1000.add_argument("--repo-root", default=None, help="Repository root. Defaults to the current directory.")
+    l1000.add_argument(
+        "--method",
+        required=True,
+        choices=sorted(L1000_METHOD_SCRIPTS),
+        help="L1000 workflow to run.",
+    )
+    _add_backend_args(l1000)
+
     args, extra = parser.parse_known_args(argv)
     root = _repo_root(getattr(args, "repo_root", None))
 
@@ -153,6 +193,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "score-mash":
         return _run_script(root, "score_liver_mas_fibrosis_final_expression_mean.py", extra, _backend_env(args))
+
+    if args.command == "run-l1000":
+        script = L1000_METHOD_SCRIPTS[args.method]
+        if args.method in {"autotransop", "simple-autotransop"}:
+            _print_autotransop_note()
+        return _run_script(root, script, extra, _backend_env(args))
 
     parser.error(f"Unhandled command: {args.command}")
     return 2

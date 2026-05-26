@@ -61,6 +61,37 @@ flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
 flowtransop score-mash --repo-root .
 ```
 
+It can also launch the L1000 approaches discussed in the manuscript:
+
+```bash
+flowtransop run-l1000 --repo-root . --method consensus-decoders
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
+flowtransop run-l1000 --repo-root . --method simple-autotransop
+```
+
+Available L1000 methods are:
+
+```text
+flowtransop
+consensus-decoders
+consensus-decoders-different-inputs
+consensus-decoders-bracketed
+hybrid-flowtransop
+hybrid-flowtransop-extreme
+hybrid-flowtransop-extreme-mean
+hybrid-flowtransop-extreme-sum
+autotransop
+simple-autotransop
+```
+
+**Important AutoTransOP note:** AutoTransOP hyperparameters are very important
+and the method can be highly sensitive. Whether to use mutual information,
+cosine distance, Euclidean distance, and/or prior/adversarial discriminators as
+proposed in the original publication is a modeling choice that users must
+customly re-adjust for their own data, paired-sample regime, and feature space.
+The CLI prints this note every time `--method autotransop` or
+`--method simple-autotransop` is run.
+
 `--model-device` controls the Torch model device. `--transact-backend` and
 `--transact-device` are separate so TRANSACT/pre-alignment can be configured
 independently of model training. The defaults are GPU/CUDA:

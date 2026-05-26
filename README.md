@@ -112,6 +112,29 @@ sbatch subsetting_decoders_only.sh
 Outputs are written under `results/` and summarized by the plotting scripts in
 `postprocessing/`.
 
+The installable package also exposes a convenience wrapper for the main L1000
+choices discussed in the manuscript:
+
+```bash
+flowtransop run-l1000 --repo-root . --method consensus-decoders
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
+flowtransop run-l1000 --repo-root . --method simple-autotransop
+```
+
+Use `--method consensus-decoders` when you want the consensus-space decoder
+baseline, `--method hybrid-flowtransop` when you want the pair-and-similarity
+FlowTransOP variant, and `--method simple-autotransop` when you want the
+AutoTransOP/CPA-style baseline. Extra arguments are passed through to the
+selected script, for example `--output_dir`, `--epochs`, `--folders`, or
+checkpoint/log options supported by that script.
+
+**Important AutoTransOP note:** AutoTransOP hyperparameters are very important
+and the method can be highly sensitive. Whether to use mutual information,
+cosine distance, Euclidean distance, and/or prior/adversarial discriminators as
+proposed in the original publication is a modeling choice that users must
+customly re-adjust for their own data, paired-sample regime, and feature space.
+The checked-in defaults should not be treated as universally optimal.
+
 ### 3. ARCHS4 Download, Splits, and Preprocessing
 
 Run from `learning/` using the SLURM wrappers:
@@ -232,6 +255,14 @@ flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
 flowtransop train-archs4-ensemble --repo-root . --ensemble-id 0 --fold 0 \
   --model-device cuda --transact-backend gpu --transact-device cuda
 flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+```
+
+L1000 method wrappers are also available:
+
+```bash
+flowtransop run-l1000 --repo-root . --method consensus-decoders
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
+flowtransop run-l1000 --repo-root . --method simple-autotransop
 ```
 
 To run model code on GPU but expose CPU TRANSACT/pre-alignment settings:
