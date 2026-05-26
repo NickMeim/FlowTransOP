@@ -97,6 +97,10 @@ cd learning
 # Shared-feature cell-line benchmark
 sbatch cell_pairs_benchmark.sh
 
+# Optional Supplementary Figure S1 ablation:
+# shared-feature FlowTransOP with structural guidance disabled
+sbatch supplementary_figure_s1_no_structural_guidance.sh
+
 # Low-pair and extremely-low-pair benchmarks
 sbatch low_percentage_of_pairs.sh
 sbatch extremely_low_percentage_of_pairs.sh
@@ -110,7 +114,10 @@ sbatch subsetting_decoders_only.sh
 ```
 
 Outputs are written under `results/` and summarized by the plotting scripts in
-`postprocessing/`.
+`postprocessing/`. The S1 ablation writes
+`results/FlowMatch_no_structural_guidance/`; compare it against the main
+`results/AutoTransOP_CellPairs/` run when assembling the no-structural-guidance
+supplementary panel.
 
 The installable package also exposes a convenience wrapper for the main L1000
 choices discussed in the manuscript:

@@ -388,10 +388,11 @@ p2 <-ggpaired(compare_df_plt ,
   facet_wrap(~set)+
   stat_compare_means(method = 'wilcox')+
   ylab('r') + xlab('approach') + 
-  theme(axis.title.x = element_blank())
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 12))
 ggsave('../transact_decoders_paired_vs_generalizedtransop.png',
        plot=p2,
-       width = 12,
+       width = 18,
        height = 12,
        units = 'cm',
        dpi = 600)
@@ -429,7 +430,7 @@ stat.test <- rbind(results_paired_general,
                    compare_df %>% filter(translation %in% results_paired_general$translation)) %>%
   filter(set != 'shuffled X') %>%
   group_by(set) %>%
-  rstatix::wilcox_test(r ~ approach) %>%
+  rstatix::wilcox_test(r ~ approach, paired = TRUE) %>%
   rstatix::add_y_position() 
 ggboxplot(
   rbind(results_paired_general,
@@ -549,7 +550,7 @@ pd <- ggdotplot(compare_diffIns_plt %>%
 p <- pv/pd
 print(p)
 
-ggsave('../transact_decoders_paired_vs_generalizedtransop_diffInputs.png',
+ggsave('../_diffInputs.png',
        plot=p,
        width = 28,
        height = 20,

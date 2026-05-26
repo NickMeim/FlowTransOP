@@ -58,6 +58,7 @@ Convenience wrappers:
 
 ```text
 cell_pairs_benchmark.sh
+supplementary_figure_s1_no_structural_guidance.sh
 low_percentage_of_pairs.sh
 extremely_low_percentage_of_pairs.sh
 pairedFlow_low_percentage_of_pairs.sh
@@ -303,6 +304,7 @@ where possible, the plotting script that consumes the output.
 | `evaluate_translation.sh` | SLURM array wrapper for `evaluate_translation.py`. |
 | `score_liver_mas_fibrosis_final_expression_mean.sh` | SLURM wrapper for final MASH/fibrosis scoring. |
 | `cell_pairs_benchmark.sh` | Historical SLURM wrapper for the shared-feature L1000 benchmark; edit the active Python command as needed. |
+| `supplementary_figure_s1_no_structural_guidance.sh` | Runs the shared-feature L1000 FlowTransOP ablation with `--conditional_flow_lambda 0`, generating `../results/FlowMatch_no_structural_guidance/` for Supplementary Figure S1. |
 | `low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentage.py`. |
 | `extremely_low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme.py`. |
 | `pairedFlow_low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatchPaired_lowPairsPercentage.py`. |
