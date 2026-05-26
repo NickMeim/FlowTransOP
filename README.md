@@ -29,7 +29,11 @@ FlowTransOP/
 ## Install
 
 Create an environment with Python 3.9 or newer. GPU-enabled PyTorch is strongly
-recommended for training. A minimal Python setup is:
+recommended for training. The package wrappers default to CUDA/GPU for both the
+model and the TRANSACT/pre-alignment backend, while exposing separate switches
+for users who want one of those stages on CPU.
+
+A minimal Python setup is:
 
 ```bash
 pip install -e .
@@ -58,16 +62,21 @@ relative to that folder, e.g. `../archs4`, `../results`, and `../postprocessing`
 
 ### 1. L1000 Benchmark Data
 
-The L1000 experiments use the AutoTransOP-compatible processed L1000 data and
-cell-line task definitions. If starting from raw L1000 inputs, run:
+The L1000 experiments in the active manuscript pipeline use
+AutoTransOP-compatible processed L1000 matrices, cell-line task definitions, and
+fold splits under:
 
-```bash
-cd preprocessing
-Rscript preProcessL1000DrugData.R
+```text
+preprocessing/preprocessed_data/CellPairs/
+preprocessing/preprocessed_data/SameCellimputationModel/
+preprocessing/preprocessed_data/SameCellimputationModel/bracketed_difficulty/
 ```
 
-The expected processed files should be placed under
-`preprocessing/preprocessed_data/`. See `preprocessing/readme.md`.
+`preprocessing/preProcessL1000DrugData.R` creates older pair, triplet, and
+quadruplet split files, but those exact artifacts are not referenced by the
+current learning or postprocessing scripts. Treat it as a legacy/optional helper
+rather than a required manuscript reproduction step. See
+`preprocessing/readme.md` for the details.
 
 ### 2. L1000 Benchmark Models
 
@@ -179,6 +188,10 @@ Outputs are written to:
 archs4/evaluation/liver_mas_fibrosis_final_expression_mean/
 ```
 
+This script imports shared scoring helpers from `learning/score_liver_mas_fibrosis.py`;
+keep that helper alongside the final scoring script when recreating the case
+study.
+
 ### 7. Plotting
 
 Run from `postprocessing/`:
@@ -204,13 +217,34 @@ archs4/evaluation/liver_mas_fibrosis_final_expression_mean/figures/
 
 ## Package CLI
 
-After `pip install -e .`, common workflows can be called with `flowtransop`:
+After `pip install -e .`, common workflows can be called with `flowtransop`.
+The package exposes model and TRANSACT/pre-alignment device choices separately:
 
 ```bash
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h
-flowtransop train-archs4-ensemble --repo-root . --ensemble-id 0 --fold 0
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop train-archs4-ensemble --repo-root . --ensemble-id 0 --fold 0 \
+  --model-device cuda --transact-backend gpu --transact-device cuda
 flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+```
+
+To run model code on GPU but expose CPU TRANSACT/pre-alignment settings:
+
+```bash
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
+  --model-device cuda --transact-backend cpu --transact-device cpu
+```
+
+Python users can choose the TRANSACT backend independently as well:
+
+```python
+from flowtransop import RuntimeBackends, load_transact_backend
+
+backends = RuntimeBackends(model_device="cuda", transact_backend="cpu", transact_device="cpu")
+transact = load_transact_backend(repo_root=".", backends=backends)
+Z_source, Z_target, tau, model = transact.align(X_source, X_target)
 ```
 
 Translate a preprocessed matrix with a saved checkpoint:
@@ -225,6 +259,28 @@ flowtransop predict \
 
 Inputs must already be normalized and feature-ordered like the matrices used
 for training.
+
+## Minimal End-to-End Package Example
+
+From the repository root:
+
+```bash
+pip install -e ".[reproduce]"
+
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+
+flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+
+flowtransop predict \
+  --normal-checkpoint archs4/models/fold_0_normal.pt \
+  --m2h-checkpoint archs4/models/fold_0_normal_m2h.pt \
+  --direction m2h \
+  --input-npy archs4/preprocessed/mouse_test_X.npy \
+  --output-npy archs4/evaluation/example_m2h_prediction.npy
+```
 
 ## Notes for Reuse
 

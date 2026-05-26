@@ -1,6 +1,6 @@
 # Preprocessing
 
-This folder contains preprocessing scripts for the L1000 benchmark portion of
+This folder contains preprocessing material for the L1000 benchmark portion of
 the FlowTransOP study.
 
 ARCHS4 preprocessing is handled by the Python scripts in `../learning/`
@@ -8,35 +8,61 @@ ARCHS4 preprocessing is handled by the Python scripts in `../learning/`
 `preprocess_archs4_mouse.py`) because those scripts write directly to
 `../archs4/`.
 
-## L1000 Preprocessing
+## Active L1000 Inputs Used by the Manuscript Scripts
 
-The main script is:
+The L1000 learning scripts used for the manuscript expect AutoTransOP-compatible
+processed files under:
 
-```bash
-Rscript preProcessL1000DrugData.R
+```text
+preprocessing/preprocessed_data/CellPairs/
+preprocessing/preprocessed_data/SameCellimputationModel/
+preprocessing/preprocessed_data/SameCellimputationModel/bracketed_difficulty/
 ```
 
-Run it from this folder:
+Common files referenced by downstream scripts include:
+
+```text
+preprocessing/preprocessed_data/CellPairs/drug_landmarks.csv
+preprocessing/preprocessed_data/CellPairs/cmap_all_genes_q1_tas03.csv
+preprocessing/preprocessed_data/CellPairs/train_paired_{fold}.csv
+preprocessing/preprocessed_data/CellPairs/val_paired_{fold}.csv
+```
+
+The learning scripts in `../learning/` read these processed matrices, cell-line
+pair definitions, and fold splits, then write benchmark outputs to
+`../results/`.
+
+## Legacy Script: `preProcessL1000DrugData.R`
+
+`preProcessL1000DrugData.R` appears to be a legacy or exploratory preprocessing
+script. It creates pair, triplet, and quadruplet split objects such as:
+
+```text
+preprocessed_data/drug_pairs_dataset.rds
+preprocessed_data/drug_triplets_dataset.rds
+preprocessed_data/drug_quadruplets_dataset.rds
+preprocessed_data/drug_test_sets_pairs.rds
+preprocessed_data/drug_tuning_and_cv_pairs.json
+preprocessed_data/drug_tuning_and_cv_triplets.json
+preprocessed_data/drug_tuning_and_cv_quadruplets_part*.json
+```
+
+A repository-wide search did not find these exact outputs being consumed by the
+current learning or postprocessing scripts. In other words, this script is not
+part of the active manuscript reproduction path unless you intentionally want to
+recreate that older pair/triplet/quadruplet split format.
+
+If you do run it, execute it from this folder:
 
 ```bash
 cd preprocessing
 Rscript preProcessL1000DrugData.R
 ```
 
-The expected output location is:
+## Downstream Workflow
 
-```text
-preprocessing/preprocessed_data/
-```
-
-The downstream scripts in `../learning/` expect processed L1000 matrices,
-metadata, cell-line pair definitions, and train/test fold information to be
-available from this preprocessing output or from the AutoTransOP-compatible
-processed files used in the manuscript.
-
-## Expected Downstream Use
-
-After preprocessing, run model training from `../learning/`, for example:
+After the active preprocessed L1000 files are available, run model training from
+`../learning/`, for example:
 
 ```bash
 cd ../learning

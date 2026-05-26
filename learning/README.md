@@ -4,6 +4,18 @@ This folder contains the Python and shell scripts used for model training,
 evaluation, and disease-score analysis. Most paths in these scripts are relative
 to this folder, so run commands from `learning/` unless noted otherwise.
 
+## Important Data Note
+
+The active L1000 manuscript workflow uses AutoTransOP-compatible processed files
+under `../preprocessing/preprocessed_data/CellPairs/` and
+`../preprocessing/preprocessed_data/SameCellimputationModel/`.
+
+`../preprocessing/preProcessL1000DrugData.R` creates older pair, triplet, and
+quadruplet split files. A repository-wide search did not find those exact
+outputs being consumed by the current learning or postprocessing scripts, so it
+should be treated as legacy/optional unless you intentionally want to reproduce
+that older split format.
+
 ## Main Script Groups
 
 ### L1000 Benchmarks
@@ -140,30 +152,126 @@ Outputs:
 ../archs4/evaluation/liver_mas_fibrosis_final_expression_mean/
 ```
 
+`score_liver_mas_fibrosis_final_expression_mean.py` imports shared helper code
+from `score_liver_mas_fibrosis.py`; keep that helper in this folder when running
+the scoring workflow.
+
+## Script-by-Script Map
+
+This table traces each learning script to the result family it generates and,
+where possible, the plotting script that consumes the output.
+
+| Script | What it does | Main outputs or downstream use |
+| --- | --- | --- |
+| `archs4_workflow.py` | Retrieves/organizes ARCHS4 human and mouse data, defines held-out liver samples, and creates fold split metadata. | `../archs4/splits/`; inputs for ARCHS4 preprocessing and training. |
+| `preprocess_archs4.py` | Converts ARCHS4 human and mouse expression into sample-major numpy matrices and fold index arrays. | `../archs4/preprocessed/`; required by ARCHS4 train/evaluate/score scripts. |
+| `preprocess_archs4_mouse.py` | Mouse-focused/resumable ARCHS4 preprocessing path for large mouse matrices. | `../archs4/preprocessed/mouse_*`; used with `mouse_preprocess*.sh`. |
+| `train_ARCHS4_fold.py` | Trains fold-level human and mouse autoencoders, the human-to-mouse flow, and permuted controls. | `../archs4/models/fold_*_normal.pt`, `fold_*_permuted.pt`; required before `train_ARCHS4_fold_m2h.py` and evaluation. |
+| `train_ARCHS4_fold_m2h.py` | Trains the reverse mouse-to-human flow using the fold encoders/decoders trained above. | `../archs4/models/fold_*_normal_m2h.pt`, `fold_*_permuted_m2h.pt`; consumed by ARCHS4 evaluation. |
+| `train_ARCHS4_full_ensemble.py` | Trains full-data ensemble models for final translated-expression averaging. | `../archs4/models/full_ensemble_*`; consumed by MASH/fibrosis scoring. |
+| `evaluate_translation.py` | Computes cycle consistency, orthologue preservation, and latent MMD for ARCHS4 folds. | `../archs4/evaluation/cycle_*`, `orthologue_*`, `mmd_*`; plotted by `../postprocessing/plot_archs4_evaluation.R`. |
+| `evaluate_expression_mmd_archs4.py` | Computes expression-space MMD for ARCHS4 translated samples. | `../archs4/evaluation/expression_mmd_fold*.csv`; plotted by `plot_archs4_evaluation.R`. |
+| `evaluate_liver.py` | Evaluates held-out liver reconstruction, cycle, orthologue, expression MMD, latent MMD, and centroid specificity metrics. | `../archs4/evaluation/liver_*_fold*.csv`; plotted by `plot_archs4_liver_evaluation.R`. |
+| `score_liver_mas_fibrosis_final_expression_mean.py` | Averages full-ensemble translated expression and scores mouse MASH/fibrosis studies with human PLSR models. | `../archs4/evaluation/liver_mas_fibrosis_final_expression_mean/`; plotted by `plot_liver_mas_fibrosis_final_expression_mean.R`. |
+| `AutoTransOP_Pretrain_FlowMatch.py` | Main unpaired FlowTransOP L1000 benchmark on shared-feature cell-line pairs. | `../results/AutoTransOP_CellPairs/`; summarized by `evaluate5folds.R`. |
+| `AutoTransOP_Pretrain_FlowMatch_withPairs.py` | Paired-constrained FlowTransOP comparison for cell-line pairs. | `../results/AutoTransOP_CellPairs_withPairs/`; summarized by `evaluate5folds.R`. |
+| `AutoTransOP_Pretrain_FlowMatch_withSTRUCTURE.py` | Compares a STRUCTURE-based initial alignment/pretraining variant against TRANSACT-based workflows. | `../results/AutoTransOP_withSTRUCTURE/`; summarized by `evaluate5folds.R`. |
+| `DecodeFromConsencusSpace.py` | Decoder-only baseline using a consensus latent space for the shared-feature L1000 benchmark. | `../results/DecodersOnly/`; summarized by `evaluate5folds.R`. |
+| `DecodeFromConsencusSpaceRandomPairs.py` | Decoder-only baseline with random/unpaired consensus construction. | Supports consensus-space control comparisons in the L1000 benchmark. |
+| `AutoTransOP_Pretrain_FlowMatch_differentInputs.py` | FlowTransOP benchmark where the two domains use different feature subsets. | `../results/AutoTransOP_CellPairs_diffenetInputs/`; summarized by `evaluate5folds.R` and `DifferentInputsPerformanceBracketed.R`. |
+| `DecodeFromConsencusSpace_diffenetInputs.py` | Decoder-only baseline for different-input L1000 tasks. | `../results/DecodersOnly_differentInputs/`; summarized by `evaluate5folds.R` and `DifferentInputsPerformanceBracketed.R`. |
+| `AutoTransOP_Pretrain_FlowMatch_differentInputs_bracketed.py` | FlowTransOP across bracketed feature-correlation difficulty levels. | `../results/AutoTransOP_CellPairs_diffenetInputs_bracketed/`; summarized by `DifferentInputsPerformanceBracketed.R`. |
+| `DecodeFromConsencusSpace_diffenetInputs_bracketed.py` | Decoder-only bracketed-difficulty baseline. | `../results/Decoders_only_diffenetInputs_bracketed/`; summarized by `DifferentInputsPerformanceBracketed.R`. |
+| `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentage.py` | FlowTransOP low-pair A375/HT29 benchmark. | `../results/FlowMatch_lowPairsPercentage/`; summarized by `LowPairsPerformance.R`. |
+| `AutoTransOP_Pretrain_FlowMatchPaired_lowPairsPercentage.py` | Paired FlowTransOP low-pair A375/HT29 benchmark. | `../results/FlowMatch_lowPairsPercentage_withPairs/`; summarized by `LowPairsPerformance.R`. |
+| `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme.py` | FlowTransOP extreme few-pair benchmark. | `../results/FlowMatch_extremely_fewPairs_A375_HT29/`; summarized by `LowPairsPerformance.R`. |
+| `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme_withPairs.py` | Paired FlowTransOP extreme few-pair benchmark. | `../results/FlowMatch_extremely_fewPairs_A375_HT29_withPairs/`; summarized by `LowPairsPerformance.R`. |
+| `AutoTransOP_lowPairsPercentageExtreme.py` | AutoTransOP baseline for the extreme few-pair benchmark. | `../results/AutoTransOP_extremely_fewPairs_A375_HT29/`; summarized by `LowPairsPerformance.R`. |
+| `FlowMatch_lowPairsPercentage_PairsAndSimilarity.py` | Hybrid low-pair FlowTransOP variant using pair and similarity information. | `../results/FlowMatch_fewPairs_A375_HT29_PairAndSimilarity*/`; summarized by `LowPairsPerformance.R`. |
+| `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity.py` | Hybrid extreme few-pair variant with pair and similarity information. | `../results/FlowMatch_extremely_fewPairs_A375_HT29_PairAndSimilarity/`; summarized by `LowPairsPerformance.R`. |
+| `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_meanAgg.py` | Mean-aggregation version of the pair-and-similarity variant. | `../results/*_PairAndSimilarity_meanAgg/`; summarized by `LowPairsPerformance.R`. |
+| `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_sumAgg.py` | Sum-aggregation version of the pair-and-similarity variant. | `../results/*_PairAndSimilarity_sumAgg/`; summarized by `LowPairsPerformance.R`. |
+| `InitialAligner_GPUvsCPU_random_data.py` | TRANSACT GPU/CPU comparison on synthetic/random data. | `../results/GPU_vs_CPU_random/`; plotted by `GPU_vs_CPU_implementation.R`. |
+| `InitialAligner_GPUvsCPU_celline_pairs.py` | TRANSACT GPU/CPU comparison on real cell-line pair data. | `../results/GPU_vs_CPU/`; plotted by `GPU_vs_CPU_implementation.R`. |
+| `InitialAligner_GPUvsCPU_celline_pairs_random_subsampling.py` | GPU/CPU TRANSACT comparison under real-data subsampling. | Supports `GPU_vs_CPU_implementation.R` comparisons. |
+| `InitialAligner_GPUvsCPU_sameCell_diffInput.py` | GPU/CPU TRANSACT comparison for same-cell, different-feature inputs. | Supports `GPU_vs_CPU_implementation.R` comparisons. |
+| `models.py` | FlowTransOP neural-network modules used by the main training scripts. | Imported by training, inference, and package loading code. |
+| `models_autotransop.py` | Neural modules for AutoTransOP-style baselines. | Imported by AutoTransOP baseline scripts. |
+| `trainingUtils.py` | Training loops, losses, and helpers for FlowTransOP scripts. | Imported by FlowTransOP training scripts. |
+| `trainingUtils_autotransop.py` | Training helpers for AutoTransOP-style baselines. | Imported by AutoTransOP baseline scripts. |
+| `transact_utility_gpu.py` | GPU-oriented TRANSACT/pre-alignment utilities. | Imported by GPU/pretraining workflows. |
+| `utility.py` | General utility functions, including CPU-side alignment/helper routines used by benchmarks. | Imported across L1000 scripts and GPU/CPU comparison scripts. |
+| `evaluationUtils.py` | Metric and statistics helpers for benchmark evaluation. | Imported by L1000 and ARCHS4 evaluation scripts. |
+
+## Shell Wrapper Map
+
+| Wrapper | What it runs |
+| --- | --- |
+| `retrieve_ARCHS4.sh` | SLURM wrapper for `archs4_workflow.py`. |
+| `preprocess_ARCHS4.sh` | SLURM wrapper for `preprocess_archs4.py`. |
+| `mouse_preprocess.sh` | SLURM wrapper for `preprocess_archs4_mouse.py`. |
+| `mouse_preprocess_preemptable.sh` | Preemptable SLURM wrapper for `preprocess_archs4_mouse.py`. |
+| `ARCHS4_train_CV.sh` | SLURM array wrapper for `train_ARCHS4_fold.py`. |
+| `ARCHS4_train_full_ensemble.sh` | SLURM array wrapper for `train_ARCHS4_full_ensemble.py`. |
+| `evaluate_translation.sh` | SLURM array wrapper for `evaluate_translation.py`. |
+| `score_liver_mas_fibrosis_final_expression_mean.sh` | SLURM wrapper for final MASH/fibrosis scoring. |
+| `cell_pairs_benchmark.sh` | Historical SLURM wrapper for the shared-feature L1000 benchmark; edit the active Python command as needed. |
+| `low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentage.py`. |
+| `extremely_low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme.py`. |
+| `pairedFlow_low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatchPaired_lowPairsPercentage.py`. |
+| `pairedFlow_low_percentage_of_pairs_extreme.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme_withPairs.py`. |
+| `OneCell_differentInputs_benchmark.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_differentInputs_bracketed.py`. |
+| `decoders_only_imputedGenes.sh` | Runs `DecodeFromConsencusSpace_diffenetInputs_bracketed.py`. |
+| `subsetting_decoders_only.sh` | Runs `DecodeFromConsencusSpaceRandomPairs.py` for decoder-only random-pair/subsetting controls. |
+| `run_liver_translated_expression_pathway_activity.sh` | Historical wrapper for a Hallmark ssGSEA analysis script; restore the companion Python script if this optional analysis is needed. |
+
 ## Package Entry Point
 
 The repository root contains an installable package. From `..`:
 
 ```bash
-pip install -e .
+pip install -e ".[reproduce]"
 ```
 
 Then from the repository root:
 
 ```bash
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m
-flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
+  --model-device cuda --transact-backend gpu --transact-device cuda
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h \
+  --model-device cuda --transact-backend gpu --transact-device cuda
 flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+```
+
+`--model-device` controls the model device. `--transact-backend` and
+`--transact-device` configure TRANSACT/pre-alignment separately from the model
+device. Defaults are GPU/CUDA:
+
+```text
+--model-device cuda
+--transact-backend gpu
+--transact-device cuda
+```
+
+Python users can make the same choice directly:
+
+```python
+from flowtransop import RuntimeBackends, load_transact_backend
+
+backends = RuntimeBackends(model_device="cuda", transact_backend="cpu", transact_device="cpu")
+transact = load_transact_backend(repo_root=".", backends=backends)
+Z_source, Z_target, tau, model = transact.align(X_source, X_target)
 ```
 
 For direct inference on preprocessed matrices:
 
 ```bash
 flowtransop predict \
-  --normal-checkpoint archs4/models/full_ensemble_0_normal.pt \
+  --normal-checkpoint archs4/models/fold_0_normal.pt \
+  --m2h-checkpoint archs4/models/fold_0_normal_m2h.pt \
   --direction m2h \
-  --input-npy path/to/preprocessed_mouse_samples.npy \
-  --output-npy translated_human_expression.npy
+  --input-npy archs4/preprocessed/mouse_test_X.npy \
+  --output-npy archs4/evaluation/example_m2h_prediction.npy
 ```
 
 ## Practical Notes
