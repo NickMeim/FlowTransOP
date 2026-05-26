@@ -62,13 +62,14 @@ Rscript preProcessL1000DrugData.R
 ## Downstream Workflow
 
 After the active preprocessed L1000 files are available, run model training from
-`../learning/`, for example:
+`../learning/`. The manuscript-scale analyses were run through SLURM, so use
+`sbatch` for the checked-in `.sh` wrappers:
 
 ```bash
 cd ../learning
-bash cell_pairs_benchmark.sh
-bash low_percentage_of_pairs.sh
-bash OneCell_differentInputs_benchmark.sh
+sbatch cell_pairs_benchmark.sh
+sbatch low_percentage_of_pairs.sh
+sbatch OneCell_differentInputs_benchmark.sh
 ```
 
 Outputs are written under `../results/` and plotted by scripts in

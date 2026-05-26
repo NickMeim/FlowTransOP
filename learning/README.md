@@ -4,6 +4,12 @@ This folder contains the Python and shell scripts used for model training,
 evaluation, and disease-score analysis. Most paths in these scripts are relative
 to this folder, so run commands from `learning/` unless noted otherwise.
 
+The manuscript-scale workflows were run through SLURM. The `.sh` files here are
+SLURM submission scripts, so the reproduction examples use `sbatch`; direct
+Python calls are mainly useful for debugging or porting to another scheduler.
+For compact commands shown with `sbatch --wrap`, use the same resource requests
+and environment activation used in the checked-in SLURM wrappers on your cluster.
+
 ## Important Data Note
 
 The active L1000 manuscript workflow uses AutoTransOP-compatible processed files
@@ -68,8 +74,9 @@ These scripts write outputs to `../results/`.
 Prepare ARCHS4 splits and preprocessed matrices:
 
 ```bash
-python archs4_workflow.py
-python preprocess_archs4.py
+sbatch retrieve_ARCHS4.sh
+sbatch preprocess_ARCHS4.sh
+sbatch mouse_preprocess.sh
 ```
 
 Expected outputs:
@@ -87,24 +94,20 @@ Expected outputs:
 Train ARCHS4 cross-validation models:
 
 ```bash
-python train_ARCHS4_fold.py --fold 0
-python train_ARCHS4_fold_m2h.py --fold 0
+sbatch --array=0-9 ARCHS4_train_CV.sh
+sbatch --array=0-9 --wrap='python train_ARCHS4_fold_m2h.py --fold ${SLURM_ARRAY_TASK_ID}'
 ```
 
 The first command trains encoders, decoders, human-to-mouse flow, and permuted
 controls. The second command loads those saved encoders/decoders and trains the
 mouse-to-human flow.
 
-SLURM wrappers:
-
-```bash
-sbatch --array=0-9 ARCHS4_train_CV.sh
-```
+If the checked-in SLURM array range is narrower than the full experiment, update
+the scheduler header or command-line array range before submitting.
 
 Train full-data ensemble models for the MASH case study:
 
 ```bash
-python train_ARCHS4_full_ensemble.py --fold 0 --ensemble_id 0
 sbatch --array=0-9 ARCHS4_train_full_ensemble.sh
 ```
 
@@ -124,9 +127,9 @@ Model outputs:
 Run per fold:
 
 ```bash
-python evaluate_translation.py --fold 0
-python evaluate_expression_mmd_archs4.py --fold 0
-python evaluate_liver.py --fold 0
+sbatch --array=0-9 evaluate_translation.sh
+sbatch --array=0-9 --wrap='python evaluate_expression_mmd_archs4.py --fold ${SLURM_ARRAY_TASK_ID}'
+sbatch --array=0-9 --wrap='python evaluate_liver.py --fold ${SLURM_ARRAY_TASK_ID}'
 ```
 
 `evaluate_translation.py` produces cycle consistency, orthologue preservation,
@@ -139,7 +142,7 @@ consistency, orthologues, MMD, and centroid metrics.
 After training full ensemble models:
 
 ```bash
-python score_liver_mas_fibrosis_final_expression_mean.py --ensemble_ids 0-9
+sbatch score_liver_mas_fibrosis_final_expression_mean.sh
 ```
 
 The script averages translated expression across ensemble members, trains human
@@ -155,6 +158,51 @@ Outputs:
 `score_liver_mas_fibrosis_final_expression_mean.py` imports shared helper code
 from `score_liver_mas_fibrosis.py`; keep that helper in this folder when running
 the scoring workflow.
+
+## Simple Script List
+
+In the style of the companion OmicTranslationBenchmark repository, this section
+lists the learning scripts first as a plain file-by-file description.
+
+1. `archs4_workflow.py`: Script to retrieve and organize ARCHS4 human/mouse data, define liver held-out samples, and create fold split metadata.
+2. `preprocess_archs4.py`: Script to convert ARCHS4 expression data into sample-major matrices and fold index arrays for training.
+3. `preprocess_archs4_mouse.py`: Script to preprocess large ARCHS4 mouse expression matrices, including resumable/preemptable runs.
+4. `train_ARCHS4_fold.py`: Script to train fold-level human/mouse autoencoders, the human-to-mouse flow, and permuted controls.
+5. `train_ARCHS4_fold_m2h.py`: Script to train the reverse mouse-to-human flow from saved fold-level encoders and decoders.
+6. `train_ARCHS4_full_ensemble.py`: Script to train one full-data ARCHS4 ensemble member for the MASH/fibrosis case study.
+7. `evaluate_translation.py`: Script to evaluate ARCHS4 cycle consistency, orthologue preservation, and latent MMD metrics.
+8. `evaluate_expression_mmd_archs4.py`: Script to evaluate expression-space MMD for ARCHS4 translated samples.
+9. `evaluate_liver.py`: Script to evaluate held-out liver reconstruction, cycle, orthologue, MMD, and centroid metrics.
+10. `score_liver_mas_fibrosis_final_expression_mean.py`: Script to average ensemble translated expression and score selected mouse MASH/fibrosis studies with human PLSR models.
+11. `AutoTransOP_Pretrain_FlowMatch.py`: Script to train the main unpaired FlowTransOP L1000 shared-feature cell-line benchmark.
+12. `AutoTransOP_Pretrain_FlowMatch_withPairs.py`: Script to train the paired-constrained FlowTransOP comparison for cell-line pairs.
+13. `AutoTransOP_Pretrain_FlowMatch_withSTRUCTURE.py`: Script to train the STRUCTURE-initialized comparison workflow.
+14. `DecodeFromConsencusSpace.py`: Script to train/evaluate the consensus-space decoder baseline for shared-feature L1000 tasks.
+15. `DecodeFromConsencusSpaceRandomPairs.py`: Script to run consensus-space decoder controls with random/unpaired consensus construction.
+16. `AutoTransOP_Pretrain_FlowMatch_differentInputs.py`: Script to train FlowTransOP when the two domains use different feature subsets.
+17. `DecodeFromConsencusSpace_diffenetInputs.py`: Script to train/evaluate decoder-only baselines for different-input tasks.
+18. `AutoTransOP_Pretrain_FlowMatch_differentInputs_bracketed.py`: Script to train FlowTransOP across bracketed feature-correlation difficulty levels.
+19. `DecodeFromConsencusSpace_diffenetInputs_bracketed.py`: Script to train/evaluate decoder-only baselines across bracketed difficulty levels.
+20. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentage.py`: Script to train FlowTransOP in the low-pair A375/HT29 benchmark.
+21. `AutoTransOP_Pretrain_FlowMatchPaired_lowPairsPercentage.py`: Script to train paired FlowTransOP in the low-pair A375/HT29 benchmark.
+22. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme.py`: Script to train FlowTransOP in the extreme few-pair benchmark.
+23. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme_withPairs.py`: Script to train paired FlowTransOP in the extreme few-pair benchmark.
+24. `AutoTransOP_lowPairsPercentageExtreme.py`: Script to train the AutoTransOP baseline under the extreme few-pair design.
+25. `FlowMatch_lowPairsPercentage_PairsAndSimilarity.py`: Script to train a hybrid low-pair FlowTransOP variant using pair and similarity information.
+26. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity.py`: Script to train the extreme few-pair pair-and-similarity variant.
+27. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_meanAgg.py`: Script to train/evaluate the mean-aggregation pair-and-similarity variant.
+28. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_sumAgg.py`: Script to train/evaluate the sum-aggregation pair-and-similarity variant.
+29. `InitialAligner_GPUvsCPU_random_data.py`: Script to compare GPU and CPU TRANSACT/pre-alignment implementations on random data.
+30. `InitialAligner_GPUvsCPU_celline_pairs.py`: Script to compare GPU and CPU TRANSACT/pre-alignment implementations on cell-line pair data.
+31. `InitialAligner_GPUvsCPU_celline_pairs_random_subsampling.py`: Script to compare GPU/CPU TRANSACT under random subsampling of real cell-line data.
+32. `InitialAligner_GPUvsCPU_sameCell_diffInput.py`: Script to compare GPU/CPU TRANSACT for same-cell, different-feature inputs.
+33. `models.py`: Contains classes used to define the FlowTransOP neural-network modules.
+34. `models_autotransop.py`: Contains classes used to define AutoTransOP-style baseline modules.
+35. `trainingUtils.py`: Contains functions used to train FlowTransOP models.
+36. `trainingUtils_autotransop.py`: Contains functions used to train AutoTransOP-style baseline models.
+37. `transact_utility_gpu.py`: Contains GPU-oriented TRANSACT/pre-alignment functions.
+38. `utility.py`: Contains general utilities, including CPU-side alignment/helper routines.
+39. `evaluationUtils.py`: Contains functions for model evaluation and metric calculation.
 
 ## Script-by-Script Map
 

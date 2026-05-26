@@ -67,19 +67,20 @@ Run the relevant scripts from `../learning/`. Examples:
 
 ```bash
 cd ../learning
-bash cell_pairs_benchmark.sh
-bash low_percentage_of_pairs.sh
-bash extremely_low_percentage_of_pairs.sh
-bash pairedFlow_low_percentage_of_pairs.sh
-bash pairedFlow_low_percentage_of_pairs_extreme.sh
-bash OneCell_differentInputs_benchmark.sh
-bash decoders_only_imputedGenes.sh
-bash subsetting_decoders_only.sh
+sbatch cell_pairs_benchmark.sh
+sbatch low_percentage_of_pairs.sh
+sbatch extremely_low_percentage_of_pairs.sh
+sbatch pairedFlow_low_percentage_of_pairs.sh
+sbatch pairedFlow_low_percentage_of_pairs_extreme.sh
+sbatch OneCell_differentInputs_benchmark.sh
+sbatch decoders_only_imputedGenes.sh
+sbatch subsetting_decoders_only.sh
 ```
 
-The Python scripts write CSV files into the subdirectories listed above. The
-exact naming convention usually includes the cell-line pair, direction, model
-type, fold, or paired-sample count.
+The `.sh` files are SLURM submission scripts used for the manuscript-scale
+training runs. The underlying Python scripts write CSV files into the
+subdirectories listed above. The exact naming convention usually includes the
+cell-line pair, direction, model type, fold, or paired-sample count.
 
 ## Plotting Outputs
 

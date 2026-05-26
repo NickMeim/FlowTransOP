@@ -1,11 +1,15 @@
 # FlowTransOP
 
+Github repository of the study:
+
+> FlowTransOP: Distributional Translation of Omics Signatures via Constrained Deep Flow Matching
+> Meimetis, N., Hoang, T. N., Magliacane, S., & Lauffenburger, D. A.
+
 FlowTransOP is a framework for distributional translation of omics signatures
 between biological domains when paired samples and one-to-one feature maps are
-limited or absent. The repository contains the analyses for the manuscript
-**FlowTransOP: Distributional Translation of Omics Signatures via Constrained
-Deep Flow Matching**, including L1000 benchmarks, ARCHS4 mouse-human training,
-cross-validation, liver evaluation, MASH case-study scoring, and plotting.
+limited or absent. The repository contains the analyses for the manuscript,
+including L1000 benchmarks, ARCHS4 mouse-human training, cross-validation, liver
+evaluation, MASH case-study scoring, and plotting.
 
 The original research scripts are in `learning/`. A lightweight installable
 package scaffold is in `src/flowtransop/` for loading trained checkpoints,
@@ -80,26 +84,29 @@ rather than a required manuscript reproduction step. See
 
 ### 2. L1000 Benchmark Models
 
-Run these from `learning/`. The shell scripts are SLURM-oriented wrappers; the
-corresponding Python scripts can also be run directly when adapting to another
-cluster.
+Run these from `learning/`. The manuscript-scale jobs were run through SLURM,
+and the `.sh` files in `learning/` are SLURM submission scripts. Use `sbatch`
+for reproducing the study; direct Python commands are mainly useful for small
+debugging runs or when adapting the workflow to another scheduler.
+For compact commands shown with `sbatch --wrap`, use the same resource requests
+and environment activation used in the checked-in SLURM wrappers on your cluster.
 
 ```bash
 cd learning
 
 # Shared-feature cell-line benchmark
-bash cell_pairs_benchmark.sh
+sbatch cell_pairs_benchmark.sh
 
 # Low-pair and extremely-low-pair benchmarks
-bash low_percentage_of_pairs.sh
-bash extremely_low_percentage_of_pairs.sh
-bash pairedFlow_low_percentage_of_pairs.sh
-bash pairedFlow_low_percentage_of_pairs_extreme.sh
+sbatch low_percentage_of_pairs.sh
+sbatch extremely_low_percentage_of_pairs.sh
+sbatch pairedFlow_low_percentage_of_pairs.sh
+sbatch pairedFlow_low_percentage_of_pairs_extreme.sh
 
 # Distinct-feature benchmarks and decoder-only baselines
-bash OneCell_differentInputs_benchmark.sh
-bash decoders_only_imputedGenes.sh
-bash subsetting_decoders_only.sh
+sbatch OneCell_differentInputs_benchmark.sh
+sbatch decoders_only_imputedGenes.sh
+sbatch subsetting_decoders_only.sh
 ```
 
 Outputs are written under `results/` and summarized by the plotting scripts in
@@ -107,11 +114,12 @@ Outputs are written under `results/` and summarized by the plotting scripts in
 
 ### 3. ARCHS4 Download, Splits, and Preprocessing
 
-Run from `learning/`:
+Run from `learning/` using the SLURM wrappers:
 
 ```bash
-python archs4_workflow.py
-python preprocess_archs4.py
+sbatch retrieve_ARCHS4.sh
+sbatch preprocess_ARCHS4.sh
+sbatch mouse_preprocess.sh
 ```
 
 This creates or expects:
@@ -124,21 +132,22 @@ archs4/preprocessed/
 ```
 
 For resumable/preemptable mouse preprocessing, use
-`preprocess_archs4_mouse.py` or the shell wrappers in `learning/`.
+`sbatch mouse_preprocess_preemptable.sh`.
 
 ### 4. ARCHS4 Cross-Validation Training
 
-For each fold, train human-to-mouse first, then mouse-to-human:
-
-```bash
-python train_ARCHS4_fold.py --fold 0
-python train_ARCHS4_fold_m2h.py --fold 0
-```
-
-On SLURM:
+For each fold, train human-to-mouse first, then mouse-to-human. The manuscript
+models were trained through SLURM:
 
 ```bash
 sbatch --array=0-9 ARCHS4_train_CV.sh
+```
+
+The reverse-direction script can be submitted analogously if it is not included
+in the local scheduler wrapper:
+
+```bash
+sbatch --array=0-9 --wrap='python train_ARCHS4_fold_m2h.py --fold ${SLURM_ARRAY_TASK_ID}'
 ```
 
 The CV checkpoints are written to `archs4/models/`:
@@ -152,25 +161,20 @@ fold_{fold}_permuted_m2h.pt
 
 ### 5. ARCHS4 Evaluation
 
-Run per fold:
+Run per fold through SLURM:
 
 ```bash
-python evaluate_translation.py --fold 0
-python evaluate_expression_mmd_archs4.py --fold 0
-python evaluate_liver.py --fold 0
+sbatch --array=0-9 evaluate_translation.sh
+sbatch --array=0-9 --wrap='python evaluate_expression_mmd_archs4.py --fold ${SLURM_ARRAY_TASK_ID}'
+sbatch --array=0-9 --wrap='python evaluate_liver.py --fold ${SLURM_ARRAY_TASK_ID}'
 ```
 
 These write CSV outputs to `archs4/evaluation/`.
 
 ### 6. Full ARCHS4 Ensemble and MASH Scoring
 
-The final MASH case study uses full-data ensemble models:
-
-```bash
-python train_ARCHS4_full_ensemble.py --fold 0 --ensemble_id 0
-```
-
-On SLURM:
+The final MASH case study uses full-data ensemble models. Submit the ensemble
+array through SLURM:
 
 ```bash
 sbatch --array=0-9 ARCHS4_train_full_ensemble.sh
@@ -179,7 +183,7 @@ sbatch --array=0-9 ARCHS4_train_full_ensemble.sh
 Then score the liver MASH/fibrosis studies:
 
 ```bash
-python score_liver_mas_fibrosis_final_expression_mean.py --ensemble_ids 0-9
+sbatch score_liver_mas_fibrosis_final_expression_mean.sh
 ```
 
 Outputs are written to:
