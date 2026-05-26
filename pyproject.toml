@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flowtransop"
+version = "0.1.0"
+description = "FlowTransOP utilities for omics distributional translation, ARCHS4 training, and checkpoint inference."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "torch",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+plotting = ["matplotlib", "seaborn"]
+reproduce = ["h5py", "archs4py", "geomloss", "matplotlib", "seaborn", "statsmodels"]
+
+[project.scripts]
+flowtransop = "flowtransop.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

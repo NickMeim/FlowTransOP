@@ -1,0 +1,236 @@
+# FlowTransOP
+
+FlowTransOP is a framework for distributional translation of omics signatures
+between biological domains when paired samples and one-to-one feature maps are
+limited or absent. The repository contains the analyses for the manuscript
+**FlowTransOP: Distributional Translation of Omics Signatures via Constrained
+Deep Flow Matching**, including L1000 benchmarks, ARCHS4 mouse-human training,
+cross-validation, liver evaluation, MASH case-study scoring, and plotting.
+
+The original research scripts are in `learning/`. A lightweight installable
+package scaffold is in `src/flowtransop/` for loading trained checkpoints,
+running standard workflows, and translating preprocessed matrices.
+
+## Repository Layout
+
+```text
+FlowTransOP/
+  README.md                         Repository-level reproduction guide
+  pyproject.toml                    Installable package metadata
+  src/flowtransop/                  Lightweight package and CLI
+  learning/                         Python training, evaluation, scoring scripts
+  preprocessing/                    L1000 preprocessing scripts
+  postprocessing/                   R/Python scripts for statistics and plots
+  results/                          L1000 benchmark outputs
+  archs4/                           ARCHS4 raw/preprocessed data, models, evaluations
+  figures/                          Supplementary/supporting figure outputs
+```
+
+## Install
+
+Create an environment with Python 3.9 or newer. GPU-enabled PyTorch is strongly
+recommended for training. A minimal Python setup is:
+
+```bash
+pip install -e .
+pip install numpy pandas scipy scikit-learn h5py archs4py geomloss matplotlib seaborn statsmodels
+```
+
+Or install the reproduction extras declared by the package:
+
+```bash
+pip install -e ".[reproduce]"
+```
+
+For plotting, install R and the R packages used by `postprocessing/`:
+
+```r
+install.packages(c(
+  "tidyverse", "ggplot2", "ggpubr", "patchwork", "cowplot",
+  "rstatix", "lme4", "emmeans", "ggridges", "ggsignif"
+))
+```
+
+## Reproducing the Study
+
+Most scripts assume they are run from `learning/`, because paths are written
+relative to that folder, e.g. `../archs4`, `../results`, and `../postprocessing`.
+
+### 1. L1000 Benchmark Data
+
+The L1000 experiments use the AutoTransOP-compatible processed L1000 data and
+cell-line task definitions. If starting from raw L1000 inputs, run:
+
+```bash
+cd preprocessing
+Rscript preProcessL1000DrugData.R
+```
+
+The expected processed files should be placed under
+`preprocessing/preprocessed_data/`. See `preprocessing/readme.md`.
+
+### 2. L1000 Benchmark Models
+
+Run these from `learning/`. The shell scripts are SLURM-oriented wrappers; the
+corresponding Python scripts can also be run directly when adapting to another
+cluster.
+
+```bash
+cd learning
+
+# Shared-feature cell-line benchmark
+bash cell_pairs_benchmark.sh
+
+# Low-pair and extremely-low-pair benchmarks
+bash low_percentage_of_pairs.sh
+bash extremely_low_percentage_of_pairs.sh
+bash pairedFlow_low_percentage_of_pairs.sh
+bash pairedFlow_low_percentage_of_pairs_extreme.sh
+
+# Distinct-feature benchmarks and decoder-only baselines
+bash OneCell_differentInputs_benchmark.sh
+bash decoders_only_imputedGenes.sh
+bash subsetting_decoders_only.sh
+```
+
+Outputs are written under `results/` and summarized by the plotting scripts in
+`postprocessing/`.
+
+### 3. ARCHS4 Download, Splits, and Preprocessing
+
+Run from `learning/`:
+
+```bash
+python archs4_workflow.py
+python preprocess_archs4.py
+```
+
+This creates or expects:
+
+```text
+archs4/human_gene_v2.latest.h5
+archs4/mouse_gene_v2.latest.h5
+archs4/splits/
+archs4/preprocessed/
+```
+
+For resumable/preemptable mouse preprocessing, use
+`preprocess_archs4_mouse.py` or the shell wrappers in `learning/`.
+
+### 4. ARCHS4 Cross-Validation Training
+
+For each fold, train human-to-mouse first, then mouse-to-human:
+
+```bash
+python train_ARCHS4_fold.py --fold 0
+python train_ARCHS4_fold_m2h.py --fold 0
+```
+
+On SLURM:
+
+```bash
+sbatch --array=0-9 ARCHS4_train_CV.sh
+```
+
+The CV checkpoints are written to `archs4/models/`:
+
+```text
+fold_{fold}_normal.pt
+fold_{fold}_permuted.pt
+fold_{fold}_normal_m2h.pt
+fold_{fold}_permuted_m2h.pt
+```
+
+### 5. ARCHS4 Evaluation
+
+Run per fold:
+
+```bash
+python evaluate_translation.py --fold 0
+python evaluate_expression_mmd_archs4.py --fold 0
+python evaluate_liver.py --fold 0
+```
+
+These write CSV outputs to `archs4/evaluation/`.
+
+### 6. Full ARCHS4 Ensemble and MASH Scoring
+
+The final MASH case study uses full-data ensemble models:
+
+```bash
+python train_ARCHS4_full_ensemble.py --fold 0 --ensemble_id 0
+```
+
+On SLURM:
+
+```bash
+sbatch --array=0-9 ARCHS4_train_full_ensemble.sh
+```
+
+Then score the liver MASH/fibrosis studies:
+
+```bash
+python score_liver_mas_fibrosis_final_expression_mean.py --ensemble_ids 0-9
+```
+
+Outputs are written to:
+
+```text
+archs4/evaluation/liver_mas_fibrosis_final_expression_mean/
+```
+
+### 7. Plotting
+
+Run from `postprocessing/`:
+
+```bash
+Rscript evaluate5folds.R
+Rscript LowPairsPerformance.R
+Rscript DifferentInputsPerformanceBracketed.R
+Rscript GPU_vs_CPU_implementation.R
+
+Rscript plot_archs4_evaluation.R
+Rscript plot_archs4_liver_evaluation.R
+Rscript plot_liver_mas_fibrosis_final_expression_mean.R
+```
+
+ARCHS4 figures are written under:
+
+```text
+archs4/evaluation/figures_flowtransop/
+archs4/evaluation/figures_liver/
+archs4/evaluation/liver_mas_fibrosis_final_expression_mean/figures/
+```
+
+## Package CLI
+
+After `pip install -e .`, common workflows can be called with `flowtransop`:
+
+```bash
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m
+flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h
+flowtransop train-archs4-ensemble --repo-root . --ensemble-id 0 --fold 0
+flowtransop evaluate-archs4-fold --repo-root . --fold 0 --include-liver
+```
+
+Translate a preprocessed matrix with a saved checkpoint:
+
+```bash
+flowtransop predict \
+  --normal-checkpoint archs4/models/full_ensemble_0_normal.pt \
+  --direction h2m \
+  --input-npy path/to/preprocessed_human_samples.npy \
+  --output-npy translated_mouse_expression.npy
+```
+
+Inputs must already be normalized and feature-ordered like the matrices used
+for training.
+
+## Notes for Reuse
+
+- The original scripts remain the source of truth for exact manuscript analyses.
+- The package scaffold provides stable loading and inference around the saved
+  checkpoint format.
+- Training expects large memory and GPU resources for ARCHS4-scale data.
+- Random/permuted baselines are important for interpreting unpaired translation
+  performance and should be retained when benchmarking new models.
