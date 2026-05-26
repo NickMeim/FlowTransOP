@@ -15,9 +15,24 @@ The original research scripts are in `learning/`. A lightweight installable
 package scaffold is in `src/flowtransop/` for loading trained checkpoints,
 running standard workflows, and translating preprocessed matrices.
 
-**README order:** this guide first shows installation, the installable
-`flowtransop` package interface, and a minimal package example. It then gives
-the full manuscript reproduction steps.
+**README order:** after the repository layout, this guide first shows
+installation, the installable `flowtransop` package interface, and a minimal
+package example. It then gives the full manuscript reproduction steps.
+
+## Repository Layout
+
+```text
+FlowTransOP/
+  README.md                         Repository-level reproduction guide
+  pyproject.toml                    Installable package metadata
+  src/flowtransop/                  Lightweight package and CLI
+  learning/                         Python training, evaluation, scoring scripts
+  preprocessing/                    L1000 preprocessing scripts
+  postprocessing/                   R/Python scripts for statistics and plots
+  results/                          L1000 benchmark outputs
+  archs4/                           ARCHS4 raw/preprocessed data, models, evaluations
+  figures/                          Supplementary/supporting figure outputs
+```
 
 ## Install
 
@@ -167,21 +182,6 @@ flowtransop predict \
   --direction m2h \
   --input-npy archs4/preprocessed/mouse_test_X.npy \
   --output-npy archs4/evaluation/example_m2h_prediction.npy
-```
-
-## Repository Layout
-
-```text
-FlowTransOP/
-  README.md                         Repository-level reproduction guide
-  pyproject.toml                    Installable package metadata
-  src/flowtransop/                  Lightweight package and CLI
-  learning/                         Python training, evaluation, scoring scripts
-  preprocessing/                    L1000 preprocessing scripts
-  postprocessing/                   R/Python scripts for statistics and plots
-  results/                          L1000 benchmark outputs
-  archs4/                           ARCHS4 raw/preprocessed data, models, evaluations
-  figures/                          Supplementary/supporting figure outputs
 ```
 
 ## Reproducing the Study
