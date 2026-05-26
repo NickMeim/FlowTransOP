@@ -4,65 +4,103 @@ library(ggpubr)
 library(patchwork)
 library(ggridges)
 
+dir.create("../figures", showWarnings = FALSE, recursive = TRUE)
+
+panel_tag_theme <- theme(
+  plot.tag = element_text(family = "Arial", face = "bold", size = 14)
+)
+real_data_panel_tag_theme <- theme(
+  plot.tag = element_text(family = "Arial", face = "bold", size = 14),
+  plot.tag.position = c(-0.012, 1)
+)
+theme_set(theme_get() + panel_tag_theme)
+
+with_panel_tags <- function(plot) {
+  plot + panel_tag_theme
+}
+
+with_real_data_panel_tags <- function(plot) {
+  plot + real_data_panel_tag_theme
+}
+
+save_png_pdf <- function(plot, stem, width, height, units = "cm", dpi = 600) {
+  ggsave(file.path("../figures", paste0(stem, ".png")),
+         plot = plot, width = width, height = height, units = units, dpi = dpi)
+  ggsave(file.path("../figures", paste0(stem, ".pdf")),
+         plot = plot, width = width, height = height, units = units,
+         device = cairo_pdf)
+}
+
+make_random_plots <- function(detailed_results_file) {
+  distribution <- stringr::str_remove(basename(detailed_results_file), "_detailed_results\\.csv$")
+  all_results <- data.table::fread(detailed_results_file)
+  all_results <- all_results %>% 
+    gather('matrix','r',-feature_size,-sample_size,-iteration,-cpu_time,-gpu_time,-speedup) %>%
+    mutate(metric = ifelse(grepl('min',matrix),'minimum','mean')) %>%
+    mutate(matrix = ifelse(grepl('_1_val',matrix),'validation x1',
+                           ifelse(grepl('_2_val',matrix),'validation x2',
+                                  ifelse(grepl('_1',matrix),'x1','x2'))))
+  
+  p_sample <- ggplot(all_results,
+                     aes(x=sample_size,y=r,color=matrix))+
+    geom_smooth()+
+    scale_y_continuous(limits = c(0,1.05))+
+    facet_grid(metric ~ feature_size,
+               labeller = labeller(
+                 feature_size = function(x) paste("# of features:", x),
+                 metric = function(x) paste(x,"of r")
+               ))
+  
+  p_dimension <- ggplot(all_results %>% mutate(dimension_ratio = feature_size/sample_size) %>%
+                          group_by(metric,matrix,dimension_ratio) %>%
+                          mutate(mu = mean(r)) %>%
+                          mutate(std = sd(r)) %>%
+                          mutate(se = std/sqrt(n())) %>%
+                          ungroup() %>%
+                          select(-iteration) %>%
+                          unique(),
+                        aes(x=dimension_ratio,y=mu,color=matrix,fill=matrix))+
+    scale_y_continuous(limits= c(0,1.099),
+                       breaks = seq(0,1,0.1))+
+    scale_x_continuous(n.breaks = 10)+
+    geom_line()+
+    geom_point()+
+    geom_ribbon(aes(ymin = mu - std,ymax=mu+std),alpha=0.4,color = NA)+
+    geom_hline(yintercept = 0.9,linetype='dashed',color='black',lwd=0.5)+
+    geom_vline(xintercept = 1,linetype='dashed',color='black',lwd=0.5)+
+    annotate(
+      "text",
+      x = 23,
+      y = 0.8,
+      label = "dimensions` ratio = 1"
+    )+
+    facet_wrap(~metric,
+               labeller = labeller(
+                 metric = function(x) paste(x,"of r")
+               ))+
+    xlab('# features / # samples')+
+    ylab('Pearson`s r')+
+    theme_pubr()
+  
+  p_sample <- with_panel_tags(p_sample)
+  p_dimension <- with_panel_tags(p_dimension)
+  combined <- p_sample / p_dimension + plot_annotation(tag_levels = "a")
+  
+  # Keep the historical individual PNG outputs and add one merged PNG/PDF
+  # pair per random distribution for Supplementary Figure S12 assembly.
+  save_png_pdf(p_sample, paste0("CPU_vs_GPU_random_", distribution), 24, 12)
+  save_png_pdf(p_dimension, paste0("CPU_vs_GPU_random_", distribution, "_dim_effect"), 16, 12)
+  save_png_pdf(combined,
+               paste0("Supplementary_Figure_S12_random_", distribution, "_combined"),
+               24,
+               24)
+}
+
 ## Compare random matrices results================
-all_results <- data.table::fread('../results/GPU_vs_CPU_random/gamma_detailed_results.csv')
-all_results <- all_results %>% 
-  gather('matrix','r',-feature_size,-sample_size,-iteration,-cpu_time,-gpu_time,-speedup) %>%
-  mutate(metric = ifelse(grepl('min',matrix),'minimum','mean')) %>%
-  mutate(matrix = ifelse(grepl('_1_val',matrix),'validation x1',
-                         ifelse(grepl('_2_val',matrix),'validation x2',
-                                ifelse(grepl('_1',matrix),'x1','x2'))))
-
-ggplot(all_results,
-       aes(x=sample_size,y=r,color=matrix))+
-  geom_smooth()+
-  scale_y_continuous(limits = c(0,1.05))+
-  facet_grid(metric ~ feature_size,
-             labeller = labeller(
-               feature_size = function(x) paste("# of features:", x),
-               metric = function(x) paste(x,"of r")
-             ))
-ggsave('../figures/CPU_vs_GPU_random_gamma.png',
-       width = 24,
-       height = 12,
-       units = 'cm',
-       dpi=600)
-
-ggplot(all_results %>% mutate(dimension_ratio = feature_size/sample_size) %>%
-         group_by(metric,matrix,dimension_ratio) %>%
-         mutate(mu = mean(r)) %>%
-         mutate(std = sd(r)) %>%
-         mutate(se = std/sqrt(n())) %>%
-         ungroup() %>%
-         select(-iteration) %>%
-         unique(),
-       aes(x=dimension_ratio,y=mu,color=matrix,fill=matrix))+
-  scale_y_continuous(limits= c(0,1.099),
-                     breaks = seq(0,1,0.1))+
-  scale_x_continuous(n.breaks = 10)+
-  geom_line()+
-  geom_point()+
-  geom_ribbon(aes(ymin = mu - std,ymax=mu+std),alpha=0.4,color = NA)+
-  geom_hline(yintercept = 0.9,linetype='dashed',color='black',lwd=0.5)+
-  geom_vline(xintercept = 1,linetype='dashed',color='black',lwd=0.5)+
-  annotate(
-    "text",
-    x = 23,
-    y = 0.8,
-    label = "dimensions` ratio = 1"
-  )+
-  facet_wrap(~metric,
-             labeller = labeller(
-               metric = function(x) paste(x,"of r")
-             ))+
-  xlab('# features / # samples')+
-  ylab('Pearson`s r')+
-  theme_pubr()
-ggsave('../figures/CPU_vs_GPU_random_gamma_dim_effect.png',
-       width = 16,
-       height = 12,
-       units = 'cm',
-       dpi=600)
+random_detailed_files <- list.files("../results/GPU_vs_CPU_random",
+                                    pattern = "_detailed_results\\.csv$",
+                                    full.names = TRUE)
+purrr::walk(random_detailed_files, make_random_plots)
 
 #### Compare results in my actual cells (imputed genes)================
 files_cells <- list.files('../results/GPU_vs_CPU/',full.names = TRUE)
@@ -84,19 +122,16 @@ for (file in files_cells) {
   all_results_cells <- rbind(all_results_cells,tmp)
 }
 
-ggplot(all_results_cells, aes(x = value, y = as.factor(matrix))) +
+p_imputed_cells <- ggplot(all_results_cells, aes(x = value, y = as.factor(matrix))) +
   geom_density_ridges(alpha = 0.75,
                       color='black') +
   scale_x_continuous(n.breaks = 10 )+
   ggtitle('Distribution of Pearson`s r between CPU and GPU constructed aligned latent variables')+
   xlab('Pearson`s r') + ylab('matrix')+ theme(base_family = "Arial") + 
   theme_pubr(base_family = "Arial",base_size = 14) + 
-  theme(plot.title = element_text(hjust = 1))
-ggsave('../figures/CPU_vs_GPU_in_imputed_cells.png',
-       width = 24,
-       height = 12,
-       units = 'cm',
-       dpi=600)
+  theme(plot.title = element_text(hjust = 1)) +
+  panel_tag_theme
+save_png_pdf(p_imputed_cells, "CPU_vs_GPU_in_imputed_cells", 24, 12)
 
 #### Compare results in my actual cell line pairs================
 files_pairs <- list.files('../results/GPU_vs_CPU/',full.names = TRUE)
@@ -122,19 +157,16 @@ ggviolin(all_results_pairs,
        x='folder',y='value',fill='matrix',width = 2)+
   scale_y_continuous(limits = c(0.96,1.01))
 
-ggplot(all_results_pairs, aes(x = value, y = as.factor(folder),fill=matrix)) +
+p_cell_line_pairs <- ggplot(all_results_pairs, aes(x = value, y = as.factor(folder),fill=matrix)) +
   geom_density_ridges(alpha = 0.75,
                       color='black') +
   scale_x_continuous(n.breaks = 10 )+
   ggtitle('Distribution of Pearson`s r between CPU and GPU constructed aligned latent variables')+
   xlab('Pearson`s r') + ylab('cell line pair')+ theme(base_family = "Arial") + 
   theme_pubr(base_family = "Arial",base_size = 14) + 
-  theme(plot.title = element_text(hjust = 1))
-ggsave('../figures/CPU_vs_GPU_in_cell_line_pairs.png',
-       width = 24,
-       height = 12,
-       units = 'cm',
-       dpi=600)
+  theme(plot.title = element_text(hjust = 1)) +
+  panel_tag_theme
+save_png_pdf(p_cell_line_pairs, "CPU_vs_GPU_in_cell_line_pairs", 24, 12)
 
 
 #### Compare results in my actual cell line pairs that are subsetted================
@@ -163,7 +195,7 @@ ggplot(all_results_pairs_sub,
   scale_y_continuous(limits = c(0,1.05))+
   facet_wrap(~matrix)
 
-ggplot(all_results_pairs_sub %>% 
+p_subsampled <- ggplot(all_results_pairs_sub %>% 
          group_by(variable,matrix,sample_size) %>%
          mutate(mu = mean(value)) %>%
          mutate(std = sd(value)) %>%
@@ -189,9 +221,15 @@ ggplot(all_results_pairs_sub %>%
   facet_wrap(~matrix)+
   xlab('# of samples')+
   ylab('Pearson`s r')+
-  theme_pubr()
-ggsave('../figures/CPU_vs_GPU_subsampled.png',
-       width = 24,
-       height = 14,
-       units = 'cm',
-       dpi=600)
+  theme_pubr() +
+  panel_tag_theme
+save_png_pdf(p_subsampled, "CPU_vs_GPU_subsampled", 24, 14)
+
+p_real_data_baselines <- with_real_data_panel_tags(p_cell_line_pairs) /
+  with_real_data_panel_tags(p_imputed_cells) /
+  with_real_data_panel_tags(p_subsampled) +
+  plot_annotation(tag_levels = "a")
+save_png_pdf(p_real_data_baselines,
+             "Supplementary_Figure_S12_real_data_baselines_combined",
+             24,
+             36)

@@ -5,6 +5,15 @@ library(patchwork)
 library(lme4)
 library(emmeans)
 
+dir.create("../figures", showWarnings = FALSE, recursive = TRUE)
+
+save_supplementary_plot <- function(plot, stem, width, height, units = "cm", dpi = 600) {
+  ggsave(file.path("../figures", paste0(stem, ".png")),
+         plot = plot, width = width, height = height, units = units, dpi = dpi)
+  ggsave(file.path("../figures", paste0(stem, ".pdf")),
+         plot = plot, width = width, height = height, units = units)
+}
+
 ## Load example data----------
 results <- data.table::fread('../results/AutoTransOP_CellPairs/A375_HT29_flow12_TransAct_GeneralizedTransOP_translation_eval.csv') %>%
   select(-V1)
@@ -243,16 +252,23 @@ print(results %>% filter(approach %in% c('consencus space: 1 -> 2','consencus sp
         group_by(set,approach) %>% 
         summarise(mu = mean(r),med=median(r),min = min(r),max=max(r)))
 
-ggboxplot(results,x='approach',y='r',color='approach',add='jitter')+
+p_s5_consensus <- ggboxplot(results,x='approach',y='r',color='approach',add='jitter')+
   facet_wrap(~set)+
   stat_compare_means(comparisons = list(c('consencus space: 1 -> 2','consencus space: 2 -> 1')),
                      method = 'wilcox',paired = TRUE)+
-  theme(axis.text.x = element_blank())
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  theme(axis.text.x = element_blank(),
+        legend.position = 'top')
 ggsave('../transact_decoders_all_approaches.png',
+       plot = p_s5_consensus,
        width = 28,
-       height = 10,
+       height = 13,
        units = 'cm',
        dpi = 600)
+save_supplementary_plot(p_s5_consensus,
+                        "Supplementary_Figure_S5A_consensus_space_construction",
+                        width = 28,
+                        height = 13)
 
 ## Now compare decoders only using only paired and random conditions
 files_dec_trans <- list.files('../results/DecodersOnly/',full.names = TRUE)
@@ -297,7 +313,7 @@ ggsave('../transact_decoders_subsets_convergence.png',
 #   geom_point(size=2.5)+
 #   facet_wrap(~translation,scales = 'free_y')
 
-ggboxplot(results_sub ,x='subset_size',y='r',add='jitter')+
+p_s5_subset_sizes <- ggboxplot(results_sub ,x='subset_size',y='r',add='jitter')+
   scale_y_continuous(n.breaks = 10,limits = c(0,1))+
   stat_compare_means(method='kruskal')+
   stat_compare_means(comparisons = list(c('512','384'),
@@ -307,10 +323,15 @@ ggboxplot(results_sub ,x='subset_size',y='r',add='jitter')+
                      method='wilcox')+
   facet_wrap(~set)
 ggsave('../transact_decoders_subsets_boxplots.png',
-       width = 16,
+       plot = p_s5_subset_sizes,
+       width = 18,
        height = 12,
        units = 'cm',
        dpi = 600)
+save_supplementary_plot(p_s5_subset_sizes,
+                        "Supplementary_Figure_S5C_random_subset_size_boxplots",
+                        width = 18,
+                        height = 12)
 # ggboxplot(results_sub %>% filter(set=='test') ,x='subset_size',y='r',add='jitter')+
 #   scale_y_continuous(n.breaks = 10,limits = c(0,1))+
 #   stat_compare_means(method='kruskal')+
@@ -327,15 +348,20 @@ compare_df <- results_sub %>% filter(subset_size==512) %>% select(-iteration,-su
 compare_df <- rbind(results %>% filter(approach=='consencus space: 2 -> 1') %>%
                       mutate(`consensus space constructed with` = 'pairs'),
                     compare_df)
-ggboxplot(compare_df,
+p_s5_pairs_vs_random <- ggboxplot(compare_df,
           x='consensus space constructed with',y='r',add = 'jitter')+
   facet_wrap(~set)+
   stat_compare_means(method = 'wilcox')
 ggsave('../transact_decoders_paired_vs_subset.png',
+       plot = p_s5_pairs_vs_random,
        width = 18,
        height = 10,
        units = 'cm',
        dpi = 600)
+save_supplementary_plot(p_s5_pairs_vs_random,
+                        "Supplementary_Figure_S5B_paired_vs_random_consensus",
+                        width = 18,
+                        height = 10)
 
 ### Compare my approach with decoders only-----
 files <- list.files('../results/AutoTransOP_CellPairs/',full.names = TRUE)
@@ -444,9 +470,10 @@ ggboxplot(
     label = "Wilcox test p = {p}",
     position = position_dodge(0.8), 
     tip.length = 0.01
-  )
+  ) +
+  theme(axis.text.x = element_text(angle = 12, hjust = 1, vjust = 1))
 ggsave('../transact_decoders_paired_vs_PairedGeneralizedtransop.png',
-       width = 18,
+       width = 26,
        height = 12,
        units = 'cm',
        dpi = 600)
