@@ -265,6 +265,43 @@ flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
 flowtransop run-l1000 --repo-root . --method simple-autotransop
 ```
 
+Use the pretrained full ARCHS4 ensemble weights from a local, gitignored
+`archs4/` folder:
+
+```bash
+flowtransop predict-archs4-ensemble \
+  --archs4-dir archs4 \
+  --ensemble-ids 0-9 \
+  --direction m2h \
+  --input-npy archs4/preprocessed/mouse_test_X.npy \
+  --output-npy archs4/evaluation/example_ensemble_m2h_prediction.npy
+```
+
+This expects local checkpoints such as:
+
+```text
+archs4/models/full_ensemble_0_normal.pt
+...
+archs4/models/full_ensemble_9_normal.pt
+```
+
+The package also exposes a fine-tuning entry point for users who have the
+preprocessed ARCHS4 matrices and want to continue from one pretrained ensemble
+member:
+
+```bash
+flowtransop finetune-archs4-ensemble \
+  --repo-root . \
+  --archs4-dir archs4 \
+  --ensemble-id 0 \
+  --epochs 5 \
+  --output-model-dir archs4/models_finetuned
+```
+
+Fine-tuned checkpoints are written to a separate directory by default
+(`archs4/models_finetuned`) so the original pretrained weights are not
+overwritten.
+
 To run model code on GPU but expose CPU TRANSACT/pre-alignment settings:
 
 ```bash
@@ -280,6 +317,15 @@ from flowtransop import RuntimeBackends, load_transact_backend
 backends = RuntimeBackends(model_device="cuda", transact_backend="cpu", transact_device="cpu")
 transact = load_transact_backend(repo_root=".", backends=backends)
 Z_source, Z_target, tau, model = transact.align(X_source, X_target)
+```
+
+Python users can also load the pretrained ARCHS4 ensemble directly:
+
+```python
+from flowtransop import load_archs4_ensemble
+
+ensemble = load_archs4_ensemble(archs4_dir="archs4", ensemble_ids="0-9")
+translated = ensemble.translate(mouse_expression, direction="m2h")
 ```
 
 Translate a preprocessed matrix with a saved checkpoint:

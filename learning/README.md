@@ -338,6 +338,49 @@ flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
 flowtransop run-l1000 --repo-root . --method simple-autotransop
 ```
 
+The package can also load and average the 10 pretrained full ARCHS4 ensemble
+members if the local gitignored `../archs4/` folder is present:
+
+```bash
+flowtransop predict-archs4-ensemble \
+  --archs4-dir archs4 \
+  --ensemble-ids 0-9 \
+  --direction m2h \
+  --input-npy archs4/preprocessed/mouse_test_X.npy \
+  --output-npy archs4/evaluation/example_ensemble_m2h_prediction.npy
+```
+
+Expected checkpoint names are:
+
+```text
+archs4/models/full_ensemble_0_normal.pt
+...
+archs4/models/full_ensemble_9_normal.pt
+```
+
+For Python use:
+
+```python
+from flowtransop import load_archs4_ensemble
+
+ensemble = load_archs4_ensemble(archs4_dir="archs4", ensemble_ids="0-9")
+translated = ensemble.translate(mouse_expression, direction="m2h")
+```
+
+To continue training one pretrained ensemble member:
+
+```bash
+flowtransop finetune-archs4-ensemble \
+  --repo-root . \
+  --archs4-dir archs4 \
+  --ensemble-id 0 \
+  --epochs 5 \
+  --output-model-dir archs4/models_finetuned
+```
+
+Fine-tuned checkpoints are written separately from the original pretrained
+weights unless you explicitly choose another output directory.
+
 `--model-device` controls the model device. `--transact-backend` and
 `--transact-device` configure TRANSACT/pre-alignment separately from the model
 device. Defaults are GPU/CUDA:

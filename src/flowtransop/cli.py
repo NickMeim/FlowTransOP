@@ -96,6 +96,21 @@ def main(argv: list[str] | None = None) -> int:
     predict.add_argument("--batch-size", type=int, default=256)
     predict.add_argument("--n-steps", type=int, default=10)
 
+    predict_ensemble = sub.add_parser(
+        "predict-archs4-ensemble",
+        help="Translate a preprocessed matrix with the pretrained full ARCHS4 ensemble.",
+    )
+    predict_ensemble.add_argument("--archs4-dir", default="archs4", help="Local ARCHS4 folder containing models/ and preprocessed/.")
+    predict_ensemble.add_argument("--model-dir", default=None, help="Optional model directory. Defaults to ARCHS4_DIR/models.")
+    predict_ensemble.add_argument("--ensemble-ids", default="0-9", help="Comma/range spec, e.g. 0-9 or 0,2,4.")
+    predict_ensemble.add_argument("--direction", required=True, choices=["h2m", "human-to-mouse", "m2h", "mouse-to-human"])
+    predict_ensemble.add_argument("--input-npy", required=True)
+    predict_ensemble.add_argument("--output-npy", required=True)
+    predict_ensemble.add_argument("--members-output-npy", default=None, help="Optional .npy file with per-member predictions.")
+    predict_ensemble.add_argument("--model-device", "--device", dest="model_device", default=None)
+    predict_ensemble.add_argument("--batch-size", type=int, default=256)
+    predict_ensemble.add_argument("--n-steps", type=int, default=10)
+
     train_cv = sub.add_parser(
         "train-archs4-fold",
         help="Run the ARCHS4 CV training scripts.",
@@ -115,6 +130,21 @@ def main(argv: list[str] | None = None) -> int:
     train_full.add_argument("--ensemble-id", default="0")
     train_full.add_argument("--fold", default="0")
     _add_backend_args(train_full)
+
+    finetune_ensemble = sub.add_parser(
+        "finetune-archs4-ensemble",
+        help="Fine-tune one pretrained full ARCHS4 ensemble member.",
+    )
+    finetune_ensemble.add_argument("--repo-root", default=None, help="Repository root containing learning/. Defaults to current directory.")
+    finetune_ensemble.add_argument("--archs4-dir", default="archs4", help="ARCHS4 folder with preprocessed/ and pretrained models/.")
+    finetune_ensemble.add_argument("--ensemble-id", type=int, default=0)
+    finetune_ensemble.add_argument("--fold", type=int, default=0)
+    finetune_ensemble.add_argument("--epochs", type=int, default=5)
+    finetune_ensemble.add_argument("--batch-size", type=int, default=4096)
+    finetune_ensemble.add_argument("--model-device", "--device", dest="model_device", default=None)
+    finetune_ensemble.add_argument("--include-liver-test", action=argparse.BooleanOptionalAction, default=True)
+    finetune_ensemble.add_argument("--output-model-dir", default=None, help="Defaults to ARCHS4_DIR/models_finetuned.")
+    finetune_ensemble.add_argument("--base-checkpoint", default=None, help="Optional starting full_ensemble_*_normal.pt checkpoint.")
 
     evaluate = sub.add_parser(
         "evaluate-archs4-fold",
@@ -169,6 +199,26 @@ def main(argv: list[str] | None = None) -> int:
         print(out)
         return 0
 
+    if args.command == "predict-archs4-ensemble":
+        if extra:
+            parser.error(f"predict-archs4-ensemble does not accept extra arguments: {' '.join(extra)}")
+        from .archs4 import translate_archs4_ensemble_array
+
+        out = translate_archs4_ensemble_array(
+            input_npy=args.input_npy,
+            output_npy=args.output_npy,
+            direction=args.direction,
+            archs4_dir=args.archs4_dir,
+            ensemble_ids=args.ensemble_ids,
+            model_dir=args.model_dir,
+            device=args.model_device,
+            batch_size=args.batch_size,
+            n_steps=args.n_steps,
+            members_output_npy=args.members_output_npy,
+        )
+        print(out)
+        return 0
+
     if args.command == "train-archs4-fold":
         script = "train_ARCHS4_fold.py" if args.direction == "h2m" else "train_ARCHS4_fold_m2h.py"
         return _run_script(root, script, ["--fold", str(args.fold), *extra], _backend_env(args))
@@ -180,6 +230,27 @@ def main(argv: list[str] | None = None) -> int:
             ["--ensemble_id", str(args.ensemble_id), "--fold", str(args.fold), *extra],
             _backend_env(args),
         )
+
+    if args.command == "finetune-archs4-ensemble":
+        if extra:
+            parser.error(f"finetune-archs4-ensemble does not accept extra arguments: {' '.join(extra)}")
+        from .archs4 import finetune_archs4_ensemble_member
+
+        normal_out, m2h_out = finetune_archs4_ensemble_member(
+            repo_root=root,
+            archs4_dir=args.archs4_dir,
+            ensemble_id=args.ensemble_id,
+            fold=args.fold,
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            device=args.model_device,
+            include_liver_test=args.include_liver_test,
+            output_model_dir=args.output_model_dir,
+            base_checkpoint=args.base_checkpoint,
+        )
+        print(normal_out)
+        print(m2h_out)
+        return 0
 
     if args.command == "evaluate-archs4-fold":
         env = _backend_env(args)
