@@ -83,7 +83,7 @@ correlation_breaks <- function(x) {
 }
 
 mmd_breaks <- function(x) {
-  pretty(x, n = 7)
+  pretty(x, n = 10)
 }
 
 paired_wilcox <- function(data, value_col = "score", lower_better = FALSE) {
@@ -419,20 +419,12 @@ write_csv(performance, file.path(out_dir, "archs4_performance_for_boxplots.csv")
 write_csv(summary_table, file.path(out_dir, "archs4_performance_summary.csv"))
 write_csv(stats_by_panel, file.path(out_dir, "archs4_paired_wilcoxon_stats.csv"))
 
-caption <- paste(
-  "Statistics: paired one-sided Wilcoxon signed-rank tests on fold-level scores, testing FlowTransOP better than each baseline; Holm-adjusted within each panel.",
-  paste0("Cycle per-sample files: ", length(cycle_ps_files),
-         " | orthologue files: ", length(orth_files),
-         " | orthologue summary files: ", length(orth_summary_files),
-         " | MMD files: ", length(mmd_files))
-)
-
 p_main <- ggplot(cycle_plot_data, aes(x = model_label, y = score, fill = as.character(model_type))) +
   geom_hline(yintercept = 0, linewidth = 0.25, color = "grey70") +
   geom_boxplot(width = 0.66, outlier.shape = NA, alpha = 0.84, color = "grey20") +
   geom_point(
     position = position_jitter(width = 0.10, height = 0, seed = 11),
-    size = 1.45,
+    size = 1.85,
     alpha = 0.75,
     color = "grey15"
   ) +
@@ -462,7 +454,7 @@ p_main <- ggplot(cycle_plot_data, aes(x = model_label, y = score, fill = as.char
     aes(x = xmid, y = y, label = label),
     inherit.aes = FALSE,
     vjust = -0.18,
-    size = 3.6,
+    size = 4.4,
     color = "grey20"
   ) +
   geom_text(
@@ -470,32 +462,26 @@ p_main <- ggplot(cycle_plot_data, aes(x = model_label, y = score, fill = as.char
     aes(x = x, y = y, label = label),
     inherit.aes = FALSE,
     vjust = -0.18,
-    size = 4.5,
+    size = 5.3,
     color = "grey20"
   ) +
   facet_grid(metric ~ species, scales = "free_y") +
   scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels], drop = FALSE) +
-  scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5, expand = expansion(mult = c(0.06, 0.20))) +
+  scale_y_continuous(limits = c(NA, 1.2), n.breaks = 10, expand = expansion(mult = c(0.06, 0.20))) +
   labs(
-    title = "ARCHS4 FlowTransOP Cycle Consistency",
-    subtitle = "Permuted-both baseline shown for the permutation comparison",
     x = NULL,
     y = "Pearson correlation",
-    fill = NULL,
-    caption = paste(caption, "Significance: * p <= 0.05, ** p <= 0.01, *** p <= 0.001; ns otherwise.")
+    fill = NULL
   ) +
-  theme_bw(base_size = 16) +
+  theme_bw(base_size = 18) +
   theme(
-    plot.title = element_text(face = "bold", size = 21),
-    plot.subtitle = element_text(size = 15, color = "grey30"),
-    plot.caption = element_text(hjust = 0, size = 11, color = "grey35"),
     panel.grid.minor = element_blank(),
     strip.background = element_rect(fill = "grey92", color = "grey70"),
-    strip.text = element_text(face = "bold", size = 16),
-    axis.title = element_text(size = 18),
-    axis.text = element_text(size = 15),
-    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 15),
-    legend.position = "bottom",
+    strip.text = element_text(face = "bold", size = 20),
+    axis.title = element_text(size = 20),
+    axis.text = element_text(size = 17),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 17),
+    legend.position = "none",
     plot.margin = margin(8, 22, 8, 8)
   )
 
@@ -508,7 +494,7 @@ if (nrow(orth_plot_data) > 0) {
     geom_boxplot(width = 0.66, outlier.shape = NA, alpha = 0.84, color = "grey20") +
     geom_point(
       position = position_jitter(width = 0.10, height = 0, seed = 12),
-      size = 1.45,
+      size = 1.85,
       alpha = 0.75,
       color = "grey15"
     ) +
@@ -538,7 +524,7 @@ if (nrow(orth_plot_data) > 0) {
       aes(x = xmid, y = y, label = label),
       inherit.aes = FALSE,
       vjust = -0.15,
-      size = 4,
+      size = 4.8,
       color = "grey20"
     ) +
     geom_text(
@@ -546,33 +532,27 @@ if (nrow(orth_plot_data) > 0) {
       aes(x = x, y = y, label = label),
       inherit.aes = FALSE,
       vjust = -0.15,
-      size = 5,
+      size = 5.8,
       color = "grey20"
     ) +
     facet_wrap(~ direction, nrow = 1, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels], drop = FALSE) +
-    scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5) +
+    scale_y_continuous(limits = c(NA, 1.2), n.breaks = 10) +
     labs(
-      title = "ARCHS4 FlowTransOP Orthologue-Mediated Evaluation",
-      subtitle = "Per-sample orthologue correlation by translation direction",
       x = NULL,
       y = "Pearson correlation",
-      fill = NULL,
-      caption = "Statistics: paired one-sided Wilcoxon signed-rank tests comparing FlowTransOP with permuted both; Holm-adjusted within panel. * p <= 0.05, ** p <= 0.01, *** p <= 0.001; ns otherwise."
+      fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_bw(base_size = 14) +
+    theme_bw(base_size = 16) +
     theme(
-      plot.title = element_text(face = "bold", size = 18),
-      plot.subtitle = element_text(size = 13, color = "grey30"),
-      plot.caption = element_text(hjust = 0, size = 10, color = "grey35"),
       panel.grid.minor = element_blank(),
       strip.background = element_rect(fill = "grey92", color = "grey70"),
-      strip.text = element_text(face = "bold", size = 13.5),
-      axis.title = element_text(size = 15.5),
-      axis.text = element_text(size = 12.5),
-      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 12.5),
-      legend.position = "bottom",
+      strip.text = element_text(face = "bold", size = 17.5),
+      axis.title = element_text(size = 17.5),
+      axis.text = element_text(size = 14.5),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14.5),
+      legend.position = "none",
       plot.margin = margin(8, 22, 8, 8)
     )
   ggsave(file.path(out_dir, "orthologue_evaluation_boxplots.png"), p_orth, width = 10.5, height = 5.4, dpi = 300)
@@ -639,7 +619,7 @@ if (nrow(mmd) > 0) {
     geom_boxplot(width = 0.66, outlier.shape = NA, alpha = 0.84, color = "grey20") +
     geom_point(
       position = position_jitter(width = 0.10, height = 0, seed = 21),
-      size = 1.8,
+      size = 2.2,
       alpha = 0.8,
       color = "grey15"
     ) +
@@ -669,7 +649,7 @@ if (nrow(mmd) > 0) {
       aes(x = xmid, y = y, label = label),
       inherit.aes = FALSE,
       vjust = -0.15,
-      size = 4.5,
+      size = 5.3,
       color = "grey20"
     ) +
     facet_wrap(~ direction, scales = "free_y") +
@@ -677,23 +657,20 @@ if (nrow(mmd) > 0) {
                       labels = model_labels[c("FlowTransOP", "permuted_both")], drop = FALSE) +
     scale_y_continuous(breaks = mmd_breaks, expand = expansion(mult = c(0.08, 0.34))) +
     labs(
-      title = "Latent-Space MMD",
-      subtitle = "Lower MMD is better: translated source latents should match target species latents",
       x = NULL,
       y = expression(MMD^2),
-      fill = NULL,
-      caption = "Latent-space MMD excludes the untranslated-source comparison because FlowTransOP uses direction-specific, non-global latent spaces. Statistics: paired one-sided Wilcoxon tests for lower FlowTransOP MMD with Holm correction; * p <= 0.05, ** p <= 0.01, *** p <= 0.001."
+      fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_bw(base_size = 12) +
+    theme_bw(base_size = 14) +
     theme(
-      plot.title = element_text(face = "bold"),
       panel.grid.minor = element_blank(),
-      plot.caption = element_text(hjust = 0, size = 8, color = "grey35"),
-      axis.title = element_text(size = 13.7),
-      axis.text = element_text(size = 11.1),
-      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 11.1),
-      legend.position = "bottom",
+      strip.background = element_rect(fill = "grey92", color = "grey70"),
+      strip.text = element_text(face = "bold", size = 16),
+      axis.title = element_text(size = 15.7),
+      axis.text = element_text(size = 13.1),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 13.1),
+      legend.position = "none",
       plot.margin = margin(8, 22, 8, 8)
     )
   ggsave(file.path(out_dir, "mmd_summary_lower_is_better.png"), p_mmd, width = 9.5, height = 6.2, dpi = 300)
@@ -744,7 +721,7 @@ if (nrow(expression_mmd) > 0) {
     geom_boxplot(width = 0.66, outlier.shape = NA, alpha = 0.84, color = "grey20") +
     geom_point(
       position = position_jitter(width = 0.10, height = 0, seed = 31),
-      size = 1.8,
+      size = 2.2,
       alpha = 0.8,
       color = "grey15"
     ) +
@@ -753,33 +730,27 @@ if (nrow(expression_mmd) > 0) {
       aes(x = model_label, y = y, label = label),
       inherit.aes = FALSE,
       vjust = -0.15,
-      size = 4.7,
+      size = 5.5,
       color = "grey20"
     ) +
     facet_grid(feature_set ~ direction, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = expr_levels, labels = model_labels[expr_levels], drop = FALSE) +
     scale_y_continuous(breaks = mmd_breaks, expand = expansion(mult = c(0.08, 0.42))) +
     labs(
-      title = "Expression-Space MMD",
-      subtitle = "Lower MMD is better: translated source expression should match target validation expression",
       x = NULL,
       y = expression(MMD^2),
-      fill = NULL,
-      caption = "Validation orthologues is the same uncorrected source-vs-target validation baseline on matched orthologue genes; it is repeated in all-target-gene panels only as a visual reference. Statistics compare FlowTransOP to permuted both only."
+      fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_bw(base_size = 12) +
+    theme_bw(base_size = 14) +
     theme(
-      plot.title = element_text(face = "bold", size = 16),
-      plot.subtitle = element_text(size = 12, color = "grey30"),
-      plot.caption = element_text(hjust = 0, size = 9.5, color = "grey35"),
       panel.grid.minor = element_blank(),
       strip.background = element_rect(fill = "grey92", color = "grey70"),
-      strip.text = element_text(face = "bold", size = 12),
-      axis.title = element_text(size = 13.7),
-      axis.text = element_text(size = 11.1),
-      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 11.1),
-      legend.position = "bottom",
+      strip.text = element_text(face = "bold", size = 16),
+      axis.title = element_text(size = 15.7),
+      axis.text = element_text(size = 13.1),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 13.1),
+      legend.position = "none",
       plot.margin = margin(8, 26, 8, 8)
     )
   ggsave(file.path(out_dir, "expression_mmd_lower_is_better.png"), p_expr_mmd, width = 13, height = 8.5, dpi = 300)

@@ -30,77 +30,75 @@ endpoint_labels <- c(
 )
 
 treatment_cols <- c(
-  `WT Control chow+placebo` = "#59A14F",
-  `Nlrp3 Control chow+placebo` = "#4C78A8",
-  `GS-444217` = "#E15759",
-  `CDAA-HFD vehicle` = "#4C78A8",
-  Chow = "#59A14F",
+  `healthy control` = "#59A14F",
+  `disease control` = "#4C78A8",
+  Selonsertib = "#E15759",
   Lanifibranor = "#E15759"
 )
 
 treatment_labels <- c(
-  `WT Control chow+placebo` = "WT control\nchow + placebo",
-  `Nlrp3 Control chow+placebo` = "Nlrp3 control\nchow + placebo",
-  `GS-444217` = "GS-444217",
-  `CDAA-HFD vehicle` = "CDAA-HFD\nvehicle",
-  Chow = "Chow",
+  `healthy control` = "healthy control",
+  `disease control` = "disease control",
+  Selonsertib = "Selonsertib",
   Lanifibranor = "Lanifibranor"
 )
 
 dataset_specs <- list(
   mouse_nlrp3 = list(
     label = "GSE140742 Nlrp3A350V",
+    accession = "GSE140742",
     file_slug = "gse140742_nlrp3a350v",
-    treatment_levels = c("WT Control chow+placebo", "Nlrp3 Control chow+placebo", "GS-444217"),
-    healthy = "WT Control chow+placebo",
-    control = "Nlrp3 Control chow+placebo",
-    treatment = "GS-444217"
+    treatment_levels = c("healthy control", "disease control", "Selonsertib"),
+    healthy = "healthy control",
+    control = "disease control",
+    treatment = "Selonsertib"
   ),
   mouse_cdaa_lanifibranor = list(
     label = "GSE269493 CDAA-HFD",
+    accession = "GSE269493",
     file_slug = "gse269493_cdaa_hfd",
-    treatment_levels = c("Chow", "CDAA-HFD vehicle", "Lanifibranor"),
-    healthy = "Chow",
-    control = "CDAA-HFD vehicle",
+    treatment_levels = c("healthy control", "disease control", "Lanifibranor"),
+    healthy = "healthy control",
+    control = "disease control",
     treatment = "Lanifibranor"
   )
 )
 
 figure_specs <- list(
   hybrid = list(
-    label = "Reconstructed translated PLSR with raw-orthologue reference",
+    label = "Reconstructed translated PLSR with raw orthologue reference",
     file_slug = "hybrid_reconstructed_translated_with_raw_orthologues",
     description = paste(
       "Hybrid figure: translated expression is scored with PLSR trained on",
       "ensemble-mean reconstructed human expression; raw mouse orthologues are",
-      "scored with the observed-human orthologue PLSR."
+      "scored with the observed human orthologue PLSR."
     ),
     rows = tibble(
       model_family = c("raw_human_plsr", "reconstructed_human_plsr", "reconstructed_human_plsr"),
       scoring_space = c("raw_mouse_orthologues", "translated_all_genes", "translated_orthologues"),
       panel = c(
-        "Raw mouse orthologues\nraw-human PLSR",
-        "Translated all genes\nreconstructed-human PLSR",
-        "Translated orthologues\nreconstructed-human PLSR"
+        "Raw mouse orthologues\nscored with raw human PLSR",
+        "Translated all genes\nscored with reconstructed human PLSR",
+        "Translated orthologues\nscored with reconstructed human PLSR"
       )
     )
   ),
   raw_human_plsr = list(
-    label = "Raw-human PLSR",
+    label = "Raw human PLSR",
     file_slug = "raw_human_plsr",
     description = "All panels are scored using PLSR models trained on observed human Govaere expression.",
     rows = tibble(
       model_family = "raw_human_plsr",
       scoring_space = c("translated_all_genes", "translated_orthologues", "raw_mouse_orthologues"),
       panel = c(
-        "Translated all genes\nraw-human PLSR",
-        "Translated orthologues\nraw-human PLSR",
-        "Raw mouse orthologues\nraw-human PLSR"
+        "Translated all genes\nscored with raw human PLSR",
+        "Translated orthologues\nscored with raw human PLSR",
+        "Raw mouse orthologues\nscored with raw human PLSR"
       )
     )
   ),
   reconstructed_human_plsr = list(
-    label = "Reconstructed-human PLSR",
+    label = "Reconstructed human PLSR",
     file_slug = "reconstructed_human_plsr",
     description = paste(
       "All panels are scored using PLSR models trained on ensemble-mean",
@@ -110,9 +108,9 @@ figure_specs <- list(
       model_family = "reconstructed_human_plsr",
       scoring_space = c("translated_all_genes", "translated_orthologues", "raw_mouse_orthologues"),
       panel = c(
-        "Translated all genes\nreconstructed-human PLSR",
-        "Translated orthologues\nreconstructed-human PLSR",
-        "Raw mouse orthologues\nreconstructed-human PLSR"
+        "Translated all genes\nscored with reconstructed human PLSR",
+        "Translated orthologues\nscored with reconstructed human PLSR",
+        "Raw mouse orthologues\nscored with reconstructed human PLSR"
       )
     )
   )
@@ -127,10 +125,6 @@ pretty_p <- function(p) {
   )
 }
 
-pretty_p_less <- function(p) {
-  str_replace(pretty_p(p), "^p", "p_less")
-}
-
 read_required_csv <- function(path) {
   if (!file.exists(path)) stop("Missing required file: ", path)
   read_csv(path, show_col_types = FALSE)
@@ -142,7 +136,11 @@ mouse_long_from_csv <- function(cohort_name) {
     mutate(
       cohort = cohort_name,
       mouse_treatment = case_when(
-        cohort == "mouse_nlrp3" & mouse_treatment == "Control chow+placebo" ~ "Nlrp3 Control chow+placebo",
+        cohort == "mouse_nlrp3" & mouse_treatment == "WT Control chow+placebo" ~ "healthy control",
+        cohort == "mouse_nlrp3" & mouse_treatment %in% c("Control chow+placebo", "Nlrp3 Control chow+placebo") ~ "disease control",
+        cohort == "mouse_nlrp3" & mouse_treatment == "GS-444217" ~ "Selonsertib",
+        cohort == "mouse_cdaa_lanifibranor" & mouse_treatment == "Chow" ~ "healthy control",
+        cohort == "mouse_cdaa_lanifibranor" & mouse_treatment == "CDAA-HFD vehicle" ~ "disease control",
         TRUE ~ mouse_treatment
       )
     ) %>%
@@ -251,7 +249,7 @@ stats_for <- function(data, score_type_value) {
       description <- paste0(
         "One-sided Wilcoxon rank-sum test; alternative: ",
         ds$treatment, " score < ", ds$control,
-        " score. Healthy group ", ds$healthy,
+        " score. Healthy control",
         ifelse(score_type_value == "delta_from_healthy",
                " is used to center deltas.",
         " is shown as a visual reference only. Scores are min-max normalized within each endpoint-by-panel before plotting and testing."),
@@ -271,7 +269,7 @@ stats_for <- function(data, score_type_value) {
         mean_treated = mean(treatment_df$plot_value, na.rm = TRUE),
         mean_diff_treated_minus_control = mean_treated - mean_control,
         p_value = p_val,
-        label = pretty_p_less(p_val),
+        label = pretty_p(p_val),
         x_start = match(ds$control, levels_x),
         x_end = match(ds$treatment, levels_x),
         x_mid = mean(c(x_start, x_end)),
@@ -313,7 +311,7 @@ mouse_group_summary <- all_plot_data %>%
       "Group-level summary for plotted boxplot values. Score type: ", score_type,
       "; value scale: ", value_scale,
       "; figure category: ", figure_description,
-      "; statistical comparisons are drug versus diseased control, with healthy as visual reference",
+      "; statistical comparisons are drug versus disease control, with healthy control as visual reference",
       ifelse(score_type == "delta_from_healthy", " and delta baseline.", ".")
     )
   )
@@ -333,16 +331,8 @@ plot_mouse_category <- function(cohort_name, figure_name, score_type_value) {
 
   y_label <- ifelse(
     score_type_value == "delta_from_healthy",
-    "Predicted score delta from healthy control",
+    "Predicted score difference from healthy control",
     "Min-max normalized predicted score"
-  )
-  title_suffix <- ifelse(score_type_value == "delta_from_healthy", "deltas", "scores")
-  subtitle <- paste0(
-    "Drug comparison: ", ds$treatment, " vs ", ds$control,
-    ". Healthy group ", ds$healthy,
-    ifelse(score_type_value == "delta_from_healthy",
-           " centers the delta values.",
-           " is a visual reference.")
   )
 
   facet_layer <- if (score_type_value == "delta_from_healthy") {
@@ -372,7 +362,7 @@ plot_mouse_category <- function(cohort_name, figure_name, score_type_value) {
       data = stat_data,
       aes(x = x_mid, y = y_label, label = label),
       inherit.aes = FALSE,
-      size = 2.75,
+      size = 3.6,
       color = "grey15",
       fill = alpha("white", 0.88),
       linewidth = 0,
@@ -386,21 +376,24 @@ plot_mouse_category <- function(cohort_name, figure_name, score_type_value) {
     labs(
       x = NULL,
       y = y_label,
-      title = paste0(ds$label, ": ", fig$label, " ", title_suffix),
-      subtitle = subtitle
+      title = paste0("GEO Accession: ", ds$accession)
     ) +
-    theme_bw(base_size = 11) +
+    theme_bw(base_size = 14) +
     theme(
       plot.title = element_text(face = "bold"),
       strip.background = element_rect(fill = "grey92", color = "grey70"),
       panel.grid.minor = element_blank(),
-      axis.text.x = element_text(size = 8.5),
-      strip.text.x = element_text(size = 8.3),
+      axis.text.x = element_text(size = 11.5, angle = 12, hjust = 1),
+      strip.text = element_text(size = 12.6),
+      strip.text.x = element_text(size = 12.6),
+      strip.text.y = element_text(size = 12.6),
       plot.margin = margin(8, 12, 10, 8)
     )
 
   file_name <- paste0(ds$file_slug, "_", fig$file_slug, "_", score_type_value, ".png")
   ggsave(file.path(out_dir, file_name), p, width = 12.2, height = 7.2, dpi = 300)
+  pdf_name <- sub("\\.png$", ".pdf", file_name)
+  ggsave(file.path(out_dir, pdf_name), p, width = 12.2, height = 7.2)
 }
 
 for (cohort_name in names(dataset_specs)) {
@@ -494,7 +487,7 @@ plot_loocv <- function(model_family, title, file_name, color) {
       inherit.aes = FALSE,
       hjust = -0.06,
       vjust = 1.12,
-      size = 3.2,
+      size = 4,
       lineheight = 0.95,
       color = "grey15"
     ) +
@@ -502,30 +495,32 @@ plot_loocv <- function(model_family, title, file_name, color) {
     labs(
       x = "Observed human score",
       y = "LOOCV predicted score",
-      title = title,
-      subtitle = "Each point is predicted by a PLSR model trained without that sample"
+      title = title
     ) +
-    theme_bw(base_size = 12) +
+    theme_bw(base_size = 15) +
     theme(
       plot.title = element_text(face = "bold"),
       strip.background = element_rect(fill = "grey92", color = "grey70"),
+      strip.text = element_text(size = 16),
       panel.grid.minor = element_blank(),
       aspect.ratio = 0.95
     )
   ggsave(file.path(out_dir, file_name), p, width = 8.4, height = 7.2, dpi = 300)
+  pdf_name <- sub("\\.png$", ".pdf", file_name)
+  ggsave(file.path(out_dir, pdf_name), p, width = 8.4, height = 7.2)
 }
 
 plot_loocv(
   "raw_human_plsr",
-  "Human Govaere raw-human PLSR leave-one-out performance",
+  "GEO Accession: GSE135251",
   "human_govaere_raw_human_plsr_loocv_scatter.png",
   "#2C7FB8"
 )
 plot_loocv(
   "reconstructed_human_plsr",
-  "Human Govaere reconstructed-human PLSR leave-one-out performance",
+  "GEO Accession: GSE135251",
   "human_govaere_reconstructed_human_plsr_loocv_scatter.png",
   "#1B9E77"
 )
 
-message("Wrote final expression-mean PNG figures and CSV summaries to: ", out_dir)
+message("Wrote final expression-mean PNG/PDF figures and CSV summaries to: ", out_dir)

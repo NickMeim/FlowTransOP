@@ -212,9 +212,9 @@ add_brackets <- function(labels) {
     geom_segment(data = labels %>% filter(n_refs > 1), aes(x = xmax, xend = xmax, y = y, yend = y_tip),
                  inherit.aes = FALSE, linewidth = 0.3, color = "grey25"),
     geom_text(data = labels %>% filter(n_refs > 1), aes(x = xmid, y = y, label = stars),
-              inherit.aes = FALSE, vjust = -0.16, size = 4.8, color = "grey20"),
+              inherit.aes = FALSE, vjust = -0.16, size = 5.6, color = "grey20"),
     geom_text(data = labels %>% filter(n_refs == 1), aes(x = x, y = y, label = stars),
-              inherit.aes = FALSE, vjust = -0.16, size = 5.2, color = "grey20")
+              inherit.aes = FALSE, vjust = -0.16, size = 6, color = "grey20")
   )
 }
 
@@ -226,16 +226,13 @@ save_both <- function(plot, stem, width, height) {
 theme_archs4 <- function(base_size = 12) {
   theme_bw(base_size = base_size) +
     theme(
-      plot.title = element_text(face = "bold", size = base_size + 4),
-      plot.subtitle = element_text(size = base_size, color = "grey30"),
-      plot.caption = element_text(hjust = 0, size = base_size - 3, color = "grey35"),
       panel.grid.minor = element_blank(),
       strip.background = element_rect(fill = "grey92", color = "grey70"),
-      strip.text = element_text(face = "bold"),
+      strip.text = element_text(face = "bold", size = base_size * 1.2),
       axis.title = element_text(size = base_size * 1.3),
       axis.text = element_text(size = base_size * 1.05),
       axis.text.x = element_text(angle = 0, hjust = 0.5),
-      legend.position = "bottom",
+      legend.position = "none",
       plot.margin = margin(8, 24, 8, 8)
     )
 }
@@ -317,21 +314,18 @@ p_cycle <- ggplot(cycle_perf, aes(model_label, value, fill = model_type)) +
   geom_point(position = position_jitter(width = 0.08, height = 0, seed = 61),
              size = 1.7, alpha = 0.78, color = "grey15") +
   geom_text(data = cycle_labels, aes(model_label, y, label = stars),
-            inherit.aes = FALSE, vjust = -0.15, size = 5.8, color = "grey20") +
+            inherit.aes = FALSE, vjust = -0.15, size = 6.6, color = "grey20") +
   facet_grid(metric ~ species, scales = "free_y") +
   scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels]) +
-  scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5, expand = expansion(mult = c(0.08, 0.18))) +
+  scale_y_continuous(limits = c(NA, 1.2), n.breaks = 10, expand = expansion(mult = c(0.08, 0.18))) +
   labs(
-    title = "External Liver Test: Cycle Consistency",
-    subtitle = "Per-sample and gene-marginal distribution agreement on held-out liver samples",
     x = NULL,
     y = "Pearson correlation",
-    fill = NULL,
-    caption = "Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
+    fill = NULL
   ) +
   coord_cartesian(clip = "off") +
-  theme_archs4(15)
-save_both(p_cycle, "liver_cycle_consistency_boxplots", 14, 10.5)
+  theme_archs4(17)
+save_both(p_cycle, "liver_cycle_consistency_boxplots", 14, 11.2)
 
 if (nrow(reconstruction) > 0) {
   reconstruction_perf <- reconstruction %>%
@@ -363,20 +357,17 @@ if (nrow(reconstruction) > 0) {
     geom_point(position = position_jitter(width = 0.08, height = 0, seed = 60),
                size = 1.7, alpha = 0.78, color = "grey15") +
     geom_text(data = reconstruction_labels, aes(model_label, y, label = stars),
-              inherit.aes = FALSE, vjust = -0.15, size = 5.2, color = "grey20") +
+              inherit.aes = FALSE, vjust = -0.15, size = 6, color = "grey20") +
     facet_grid(metric ~ species, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels]) +
-    scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
+    scale_y_continuous(n.breaks = 10, expand = expansion(mult = c(0.08, 0.24))) +
     labs(
-      title = "External Liver Test: Reconstruction",
-      subtitle = "Direct Gaussian reconstruction metrics on held-out liver samples",
       x = NULL,
-      y = "Metric value",
-      fill = NULL,
-      caption = "Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
+      y = "Reconstruction Pearson correlation",
+      fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_archs4(12)
+    theme_archs4(14)
   save_both(p_reconstruction, "liver_reconstruction_evaluation_boxplots", 13, 10.5)
 }
 
@@ -420,20 +411,17 @@ if (nrow(orth_ps) > 0) {
     geom_point(position = position_jitter(width = 0.08, height = 0, seed = 62),
                size = 1.8, alpha = 0.78, color = "grey15") +
     geom_text(data = orth_labels, aes(model_label, y, label = stars),
-              inherit.aes = FALSE, vjust = -0.15, size = 5.5, color = "grey20") +
+              inherit.aes = FALSE, vjust = -0.15, size = 6.3, color = "grey20") +
     facet_wrap(~ direction, nrow = 1, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = plot_model_levels, labels = model_labels[plot_model_levels]) +
-    scale_y_continuous(limits = c(NA, 1.2), n.breaks = 5, expand = expansion(mult = c(0.08, 0.18))) +
+    scale_y_continuous(limits = c(NA, 1.2), n.breaks = 10, expand = expansion(mult = c(0.08, 0.18))) +
     labs(
-      title = "External Liver Test: Orthologue-Mediated Translation",
-      subtitle = "Per-sample orthologue correlation by translation direction",
       x = NULL,
       y = "Pearson correlation",
-      fill = NULL,
-      caption = "Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
+      fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_archs4(14)
+    theme_archs4(16)
   save_both(p_orth, "liver_orthologue_evaluation_boxplots", 10.5, 5.4)
 }
 
@@ -450,21 +438,19 @@ if (nrow(latent_mmd) > 0) {
     geom_point(position = position_jitter(width = 0.08, height = 0, seed = 63),
                size = 1.8, alpha = 0.8, color = "grey15") +
     geom_text(data = latent_mmd_labels, aes(model_label, y, label = stars),
-              inherit.aes = FALSE, vjust = -0.15, size = 5.2, color = "grey20") +
-    facet_wrap(~ direction, scales = "free_y") +
+              inherit.aes = FALSE, vjust = -0.15, size = 6.3, color = "grey20") +
+    facet_wrap(~ direction, nrow = 1, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = c("FlowTransOP", "permuted_both"),
                       labels = model_labels[c("FlowTransOP", "permuted_both")]) +
-    scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.28))) +
+    scale_y_continuous(n.breaks = 10, expand = expansion(mult = c(0.08, 0.28))) +
     labs(
-      title = "External Liver Test: Latent-Space MMD",
-      subtitle = "Lower is better: translated liver source latents should match real target liver latents",
       x = NULL,
       y = expression(MMD^2),
       fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_archs4(12)
-  save_both(p_latent_mmd, "liver_latent_mmd_lower_is_better", 9.5, 5.8)
+    theme_archs4(16)
+  save_both(p_latent_mmd, "liver_latent_mmd_lower_is_better", 10.5, 5.4)
 }
 
 if (nrow(expr_mmd) > 0) {
@@ -486,20 +472,17 @@ if (nrow(expr_mmd) > 0) {
     geom_point(position = position_jitter(width = 0.08, height = 0, seed = 64),
                size = 1.6, alpha = 0.78, color = "grey15") +
     geom_text(data = expr_mmd_labels, aes(model_label, y, label = stars),
-              inherit.aes = FALSE, vjust = -0.15, size = 5, color = "grey20") +
+              inherit.aes = FALSE, vjust = -0.15, size = 5.8, color = "grey20") +
     facet_grid(feature_set ~ direction, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = expr_levels, labels = model_labels[expr_levels]) +
-    scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
+    scale_y_continuous(n.breaks = 10, expand = expansion(mult = c(0.08, 0.24))) +
     labs(
-      title = "External Liver Test: Expression-Space MMD",
-      subtitle = "Lower is better; the liver-test orthologue baseline is shown as the uncorrected source-vs-target reference",
       x = NULL,
       y = expression(MMD^2),
-      fill = NULL,
-      caption = "Liver test orthologues are shown as a visual reference only. Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
+      fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_archs4(10.8)
+    theme_archs4(12.8)
   save_both(p_expr_mmd, "liver_expression_mmd_lower_is_better", 15, 8.2)
 
   expr_mmd_specificity <- expr_mmd %>%
@@ -531,22 +514,20 @@ if (nrow(expr_mmd) > 0) {
         geom_point(position = position_jitter(width = 0.08, height = 0, seed = 164),
                    size = 1.25, alpha = 0.58, color = "grey15") +
         geom_text(data = fs_labels, aes(model_label, y, label = stars),
-                  inherit.aes = FALSE, vjust = -0.15, size = 4.8, color = "grey20") +
+                  inherit.aes = FALSE, vjust = -0.15, size = 5.6, color = "grey20") +
         facet_wrap(~ direction, scales = "free_y") +
         scale_fill_manual(values = model_cols, breaks = background_levels,
                           labels = model_labels[background_levels]) +
-        scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
+        scale_y_continuous(n.breaks = 10, expand = expansion(mult = c(0.08, 0.24))) +
         labs(
-          title = paste0("External Liver Test: Expression MMD Specificity (", fs, ")"),
-          subtitle = "Each box is MMD to random non-liver target samples. Real target liver is a visual baseline; larger MMD means stronger separation from non-liver.",
           x = NULL,
           y = expression(MMD^2),
           fill = NULL
         ) +
         coord_cartesian(clip = "off") +
-        theme_archs4(10.5)
+        theme_archs4(12.5)
       stem <- if (fs == "All target genes") "liver_expression_mmd_specificity_all_genes" else "liver_expression_mmd_specificity_orthologues"
-      save_both(p_expr_mmd_specificity, stem, 12.5, 6.5)
+      save_both(p_expr_mmd_specificity, stem, 12.5, 9.5)
     }
   }
 }
@@ -597,20 +578,18 @@ if (nrow(latent_centroid_main) > 0) {
     geom_point(position = position_jitter(width = 0.08, height = 0, seed = 65),
                size = 1.7, alpha = 0.78, color = "grey15") +
     geom_text(data = latent_centroid_labels, aes(model_label, y, label = stars),
-              inherit.aes = FALSE, vjust = -0.15, size = 4.8, color = "grey20") +
+              inherit.aes = FALSE, vjust = -0.15, size = 5.6, color = "grey20") +
     facet_wrap(~ direction, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = c("FlowTransOP", "permuted_both"),
                       labels = model_labels[c("FlowTransOP", "permuted_both")]) +
-    scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.28))) +
+    scale_y_continuous(n.breaks = 10, expand = expansion(mult = c(0.08, 0.28))) +
     labs(
-      title = "External Liver Test: Latent Centroid Similarity",
-      subtitle = "Centroid distance between translated liver source latents and real target liver latents; lower is better",
       x = NULL,
-      y = "Metric value",
+      y = "Latent centroid distance",
       fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_archs4(11)
+    theme_archs4(13)
   save_both(p_latent_centroid, "liver_latent_centroid_similarity", 9.5, 5.8)
 }
 
@@ -632,16 +611,15 @@ if (nrow(latent_centroid_specificity) > 0) {
     facet_wrap(~ direction, scales = "free_y") +
     scale_fill_manual(values = model_cols, breaks = c("target_liver", "FlowTransOP"),
                       labels = model_labels[c("target_liver", "FlowTransOP")]) +
-    scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.18))) +
+    scale_y_continuous(n.breaks = 10, expand = expansion(mult = c(0.08, 0.18))) +
     labs(
-      title = "External Liver Test: Latent Centroid Specificity Against Random Non-Liver Tissue",
-      subtitle = "Centroid distance to random non-liver target latents. Real target liver is the expected liver-vs-non-liver baseline; larger distance means stronger separation.",
       x = NULL,
-      y = "Metric value",
+      y = "Latent centroid distance",
       fill = NULL
     ) +
     coord_cartesian(clip = "off") +
-    theme_archs4(8.8)
+    theme_archs4(10.8) +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5, size = 13))
   save_both(p_latent_specificity, "liver_latent_centroid_specificity", 9.5, 5.8)
 }
 
@@ -673,22 +651,19 @@ if (nrow(expr_centroid_main) > 0) {
       geom_point(position = position_jitter(width = 0.08, height = 0, seed = 66),
                  size = 1.35, alpha = 0.74, color = "grey15") +
       geom_text(data = fs_labels, aes(model_label, y, label = stars),
-                inherit.aes = FALSE, vjust = -0.15, size = 4.4, color = "grey20") +
+                inherit.aes = FALSE, vjust = -0.15, size = 5.2, color = "grey20") +
       facet_grid(metric ~ direction, scales = "free_y") +
       scale_fill_manual(values = model_cols, breaks = expr_levels, labels = model_labels[expr_levels]) +
-      scale_y_continuous(n.breaks = 5, expand = expansion(mult = c(0.08, 0.24))) +
+      scale_y_continuous(n.breaks = 10, expand = expansion(mult = c(0.08, 0.24))) +
       labs(
-        title = paste0("External Liver Test: Expression Centroid Similarity (", fs, ")"),
-        subtitle = "Similarity is translated liver source versus real target liver. The orthologue liver-test baseline is repeated in all-target-gene panels as a visual reference.",
         x = NULL,
-        y = "Metric value",
-        fill = NULL,
-        caption = "Liver test orthologues are shown as a visual reference only. Statistics compare FlowTransOP to permuted both using paired one-sided Wilcoxon tests across folds."
+        y = "Expression centroid distance or similarity",
+        fill = NULL
       ) +
       coord_cartesian(clip = "off") +
-      theme_archs4(9.5)
+      theme_archs4(11.5)
     stem <- if (fs == "All target genes") "liver_expression_centroid_similarity_all_genes" else "liver_expression_centroid_similarity_orthologues"
-    save_both(p_expr_centroid, stem, 13.5, 11)
+    save_both(p_expr_centroid, stem, 13.5, 15)
   }
 }
 
