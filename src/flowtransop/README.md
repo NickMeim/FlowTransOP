@@ -7,17 +7,34 @@ existing checkpoint format and common entry points so users can install a
 
 ## Install
 
-From the repository root:
+Use Python 3.9 or newer. From the repository root, a minimal install for package
+import, CLI help, and checkpoint inference is:
 
 ```bash
-pip install -e .
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e .
 ```
 
-For the full manuscript workflow, install the optional reproduction extras:
+For the full manuscript workflow and any CLI command that delegates to the
+original training/evaluation scripts in `learning/`, install the optional
+reproduction extras. These include script-level dependencies such as
+`statsmodels`, `h5py`, `archs4py`, `geomloss`, and plotting packages:
 
 ```bash
-pip install -e ".[reproduce]"
+python -m pip install -e ".[reproduce]"
 ```
+
+On SLURM, the repository-level smoke test validates the installable package in a
+fresh virtual environment:
+
+```bash
+sbatch archived/flowtransop_package_smoke_test.slurm.sh
+```
+
+The smoke test requires Python >= 3.9, refuses to continue if the virtual
+environment fails to activate, installs `.[reproduce]` when the L1000 smoke
+training is enabled, and writes outputs under
+`archived/flowtransop_smoke_${SLURM_JOB_ID}/`.
 
 ## Predict with a trained ARCHS4 checkpoint
 
@@ -62,6 +79,14 @@ flowtransop score-mash --repo-root .
 ```
 
 It can also launch the L1000 approaches discussed in the manuscript:
+
+These options are part of the default installed `flowtransop` command:
+
+| Method argument | Workflow |
+| --- | --- |
+| `--method hybrid-flowtransop` | Hybrid FlowTransOP using pair and pre-aligned similarity constraints. |
+| `--method simple-autotransop` or `--method autotransop` | AutoTransOP/CPA-style baseline. The CLI prints a hyperparameter-sensitivity warning when this is run. |
+| `--method consensus-decoders` | Consensus-space decoder baseline. |
 
 ```bash
 flowtransop run-l1000 --repo-root . --method consensus-decoders
@@ -199,7 +224,7 @@ From the repository root, after ARCHS4 preprocessing has created
 `archs4/preprocessed/`:
 
 ```bash
-pip install -e ".[reproduce]"
+python -m pip install -e ".[reproduce]"
 
 flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m
 flowtransop train-archs4-fold --repo-root . --fold 0 --direction m2h

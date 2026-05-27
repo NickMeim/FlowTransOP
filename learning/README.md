@@ -59,6 +59,7 @@ Convenience wrappers:
 ```text
 cell_pairs_benchmark.sh
 supplementary_figure_s1_no_structural_guidance.sh
+supplementary_figure_s1_no_structural_guidance_reverse.sh
 low_percentage_of_pairs.sh
 extremely_low_percentage_of_pairs.sh
 pairedFlow_low_percentage_of_pairs.sh
@@ -215,34 +216,35 @@ lists the learning scripts first as a plain file-by-file description.
 9. `evaluate_liver.py`: Script to evaluate held-out liver reconstruction, cycle, orthologue, MMD, and centroid metrics.
 10. `score_liver_mas_fibrosis_final_expression_mean.py`: Script to average ensemble translated expression and score selected mouse MASH/fibrosis studies with human PLSR models.
 11. `AutoTransOP_Pretrain_FlowMatch.py`: Script to train the main unpaired FlowTransOP L1000 shared-feature cell-line benchmark.
-12. `AutoTransOP_Pretrain_FlowMatch_withPairs.py`: Script to train the paired-constrained FlowTransOP comparison for cell-line pairs.
-13. `AutoTransOP_Pretrain_FlowMatch_withSTRUCTURE.py`: Script to train the STRUCTURE-initialized comparison workflow.
-14. `DecodeFromConsencusSpace.py`: Script to train/evaluate the consensus-space decoder baseline for shared-feature L1000 tasks.
-15. `DecodeFromConsencusSpaceRandomPairs.py`: Script to run consensus-space decoder controls with random/unpaired consensus construction.
-16. `AutoTransOP_Pretrain_FlowMatch_differentInputs.py`: Script to train FlowTransOP when the two domains use different feature subsets.
-17. `DecodeFromConsencusSpace_diffenetInputs.py`: Script to train/evaluate decoder-only baselines for different-input tasks.
-18. `AutoTransOP_Pretrain_FlowMatch_differentInputs_bracketed.py`: Script to train FlowTransOP across bracketed feature-correlation difficulty levels.
-19. `DecodeFromConsencusSpace_diffenetInputs_bracketed.py`: Script to train/evaluate decoder-only baselines across bracketed difficulty levels.
-20. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentage.py`: Script to train FlowTransOP in the low-pair A375/HT29 benchmark.
-21. `AutoTransOP_Pretrain_FlowMatchPaired_lowPairsPercentage.py`: Script to train paired FlowTransOP in the low-pair A375/HT29 benchmark.
-22. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme.py`: Script to train FlowTransOP in the extreme few-pair benchmark.
-23. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme_withPairs.py`: Script to train paired FlowTransOP in the extreme few-pair benchmark.
-24. `AutoTransOP_lowPairsPercentageExtreme.py`: Script to train the AutoTransOP baseline under the extreme few-pair design.
-25. `FlowMatch_lowPairsPercentage_PairsAndSimilarity.py`: Script to train a hybrid low-pair FlowTransOP variant using pair and similarity information.
-26. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity.py`: Script to train the extreme few-pair pair-and-similarity variant.
-27. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_meanAgg.py`: Script to train/evaluate the mean-aggregation pair-and-similarity variant.
-28. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_sumAgg.py`: Script to train/evaluate the sum-aggregation pair-and-similarity variant.
-29. `InitialAligner_GPUvsCPU_random_data.py`: Script to compare GPU and CPU TRANSACT/pre-alignment implementations on random data.
-30. `InitialAligner_GPUvsCPU_celline_pairs.py`: Script to compare GPU and CPU TRANSACT/pre-alignment implementations on cell-line pair data.
-31. `InitialAligner_GPUvsCPU_celline_pairs_random_subsampling.py`: Script to compare GPU/CPU TRANSACT under random subsampling of real cell-line data.
-32. `InitialAligner_GPUvsCPU_sameCell_diffInput.py`: Script to compare GPU/CPU TRANSACT for same-cell, different-feature inputs.
-33. `models.py`: Contains classes used to define the FlowTransOP neural-network modules.
-34. `models_autotransop.py`: Contains classes used to define AutoTransOP-style baseline modules.
-35. `trainingUtils.py`: Contains functions used to train FlowTransOP models.
-36. `trainingUtils_autotransop.py`: Contains functions used to train AutoTransOP-style baseline models.
-37. `transact_utility_gpu.py`: Contains GPU-oriented TRANSACT/pre-alignment functions.
-38. `utility.py`: Contains general utilities, including CPU-side alignment/helper routines.
-39. `evaluationUtils.py`: Contains functions for model evaluation and metric calculation.
+12. `AutoTransOP_Pretrain_FlowMatch_reverse.py`: Script to train only the reverse shared-feature L1000 FlowTransOP direction (`dataset2 -> dataset1`) and write `flow21` outputs.
+13. `AutoTransOP_Pretrain_FlowMatch_withPairs.py`: Script to train the paired-constrained FlowTransOP comparison for cell-line pairs.
+14. `AutoTransOP_Pretrain_FlowMatch_withSTRUCTURE.py`: Script to train the STRUCTURE-initialized comparison workflow.
+15. `DecodeFromConsencusSpace.py`: Script to train/evaluate the consensus-space decoder baseline for shared-feature L1000 tasks.
+16. `DecodeFromConsencusSpaceRandomPairs.py`: Script to run consensus-space decoder controls with random/unpaired consensus construction.
+17. `AutoTransOP_Pretrain_FlowMatch_differentInputs.py`: Script to train FlowTransOP when the two domains use different feature subsets.
+18. `DecodeFromConsencusSpace_diffenetInputs.py`: Script to train/evaluate decoder-only baselines for different-input tasks.
+19. `AutoTransOP_Pretrain_FlowMatch_differentInputs_bracketed.py`: Script to train FlowTransOP across bracketed feature-correlation difficulty levels.
+20. `DecodeFromConsencusSpace_diffenetInputs_bracketed.py`: Script to train/evaluate decoder-only baselines across bracketed difficulty levels.
+21. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentage.py`: Script to train FlowTransOP in the low-pair A375/HT29 benchmark.
+22. `AutoTransOP_Pretrain_FlowMatchPaired_lowPairsPercentage.py`: Script to train paired FlowTransOP in the low-pair A375/HT29 benchmark.
+23. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme.py`: Script to train FlowTransOP in the extreme few-pair benchmark.
+24. `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme_withPairs.py`: Script to train paired FlowTransOP in the extreme few-pair benchmark.
+25. `AutoTransOP_lowPairsPercentageExtreme.py`: Script to train the AutoTransOP baseline under the extreme few-pair design.
+26. `FlowMatch_lowPairsPercentage_PairsAndSimilarity.py`: Script to train a hybrid low-pair FlowTransOP variant using pair and similarity information.
+27. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity.py`: Script to train the extreme few-pair pair-and-similarity variant.
+28. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_meanAgg.py`: Script to train/evaluate the mean-aggregation pair-and-similarity variant.
+29. `FlowMatch_lowPairsPercentageExtreme_PairsAndSimilarity_sumAgg.py`: Script to train/evaluate the sum-aggregation pair-and-similarity variant.
+30. `InitialAligner_GPUvsCPU_random_data.py`: Script to compare GPU and CPU TRANSACT/pre-alignment implementations on random data.
+31. `InitialAligner_GPUvsCPU_celline_pairs.py`: Script to compare GPU and CPU TRANSACT/pre-alignment implementations on cell-line pair data.
+32. `InitialAligner_GPUvsCPU_celline_pairs_random_subsampling.py`: Script to compare GPU/CPU TRANSACT under random subsampling of real cell-line data.
+33. `InitialAligner_GPUvsCPU_sameCell_diffInput.py`: Script to compare GPU/CPU TRANSACT for same-cell, different-feature inputs.
+34. `models.py`: Contains classes used to define the FlowTransOP neural-network modules.
+35. `models_autotransop.py`: Contains classes used to define AutoTransOP-style baseline modules.
+36. `trainingUtils.py`: Contains functions used to train FlowTransOP models.
+37. `trainingUtils_autotransop.py`: Contains functions used to train AutoTransOP-style baseline models.
+38. `transact_utility_gpu.py`: Contains GPU-oriented TRANSACT/pre-alignment functions.
+39. `utility.py`: Contains general utilities, including CPU-side alignment/helper routines.
+40. `evaluationUtils.py`: Contains functions for model evaluation and metric calculation.
 
 ## Script-by-Script Map
 
@@ -262,6 +264,7 @@ where possible, the plotting script that consumes the output.
 | `evaluate_liver.py` | Evaluates held-out liver reconstruction, cycle, orthologue, expression MMD, latent MMD, and centroid specificity metrics. | `../archs4/evaluation/liver_*_fold*.csv`; plotted by `plot_archs4_liver_evaluation.R`. |
 | `score_liver_mas_fibrosis_final_expression_mean.py` | Averages full-ensemble translated expression and scores mouse MASH/fibrosis studies with human PLSR models. | `../archs4/evaluation/liver_mas_fibrosis_final_expression_mean/`; plotted by `plot_liver_mas_fibrosis_final_expression_mean.R`. |
 | `AutoTransOP_Pretrain_FlowMatch.py` | Main unpaired FlowTransOP L1000 benchmark on shared-feature cell-line pairs. | `../results/AutoTransOP_CellPairs/`; summarized by `evaluate5folds.R`. |
+| `AutoTransOP_Pretrain_FlowMatch_reverse.py` | Reverse-direction companion for the shared-feature L1000 FlowTransOP benchmark, useful when only `flow12` has already been run. | Writes `flow21_*_translation_latent_dim30_eval.csv` and `flow21_*_latent_space_latent_dim30_eval.csv`; used for the Supplementary Figure S1 no-structural-guidance ablation. |
 | `AutoTransOP_Pretrain_FlowMatch_withPairs.py` | Paired-constrained FlowTransOP comparison for cell-line pairs. | `../results/AutoTransOP_CellPairs_withPairs/`; summarized by `evaluate5folds.R`. |
 | `AutoTransOP_Pretrain_FlowMatch_withSTRUCTURE.py` | Compares a STRUCTURE-based initial alignment/pretraining variant against TRANSACT-based workflows. | `../results/AutoTransOP_withSTRUCTURE/`; summarized by `evaluate5folds.R`. |
 | `DecodeFromConsencusSpace.py` | Decoder-only baseline using a consensus latent space for the shared-feature L1000 benchmark. | `../results/DecodersOnly/`; summarized by `evaluate5folds.R`. |
@@ -305,6 +308,7 @@ where possible, the plotting script that consumes the output.
 | `score_liver_mas_fibrosis_final_expression_mean.sh` | SLURM wrapper for final MASH/fibrosis scoring. |
 | `cell_pairs_benchmark.sh` | Historical SLURM wrapper for the shared-feature L1000 benchmark; edit the active Python command as needed. |
 | `supplementary_figure_s1_no_structural_guidance.sh` | Runs the shared-feature L1000 FlowTransOP ablation with `--conditional_flow_lambda 0`, generating `../results/FlowMatch_no_structural_guidance/` for Supplementary Figure S1. |
+| `supplementary_figure_s1_no_structural_guidance_reverse.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_reverse.py` for the reverse no-structural-guidance S1 direction, adding `flow21` outputs to `../results/FlowMatch_no_structural_guidance/`. |
 | `low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentage.py`. |
 | `extremely_low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatch_lowPairsPercentageExtreme.py`. |
 | `pairedFlow_low_percentage_of_pairs.sh` | Runs `AutoTransOP_Pretrain_FlowMatchPaired_lowPairsPercentage.py`. |

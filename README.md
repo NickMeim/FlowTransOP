@@ -36,23 +36,31 @@ FlowTransOP/
 
 ## Install
 
-Create an environment with Python 3.9 or newer. GPU-enabled PyTorch is strongly
-recommended for training. The package wrappers default to CUDA/GPU for both the
-model and the TRANSACT/pre-alignment backend, while exposing separate switches
-for users who want one of those stages on CPU.
+Create an isolated environment with Python 3.9 or newer. The package smoke test
+has been run successfully on SLURM with Python 3.10.14. Some clusters still
+default to older Python versions such as 3.6; in that case, load a newer Python
+module or pass an explicit Python executable before creating the environment.
 
-A minimal Python setup is:
-
-```bash
-pip install -e .
-pip install numpy pandas scipy scikit-learn h5py archs4py geomloss matplotlib seaborn statsmodels
-```
-
-Or install the reproduction extras declared by the package:
+For package import, CLI help, and checkpoint inference:
 
 ```bash
-pip install -e ".[reproduce]"
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e .
 ```
+
+For the manuscript reproduction wrappers, L1000 smoke training, ARCHS4
+training/evaluation, plotting support, and scripts that import packages such as
+`statsmodels`, install the reproduction extras instead:
+
+```bash
+python -m pip install -e ".[reproduce]"
+```
+
+GPU-enabled PyTorch is strongly recommended for training. The package wrappers
+default to CUDA/GPU for both the model and the TRANSACT/pre-alignment backend,
+while exposing separate switches for users who want one of those stages on CPU.
 
 For plotting, install R and the R packages used by `postprocessing/`:
 
@@ -63,10 +71,63 @@ install.packages(c(
 ))
 ```
 
+## Validate Installation
+
+After installation, confirm that the command-line interface is available:
+
+```bash
+flowtransop --help
+flowtransop run-l1000 --help
+flowtransop train-archs4-fold --help
+flowtransop predict --help
+```
+
+On a SLURM cluster, the repository includes a package smoke test that creates an
+isolated virtual environment, installs the package, checks the CLI, and runs a
+short L1000 training workflow with fast parameters:
+
+```bash
+sbatch archived/flowtransop_package_smoke_test.slurm.sh
+```
+
+The smoke test writes into `archived/flowtransop_smoke_${SLURM_JOB_ID}/`. It
+requires Python >= 3.9, refuses to continue if the virtual environment fails to
+activate, and installs `.[reproduce]` by default when `RUN_L1000_SMOKE=1`.
+Useful overrides are:
+
+```bash
+# Install and CLI checks only
+sbatch --export=ALL,RUN_L1000_SMOKE=0 archived/flowtransop_package_smoke_test.slurm.sh
+
+# Reuse an existing smoke-test virtual environment
+sbatch --export=ALL,RECREATE_ENV=0 archived/flowtransop_package_smoke_test.slurm.sh
+
+# Use a cluster-specific Python module or executable
+sbatch --export=ALL,PYTHON_MODULE=python/3.10 archived/flowtransop_package_smoke_test.slurm.sh
+sbatch --export=ALL,PYTHON_MODULE='',PYTHON_BIN=/path/to/python3.10 archived/flowtransop_package_smoke_test.slurm.sh
+
+# GPU smoke test for AutoTransOP through the package
+sbatch --export=ALL,L1000_METHOD=simple-autotransop,MODEL_DEVICE=cuda,TRANSACT_BACKEND=gpu,TRANSACT_DEVICE=cuda archived/flowtransop_package_smoke_test.slurm.sh
+
+# GPU smoke test for consensus-space decoders through the package
+sbatch --export=ALL,L1000_METHOD=consensus-decoders,MODEL_DEVICE=cuda,TRANSACT_BACKEND=gpu,TRANSACT_DEVICE=cuda archived/flowtransop_package_smoke_test.slurm.sh
+```
+
 ## Package CLI
 
-After `pip install -e .`, common workflows can be called with `flowtransop`.
-The package exposes model and TRANSACT/pre-alignment device choices separately:
+After `pip install -e .`, inference commands and help pages can be called with
+`flowtransop`. For commands that delegate to the original manuscript training or
+evaluation scripts, use `pip install -e ".[reproduce]"`. The package exposes
+model and TRANSACT/pre-alignment device choices separately:
+
+The L1000 wrapper is installed by default with the package and includes the
+three main manuscript options:
+
+| Method argument | Workflow |
+| --- | --- |
+| `--method hybrid-flowtransop` | Hybrid FlowTransOP using pair and pre-aligned similarity constraints. |
+| `--method simple-autotransop` or `--method autotransop` | AutoTransOP/CPA-style baseline. The CLI prints a hyperparameter-sensitivity warning when this is run. |
+| `--method consensus-decoders` | Consensus-space decoder baseline. |
 
 ```bash
 flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
@@ -167,7 +228,7 @@ for training.
 From the repository root:
 
 ```bash
-pip install -e ".[reproduce]"
+python -m pip install -e ".[reproduce]"
 
 flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
   --model-device cuda --transact-backend gpu --transact-device cuda
@@ -225,6 +286,9 @@ sbatch cell_pairs_benchmark.sh
 # Optional Supplementary Figure S1 ablation:
 # shared-feature FlowTransOP with structural guidance disabled
 sbatch supplementary_figure_s1_no_structural_guidance.sh
+
+# Optional reverse direction for the same S1 ablation if flow21 outputs are missing
+sbatch supplementary_figure_s1_no_structural_guidance_reverse.sh
 
 # Low-pair and extremely-low-pair benchmarks
 sbatch low_percentage_of_pairs.sh
