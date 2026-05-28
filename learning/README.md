@@ -192,6 +192,12 @@ when pair and similarity information should be combined, and AutoTransOP when
 running the AutoTransOP/CPA-style paired baseline. Extra arguments are passed
 through to the selected Python script.
 
+The standard hybrid setting uses `--hybrid-aggregation max`, matching the
+manuscript-selected model. In that mode, the exact known-pair indicator matrix
+and the TRANSACT-derived approximate similarity matrix are combined by taking
+their elementwise maximum. Users can instead pass `--hybrid-aggregation mean`
+or `--hybrid-aggregation sum` when testing average or additive aggregation.
+
 **Important AutoTransOP note:** AutoTransOP hyperparameters are very important
 and the method can be highly sensitive. Whether to use mutual information,
 cosine distance, Euclidean distance, and/or prior/adversarial discriminators as
@@ -320,10 +326,29 @@ where possible, the plotting script that consumes the output.
 
 ## Package Entry Point
 
-The repository root contains an installable package. From `..`:
+The repository root contains an installable package. Use Python 3.9 or newer.
+For workflows that call the original training/evaluation scripts, install the
+reproduction extras from `..`:
 
 ```bash
-pip install -e ".[reproduce]"
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e ".[reproduce]"
+```
+
+The root README contains the full installation notes. To validate the package on
+SLURM from the repository root, run:
+
+```bash
+sbatch archived/flowtransop_package_smoke_test.slurm.sh
+```
+
+The same smoke-test wrapper can exercise AutoTransOP or consensus-space decoders
+on GPU:
+
+```bash
+sbatch --export=ALL,L1000_METHOD=simple-autotransop,MODEL_DEVICE=cuda,TRANSACT_BACKEND=gpu,TRANSACT_DEVICE=cuda archived/flowtransop_package_smoke_test.slurm.sh
+sbatch --export=ALL,L1000_METHOD=consensus-decoders,MODEL_DEVICE=cuda,TRANSACT_BACKEND=gpu,TRANSACT_DEVICE=cuda archived/flowtransop_package_smoke_test.slurm.sh
+sbatch --export=ALL,L1000_METHOD=hybrid-flowtransop,HYBRID_AGGREGATION=mean,MODEL_DEVICE=cuda,TRANSACT_BACKEND=gpu,TRANSACT_DEVICE=cuda archived/flowtransop_package_smoke_test.slurm.sh
 ```
 
 Then from the repository root:
@@ -343,6 +368,12 @@ flowtransop run-l1000 --repo-root . --method consensus-decoders
 flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
 flowtransop run-l1000 --repo-root . --method simple-autotransop
 ```
+
+For `--method hybrid-flowtransop`, the default is
+`--hybrid-aggregation max`: the exact known-pair matrix and TRANSACT-derived
+approximate similarity matrix are combined by taking the elementwise maximum.
+Use `--hybrid-aggregation mean` or `--hybrid-aggregation sum` to test the other
+aggregation rules.
 
 The package can also load and average the 10 pretrained full ARCHS4 ensemble
 members if the local gitignored `../archs4/` folder is present:

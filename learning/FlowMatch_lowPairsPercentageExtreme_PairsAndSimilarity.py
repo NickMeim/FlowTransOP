@@ -124,6 +124,16 @@ parser.add_argument("--autoencoder_wd", type=float, default=0.0, help="Weight de
 # Flow-related regularization
 parser.add_argument("--flow_lambda", type=float, default=1.0, help="Flow matrix regularization parameter.")
 parser.add_argument("--conditional_flow_lambda", type=float, default=1e-3, help="Flow matching regularization parameter.")
+parser.add_argument(
+    "--similarity_aggregation",
+    type=str,
+    choices=["max", "mean", "sum"],
+    default="max",
+    help=(
+        "How to combine exact paired-condition indicators with TRANSACT-derived "
+        "pre-aligned similarity. Default: max, the manuscript-selected hybrid."
+    ),
+)
 
 args = parser.parse_args()
 
@@ -136,6 +146,7 @@ fh = FileHandler(args.log_file, mode="a")
 fh.setFormatter(logging.Formatter("%(message)s"))
 logger.addHandler(fh)
 print2log = logger.info
+print2log(f"Hybrid pair/similarity aggregation: {args.similarity_aggregation}")
 
 output_dir = args.output_dir
 Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -575,7 +586,7 @@ for i, n_pairs in enumerate(args.n_pairs_list):
                 model_params["epochs"],
                 pairs_train=pairs_train,
                 tanslation_direction="1 to 2",
-                similarity_agregation = 'max'
+                similarity_agregation=args.similarity_aggregation,
             )
 
             # ------------------ Validate on ALL validation pairs ------------------
@@ -604,7 +615,7 @@ for i, n_pairs in enumerate(args.n_pairs_list):
                                                           model_params['batch_size_1'], model_params['batch_size_2'],model_params['batch_size_paired'], model_params['epochs'],
                                                           pairs_train=pairs_train,
                                                           tanslation_direction = '2 to 1',
-                                                          similarity_agregation = 'max')
+                                                          similarity_agregation=args.similarity_aggregation)
             r_2_to_1,_,pearson2,_ = validate_flowMatch_fold(device, X_1_val, X_2_val, decoder_1, decoder_2, encoder_1, encoder_2,flow_21,pairs_val,'2 to 1')
             ## aggregate
             mu_r = 0.5*(np.nanmean(pearson1) + np.nanmean(pearson2))

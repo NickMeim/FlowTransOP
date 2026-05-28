@@ -84,7 +84,7 @@ These options are part of the default installed `flowtransop` command:
 
 | Method argument | Workflow |
 | --- | --- |
-| `--method hybrid-flowtransop` | Hybrid FlowTransOP using pair and pre-aligned similarity constraints. |
+| `--method hybrid-flowtransop` | Standard hybrid FlowTransOP using known paired-condition indicators plus TRANSACT pre-aligned similarity. The default aggregation is `--hybrid-aggregation max`, the manuscript-selected setting. |
 | `--method simple-autotransop` or `--method autotransop` | AutoTransOP/CPA-style baseline. The CLI prints a hyperparameter-sensitivity warning when this is run. |
 | `--method consensus-decoders` | Consensus-space decoder baseline. |
 
@@ -93,6 +93,18 @@ flowtransop run-l1000 --repo-root . --method consensus-decoders
 flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
 flowtransop run-l1000 --repo-root . --method simple-autotransop
 ```
+
+For hybrid FlowTransOP, exact paired-condition matches are encoded in `C` and
+approximate relationships from the pre-aligned TRANSACT space are encoded in
+`C_pre`. The standard manuscript setting is:
+
+```bash
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop --hybrid-aggregation max
+```
+
+This uses the elementwise maximum of `C` and `C_pre`. Users can also select
+`--hybrid-aggregation mean` or `--hybrid-aggregation sum` to test average or
+additive pair/similarity aggregation.
 
 Available L1000 methods are:
 

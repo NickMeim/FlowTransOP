@@ -63,6 +63,16 @@ parser.add_argument('--decoder_activation', type=str,
 ## arguments for stretching and alinging
 parser.add_argument('--flow_lambda', type=float, default=1., help='Flow matrix regularization parameter.')
 parser.add_argument('--conditional_flow_lambda', type=float, default=1e-3, help='Flow matching regularization parameter.')
+parser.add_argument(
+    '--similarity_aggregation',
+    type=str,
+    choices=['max', 'mean', 'sum'],
+    default='max',
+    help=(
+        'How to combine exact paired-condition indicators with TRANSACT-derived '
+        'pre-aligned similarity. Default: max, the manuscript-selected hybrid.'
+    ),
+)
 args = parser.parse_args()
 
 logger = logging.getLogger()
@@ -71,6 +81,7 @@ fh = FileHandler(args.log_file, mode='a')
 fh.setFormatter(logging.Formatter('%(message)s'))
 logger.addHandler(fh)
 print2log = logger.info
+print2log(f"Hybrid pair/similarity aggregation: {args.similarity_aggregation}")
 
 output_dir = args.output_dir
 data_root = args.data_root
@@ -324,7 +335,7 @@ for fi, folder in enumerate(folders):
                                                           model_params['batch_size_1'], model_params['batch_size_2'],model_params['batch_size_paired'], model_params['epochs'],
                                                           pairs_train=pairs_train,
                                                           tanslation_direction = '1 to 2',
-                                                          similarity_agregation = 'max')
+                                                          similarity_agregation = args.similarity_aggregation)
         print2log(f'Now train opposite flow for Fold {fold_id}: {folder}...')
         (pearson_2_to_1,_,flow_21) = train_GeneralFM_fold(model_params, device,
                                                           X_1, X_2,
@@ -336,7 +347,7 @@ for fi, folder in enumerate(folders):
                                                           model_params['batch_size_1'], model_params['batch_size_2'],model_params['batch_size_paired'], model_params['epochs'],
                                                           pairs_train=pairs_train,
                                                           tanslation_direction = '2 to 1',
-                                                          similarity_agregation = 'max')
+                                                          similarity_agregation = args.similarity_aggregation)
             
         # Validation for the current fold
         r_1_to_2,pearson1,_,_ = validate_flowMatch_fold(device, X_1_val, X_2_val, decoder_1, decoder_2, encoder_1, encoder_2,flow_12,pairs_val,'1 to 2')

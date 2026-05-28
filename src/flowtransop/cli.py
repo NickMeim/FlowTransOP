@@ -176,6 +176,16 @@ def main(argv: list[str] | None = None) -> int:
         choices=sorted(L1000_METHOD_SCRIPTS),
         help="L1000 workflow to run.",
     )
+    l1000.add_argument(
+        "--hybrid-aggregation",
+        choices=["max", "mean", "sum"],
+        default="max",
+        help=(
+            "For hybrid FlowTransOP methods, combine exact paired-condition "
+            "indicators with TRANSACT-derived similarity using this rule. "
+            "Default: max, the manuscript-selected hybrid."
+        ),
+    )
     _add_backend_args(l1000)
 
     args, extra = parser.parse_known_args(argv)
@@ -269,7 +279,10 @@ def main(argv: list[str] | None = None) -> int:
         script = L1000_METHOD_SCRIPTS[args.method]
         if args.method in {"autotransop", "simple-autotransop"}:
             _print_autotransop_note()
-        return _run_script(root, script, extra, _backend_env(args))
+        passthrough = list(extra)
+        if args.method in {"hybrid-flowtransop", "hybrid-flowtransop-extreme"}:
+            passthrough = ["--similarity_aggregation", args.hybrid_aggregation, *passthrough]
+        return _run_script(root, script, passthrough, _backend_env(args))
 
     parser.error(f"Unhandled command: {args.command}")
     return 2

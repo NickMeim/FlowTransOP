@@ -111,6 +111,9 @@ sbatch --export=ALL,L1000_METHOD=simple-autotransop,MODEL_DEVICE=cuda,TRANSACT_B
 
 # GPU smoke test for consensus-space decoders through the package
 sbatch --export=ALL,L1000_METHOD=consensus-decoders,MODEL_DEVICE=cuda,TRANSACT_BACKEND=gpu,TRANSACT_DEVICE=cuda archived/flowtransop_package_smoke_test.slurm.sh
+
+# Hybrid FlowTransOP smoke test with a non-default pair/similarity aggregation
+sbatch --export=ALL,L1000_METHOD=hybrid-flowtransop,HYBRID_AGGREGATION=mean,MODEL_DEVICE=cuda,TRANSACT_BACKEND=gpu,TRANSACT_DEVICE=cuda archived/flowtransop_package_smoke_test.slurm.sh
 ```
 
 ## Package CLI
@@ -125,7 +128,7 @@ three main manuscript options:
 
 | Method argument | Workflow |
 | --- | --- |
-| `--method hybrid-flowtransop` | Hybrid FlowTransOP using pair and pre-aligned similarity constraints. |
+| `--method hybrid-flowtransop` | Standard hybrid FlowTransOP using known paired-condition indicators plus TRANSACT pre-aligned similarity. The default aggregation is `--hybrid-aggregation max`, the manuscript-selected setting. |
 | `--method simple-autotransop` or `--method autotransop` | AutoTransOP/CPA-style baseline. The CLI prints a hyperparameter-sensitivity warning when this is run. |
 | `--method consensus-decoders` | Consensus-space decoder baseline. |
 
@@ -145,6 +148,18 @@ L1000 method wrappers are also available:
 flowtransop run-l1000 --repo-root . --method consensus-decoders
 flowtransop run-l1000 --repo-root . --method hybrid-flowtransop
 flowtransop run-l1000 --repo-root . --method simple-autotransop
+```
+
+For the standard hybrid, exact paired-condition matches are encoded in `C` and
+approximate relationships from the pre-aligned TRANSACT space are encoded in
+`C_pre`. By default, FlowTransOP combines them elementwise with
+`--hybrid-aggregation max`, preserving exact known-pair signal while allowing
+TRANSACT similarity to guide non-identical or partially matched samples:
+
+```bash
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop --hybrid-aggregation max
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop --hybrid-aggregation mean
+flowtransop run-l1000 --repo-root . --method hybrid-flowtransop --hybrid-aggregation sum
 ```
 
 Use the pretrained full ARCHS4 ensemble weights from a local, gitignored
@@ -323,6 +338,12 @@ FlowTransOP variant, and `--method simple-autotransop` when you want the
 AutoTransOP/CPA-style baseline. Extra arguments are passed through to the
 selected script, for example `--output_dir`, `--epochs`, `--folders`, or
 checkpoint/log options supported by that script.
+
+The standard hybrid uses `--hybrid-aggregation max` by default. This combines
+the exact known-pair matrix and the TRANSACT-derived approximate similarity
+matrix by taking the elementwise maximum. Users can instead pass
+`--hybrid-aggregation mean` or `--hybrid-aggregation sum` when they want to test
+average or additive pair/similarity aggregation.
 
 **Important AutoTransOP note:** AutoTransOP hyperparameters are very important
 and the method can be highly sensitive. Whether to use mutual information,
