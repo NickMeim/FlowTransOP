@@ -27,6 +27,8 @@ structural <- read_translation(
          direct_translation = Direct_pearson,
          shuffled_x = `shuffled X`)
 
+# The flow[0-9]+ pattern intentionally includes both flow12 and flow21 so the
+# no-structural-guidance ablation uses both translation directions when present.
 no_structural <- read_translation(
   "../results/FlowMatch_no_structural_guidance",
   "flow[0-9]+_TransAct_GeneralizedTransOP_translation_latent_dim30_eval\\.csv$"
@@ -34,11 +36,18 @@ no_structural <- read_translation(
   select(fold, translation,
          no_structural_guidance = test)
 
+if (n_distinct(no_structural$translation) < 2) {
+  stop("No-structural-guidance results contain fewer than two translation directions.")
+}
+
 matched_results <- inner_join(
   no_structural,
   structural,
   by = c("fold", "translation")
 )
+
+message("Supplementary Figure S1 matched translation directions:")
+message(paste(sort(unique(matched_results$translation)), collapse = "; "))
 
 violin_values <- bind_rows(
   structural %>%
