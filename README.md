@@ -17,7 +17,7 @@ GitHub repository accompanying the manuscript:
 >
 > &dagger; These authors contributed equally.
 >
-> \* Corresponding author, meimetis@mit.edu
+> \* Corresponding author, meimetis@mit.edu & nmeimetis97@gmail.com
 >
 > Manuscript: [https://doi.org/10.64898/2026.05.27.728305](https://doi.org/10.64898/2026.05.27.728305)
 >
