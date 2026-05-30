@@ -1,5 +1,7 @@
 # FlowTransOP
 
+[![ARCHS4 ensemble models DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20434738.svg)](https://doi.org/10.5281/zenodo.20434738)
+
 Github repository of the study:
 
 > FlowTransOP: Distributional Translation of Omics Signatures via Constrained Deep Flow Matching
@@ -163,7 +165,8 @@ flowtransop run-l1000 --repo-root . --method hybrid-flowtransop --hybrid-aggrega
 ```
 
 Use the pretrained full ARCHS4 ensemble weights from a local, gitignored
-`archs4/` folder:
+`archs4/` folder. The ARCHS4 ensemble model files are deposited on Zenodo:
+[![ARCHS4 ensemble models DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20434738.svg)](https://doi.org/10.5281/zenodo.20434738)
 
 ```bash
 flowtransop predict-archs4-ensemble \
