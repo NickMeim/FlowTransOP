@@ -1,19 +1,27 @@
 # FlowTransOP
 
 [![bioRxiv](https://img.shields.io/badge/bioRxiv-10.64898%2F2026.05.27.728305-B31B1B.svg)](https://doi.org/10.64898/2026.05.27.728305)
+
 [![ARCHS4 ensemble models DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20434738.svg)](https://doi.org/10.5281/zenodo.20434738)
 
 GitHub repository accompanying the manuscript:
 
 > FlowTransOP: Distributional Translation of Omics Signatures via Constrained Deep Flow Matching
 >
-> Meimetis, N.; Magliacane, S.; Hoang, T. N.; & Lauffenburger, D. A.
+> Nikolaos Meimetis<sup>1,*</sup>; Trong Nghia Hoang<sup>2,&dagger;</sup>; Sara Magliacane<sup>3,4,&dagger;</sup>; & Douglas A. Lauffenburger<sup>1</sup>.
+>
+> 1. Department of Biological Engineering, Massachusetts Institute of Technology, Cambridge, MA, 02139, USA
+> 2. School of Electrical Engineering and Computer Science, Washington State University, Pullman, WA, 99164-236, USA
+> 3. Informatics Institute, University of Amsterdam, Amsterdam, The Netherlands
+> 4. Saarland Informatics Campus, Saarland University, Saarbr&uuml;cken, Germany
+>
+> &dagger; These authors contributed equally.
+>
+> \* Corresponding author, meimetis@mit.edu
 >
 > Manuscript: [https://doi.org/10.64898/2026.05.27.728305](https://doi.org/10.64898/2026.05.27.728305)
 >
 > ARCHS4 ensemble models: [https://doi.org/10.5281/zenodo.20434738](https://doi.org/10.5281/zenodo.20434738)
->
-> Corresponding author: Nikolaos Meimetis, meimetis@mit.edu, nmeimetis97@gmail.com
 
 ## Abstract
 
