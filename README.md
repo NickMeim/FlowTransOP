@@ -1,11 +1,21 @@
 # FlowTransOP
 
+[![bioRxiv](https://img.shields.io/badge/bioRxiv-10.64898%2F2026.05.27.728305-B31B1B.svg)](https://doi.org/10.64898/2026.05.27.728305)
 [![ARCHS4 ensemble models DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20434738.svg)](https://doi.org/10.5281/zenodo.20434738)
 
-Github repository of the study:
+GitHub repository accompanying the manuscript:
 
 > FlowTransOP: Distributional Translation of Omics Signatures via Constrained Deep Flow Matching
-> Meimetis, N., Hoang, T. N., Magliacane, S., & Lauffenburger, D. A.
+>
+> Meimetis, N.; Magliacane, S.; Hoang, T. N.; & Lauffenburger, D. A.
+>
+> Manuscript: [https://doi.org/10.64898/2026.05.27.728305](https://doi.org/10.64898/2026.05.27.728305)
+>
+> ARCHS4 ensemble models: [https://doi.org/10.5281/zenodo.20434738](https://doi.org/10.5281/zenodo.20434738)
+>
+> Corresponding author: Nikolaos Meimetis, meimetis@mit.edu, nmeimetis97@gmail.com
+
+## Abstract
 
 FlowTransOP is a framework for distributional translation of omics signatures
 between biological domains when paired samples and one-to-one feature maps are
