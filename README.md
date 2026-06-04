@@ -153,6 +153,12 @@ three main manuscript options:
 | `--method simple-autotransop` or `--method autotransop` | AutoTransOP/CPA-style baseline. The CLI prints a hyperparameter-sensitivity warning when this is run. |
 | `--method consensus-decoders` | Consensus-space decoder baseline. |
 
+**AutoTransOP implementation note:** the AutoTransOP wrapper in this repository
+is a light implementation intended for very fast benchmarking and may have
+lower performance than a fully tuned AutoTransOP run. The full AutoTransOP
+benchmark package is available at
+[Lauffenburger-Lab/OmicTranslationBenchmark](https://github.com/Lauffenburger-Lab/OmicTranslationBenchmark).
+
 ```bash
 flowtransop train-archs4-fold --repo-root . --fold 0 --direction h2m \
   --model-device cuda --transact-backend gpu --transact-device cuda
@@ -373,6 +379,11 @@ cosine distance, Euclidean distance, and/or prior/adversarial discriminators as
 proposed in the original publication is a modeling choice that users must
 customly re-adjust for their own data, paired-sample regime, and feature space.
 The checked-in defaults should not be treated as universally optimal.
+The AutoTransOP wrapper here is a light implementation for very fast
+benchmarking and may have lower performance than a fully tuned run; use the
+full package at
+[Lauffenburger-Lab/OmicTranslationBenchmark](https://github.com/Lauffenburger-Lab/OmicTranslationBenchmark)
+for the complete AutoTransOP benchmark implementation.
 
 ### 3. ARCHS4 Download, Splits, and Preprocessing
 
