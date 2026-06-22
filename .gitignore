@@ -16,7 +16,7 @@ preprocessing/preprocessed_data/drug_quadruplets_dataset.rds
 learning/evaluate_tissue.py
 learning.evaluate_tissue.sh
 .Rproj.user
-
+.vscode
 # Keep local ARCHS4 data and checkpoints out of GitHub while retaining folder docs.
 archs4/**
 !archs4/
